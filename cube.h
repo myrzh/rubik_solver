@@ -63,7 +63,7 @@ color *getFace(Cube thisCube, layer thisFaceName) {
         break;
     }
 
-    return *face;
+    return face;
 }
 
 void printFace(Cube thisCube, layer thisFaceName) {
