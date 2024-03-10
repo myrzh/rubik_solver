@@ -3,7 +3,9 @@
 
 int main() {
     Cube defaultCube;
-    defaultCube.F[1][1] = BLUE;
-    color front[3][3] = getFace(defaultCube, F);
+    defaultCube.F[1][2] = BLUE;
+    color front[3][3];
+    writeFaceToArray(front, defaultCube.F);
+    printFaceFromArray(front);
     return 0;
 }

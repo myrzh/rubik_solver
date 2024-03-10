@@ -13,59 +13,19 @@ typedef struct {
     color L[3][3];
 } Cube;
 
-color *getFace(Cube thisCube, layer thisFaceName) {
-    color face[3][3];
-
-    switch (thisFaceName) {
-    case F:
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 3; col++) {
-                face[row][col] = thisCube.F[row][col];
-            }
+void writeFaceToArray(color face[3][3], color cubeFace[3][3]) {
+    for (int row = 0; row < 3; row++) {
+        for (int col = 0; col < 3; col++) {
+            face[row][col] = cubeFace[row][col];
         }
-        break;
-    case U:
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 3; col++) {
-                face[row][col] = thisCube.U[row][col];
-            }
-        }
-        break;
-    case R:
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 3; col++) {
-                face[row][col] = thisCube.R[row][col];
-            }
-        }
-        break;
-    case B:
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 3; col++) {
-                face[row][col] = thisCube.B[row][col];
-            }
-        }
-    case D:
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 3; col++) {
-                face[row][col] = thisCube.D[row][col];
-            }
-        }
-        break;
-    case L:
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 3; col++) {
-                face[row][col] = thisCube.L[row][col];
-            }
-        }
-        break;
-    default:
-        printf("NOT A FACE\n");
-        break;
     }
-
-    return face;
 }
 
-void printFace(Cube thisCube, layer thisFaceName) {
-    return;
+void printFaceFromArray(color face[3][3]) {
+    for (int row = 0; row < 3; row++) {
+        for (int col = 0; col < 3; col++) {
+            printf("%u ", face[row][col]);
+        }
+        printf("\n");
+    }
 }
