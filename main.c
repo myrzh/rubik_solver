@@ -3,9 +3,11 @@
 
 int main() {
     Cube defaultCube;
-    defaultCube.F[1][2] = BLUE;
-    color front[3][3];
-    writeFaceToArray(front, defaultCube.F);
-    printFaceFromArray(front);
+    char blueUserSide[] = {'b', 'g', 'y', 'y', 'g', 'b', 'r', 'b', 'b'};
+    // color blueUserSide[] = {BLUE, GREEN, YELLOW, YELLOW, GREEN, BLUE, RED, BLUE, BLUE};
+    fillSideFromArray(defaultCube.blueSide, blueUserSide);
+    for (int i = 0; i < 9; i++) {
+        printf("%u", colorNames[defaultCube.blueSide[i]]);
+    }
     return 0;
 }
