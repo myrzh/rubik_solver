@@ -7,7 +7,7 @@ int main() {
     // color blueUserSide[] = {BLUE, GREEN, YELLOW, YELLOW, GREEN, BLUE, RED, BLUE, BLUE};
     fillSideFromArray(defaultCube.blueSide, blueUserSide);
     for (int i = 0; i < 9; i++) {
-        printf("%u", colorNames[defaultCube.blueSide[i]]);
+        printf("%s\n", colorNames[defaultCube.blueSide[i]]);
     }
     return 0;
 }
