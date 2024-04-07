@@ -1,40 +1,65 @@
 #include <stdio.h>
-#include "stdlib.h"
+#include <stdlib.h>
+#include <string.h>
+#include "cubecoords.h"
+#include "shaders.h"
 
 #define GL_SILENCE_DEPRECATION
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include <OpenGL/gl3.h>
 
-typedef struct {
-    GLfloat corners[9][2];
-} SideCoords;
+typedef enum {RIGHT, LEFT, TOP} cubeSide;
 
-// Vertex shader source
-const char* vertexShaderSource = 
-    "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\0";
+unsigned int getShaderProgram() {
+    // Compile and link shaders
+    unsigned int vertexShader, fragmentShader, shaderProgram;
+    vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &vertexShaderInstanceSource, NULL);
+    glCompileShader(vertexShader);
 
-// Fragment shader source
-const char* fragmentShaderSource = 
-    "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "    FragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);\n" // White color
-    "}\n\0";
+    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &fragmentShaderInstanceSource, NULL);
+    glCompileShader(fragmentShader);
 
-void drawSquare(GLfloat x, GLfloat y) {
-    float vertices[] = {
-        x, y, 0.0f,
-        x + 0.17f, y + 0.09f, 0.0f,
-        x + 0.17f, y - 0.1f, 0.0f,
-        x, y - 0.17f, 0.0f
-    };
+    shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    return shaderProgram;
+}
+
+void drawSquare(GLfloat x, GLfloat y, cubeSide sideToDraw) {
+    float vertices[12];
+    if (sideToDraw == RIGHT) {
+        float verticesTemp[] = {
+            x, y, 0.0f,
+            x + 0.17f, y + 0.09f, 0.0f,
+            x + 0.17f, y - 0.1f, 0.0f,
+            x, y - 0.17f, 0.0f
+        };
+        memcpy(vertices, verticesTemp, sizeof(vertices));
+    } else if (sideToDraw == LEFT) {
+        float verticesTemp[] = {
+            x, y, 0.0f,
+            x - 0.17f, y + 0.09f, 0.0f,
+            x - 0.17f, y - 0.1f, 0.0f,
+            x, y - 0.17f, 0.0f
+        };
+        memcpy(vertices, verticesTemp, sizeof(vertices));
+    } else if (sideToDraw == TOP) {
+        float verticesTemp[] = {
+            x, y, 0.0f,
+            x - 0.17f, y + 0.09f, 0.0f,
+            x, y + 0.17f, 0.0f,
+            x + 0.17f, y + 0.1f, 0.0f
+        };
+        memcpy(vertices, verticesTemp, sizeof(vertices));
+    }
 
     unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
@@ -57,18 +82,32 @@ void drawSquare(GLfloat x, GLfloat y) {
     glDeleteVertexArrays(1, &VAO);
 }
 
-void drawGrid() {
-    for (GLfloat xPos = 0.0f; xPos < 0.4f; xPos += 0.17f) {
-        for (GLfloat yPos = 0.0f; yPos < 0.4f; yPos += 0.17f) {
-            drawSquare(xPos, yPos);
-        }
+void drawSide(cubeSide sideToDraw) {
+    switch (sideToDraw) {
+        case RIGHT:
+            for (int i = 0; i < 9; i++) {
+                drawSquare(rightCoords[i][0], rightCoords[i][1], sideToDraw);
+            }
+            break;
+        case LEFT:
+            for (int i = 0; i < 9; i++) {
+                drawSquare(leftCoords[i][0], leftCoords[i][1], sideToDraw);
+            }
+            break;
+        case TOP:
+            for (int i = 0; i < 9; i++) {
+                drawSquare(topCoords[i][0], topCoords[i][1], sideToDraw);
+            }
+            break;
+        default:
+            break;
     }
-    // drawSquare(0.0f, 0.0f);
 }
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
+    }
 }
 
 int main(void) {
@@ -79,7 +118,7 @@ int main(void) {
         return -1;
     }
 
-    window = glfwCreateWindow(800, 600, "3x3 Grid of Squares", NULL, NULL);
+    window = glfwCreateWindow(800, 600, "RubikSolver", NULL, NULL);
     if (!window) {
         fprintf(stderr, "Failed to create GLFW window\n");
         glfwTerminate();
@@ -89,30 +128,16 @@ int main(void) {
     glfwMakeContextCurrent(window);
     glfwSetKeyCallback(window, keyCallback);
 
-    // Compile and link shaders
-    unsigned int vertexShader, fragmentShader, shaderProgram;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    unsigned int shaderProgram = getShaderProgram();
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shaderProgram);
-        drawGrid();
+        drawSide(RIGHT);
+        drawSide(LEFT);
+        drawSide(TOP);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -120,7 +145,6 @@ int main(void) {
 
     // Clean up
     glDeleteProgram(shaderProgram);
-
     glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
