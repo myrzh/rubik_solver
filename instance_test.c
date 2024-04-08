@@ -38,25 +38,25 @@ void drawSquare(GLfloat x, GLfloat y, cubeSide sideToDraw) {
     if (sideToDraw == RIGHT) {
         float verticesTemp[] = {
             x, y, 0.0f,
-            x + 0.17f, y + 0.09f, 0.0f,
-            x + 0.17f, y - 0.1f, 0.0f,
-            x, y - 0.17f, 0.0f
+            x + 0.173f, y + 0.1f, 0.0f,
+            x + 0.173f, y - 0.1f, 0.0f,
+            x, y - 0.2f, 0.0f
         };
         memcpy(vertices, verticesTemp, sizeof(vertices));
     } else if (sideToDraw == LEFT) {
         float verticesTemp[] = {
             x, y, 0.0f,
-            x - 0.17f, y + 0.09f, 0.0f,
-            x - 0.17f, y - 0.1f, 0.0f,
-            x, y - 0.17f, 0.0f
+            x - 0.173f, y + 0.1f, 0.0f,
+            x - 0.173f, y - 0.1f, 0.0f,
+            x, y - 0.2f, 0.0f
         };
         memcpy(vertices, verticesTemp, sizeof(vertices));
     } else if (sideToDraw == TOP) {
         float verticesTemp[] = {
             x, y, 0.0f,
-            x - 0.17f, y + 0.09f, 0.0f,
-            x, y + 0.17f, 0.0f,
-            x + 0.17f, y + 0.1f, 0.0f
+            x - 0.173f, y + 0.1f, 0.0f,
+            x, y + 0.2f, 0.0f,
+            x + 0.173f, y + 0.1f, 0.0f
         };
         memcpy(vertices, verticesTemp, sizeof(vertices));
     }
@@ -80,6 +80,29 @@ void drawSquare(GLfloat x, GLfloat y, cubeSide sideToDraw) {
 
     glDeleteBuffers(1, &VBO);
     glDeleteVertexArrays(1, &VAO);
+}
+
+void drawStroke(GLfloat x, GLfloat y, cubeSide sideToDraw) {
+    glColor3f(0.0f, 0.0f, 1.0f); // Blue color
+    glLineWidth(2.0f);
+    glBegin(GL_LINE_LOOP);
+    switch (sideToDraw) {
+        case RIGHT:
+            glVertex3f(x, y, 0.0f);
+            glVertex3f(x + 0.173f, y + 0.1f, 0.0f);
+            glVertex3f(x + 0.173f, y - 0.1f, 0.0f);
+            glVertex3f(x, y - 0.2f, 0.0f);
+            break;
+        case LEFT:
+            
+            break;
+        case TOP:
+            
+            break;
+        default:
+            break;
+    }
+    glEnd();
 }
 
 void drawSide(cubeSide sideToDraw) {
@@ -118,7 +141,7 @@ int main(void) {
         return -1;
     }
 
-    window = glfwCreateWindow(800, 600, "RubikSolver", NULL, NULL);
+    window = glfwCreateWindow(600, 600, "RubikSolver", NULL, NULL);
     if (!window) {
         fprintf(stderr, "Failed to create GLFW window\n");
         glfwTerminate();
