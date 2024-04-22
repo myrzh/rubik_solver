@@ -39,3 +39,10 @@ const float topCoords[][2] = {
     {0.173f, 0.3f},
     {0.0f, 0.4f}
 };
+
+typedef struct {
+    float xPos;
+    float yPos;
+    float width;
+    float height;
+} btnCoordsStruct;

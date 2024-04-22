@@ -1,8 +1,5 @@
 {
     "files.associations": {
-        "cube.h": "c",
-        "stdio.h": "c",
-        "__config": "c",
         "shaders.h": "c"
     }
 }
