@@ -40,7 +40,7 @@ const char* vertexShaderInstanceSource =
     "{\n"
     "    gl_Position = vec4(aPos, 1.0);\n"
     "    ourColor = aColor;\n"
-    "}\0";
+    "}";
 
 const char* fragmentShaderInstanceSource = 
     "#version 330 core\n"
@@ -48,6 +48,5 @@ const char* fragmentShaderInstanceSource =
     "out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
-    "    FragColor = vec4(ourColor, 1.0f); // Use the input color data"
-    "}\n\0";
-
+    "    FragColor = vec4(ourColor, 1.0f);\n"
+    "}";
