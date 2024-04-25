@@ -1,4 +1,4 @@
-typedef enum { RED, GREEN, BLUE, WHITE, ORANGE, YELLOW } colorIndexName;
+typedef enum { RED, GREEN, BLUE, WHITE, ORANGE, YELLOW } color;
 typedef enum { R, G, B } colorComponentName;
 
 const float colors[][3] = {

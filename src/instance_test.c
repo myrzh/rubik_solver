@@ -3,7 +3,8 @@
 #include <string.h>
 #include "objects.h"
 #include "shaders.h"
-#include "colors.h"
+// #include "colors.h"
+#include "cube.h"
 
 #define GL_SILENCE_DEPRECATION
 #define GLFW_INCLUDE_NONE
@@ -23,11 +24,65 @@ void printMessage() {
     printf("MESSAGE\n");
 }
 
-btnCoordsStruct btn1;
+typedef enum { REVERT, ROTATE_SIDE } buttonFunction;
 
-int rightSide[] = { WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE };
-int leftSide[] = { BLUE, BLUE, BLUE, BLUE, BLUE, BLUE, BLUE, BLUE, BLUE };
-int topSide[] = { RED, RED, RED, RED, RED, RED, RED, RED, RED };
+typedef struct {
+    float xPos;
+    float yPos;
+    float width;
+    float height;
+    color color;
+    buttonFunction function;
+
+} Button;
+
+Button buttons[10];
+
+Cube testCube;
+
+void initData() {
+    for (int i = 0; i < 7; i++) {
+        buttons[i].width = 0.15f;
+        buttons[i].height = 0.15f;
+    }
+
+    buttons[0].xPos = -0.95f;
+    buttons[0].yPos = 0.95f;
+    buttons[0].color = WHITE;
+    buttons[0].function = REVERT;
+
+    buttons[1].xPos = -0.75f;
+    buttons[1].yPos = 0.95f;
+    buttons[1].color = GREEN;
+    buttons[1].function = ROTATE_SIDE;
+
+    buttons[2].xPos = -0.95f;
+    buttons[2].yPos = 0.75f;
+    buttons[2].color = YELLOW;
+    buttons[2].function = ROTATE_SIDE;
+
+    buttons[3].xPos = -0.75f;
+    buttons[3].yPos = 0.75f;
+    buttons[3].color = RED;
+    buttons[3].function = ROTATE_SIDE;
+
+    buttons[4].xPos = -0.55f;
+    buttons[4].yPos = 0.75f;
+    buttons[4].color = WHITE;
+    buttons[4].function = ROTATE_SIDE;
+
+    buttons[5].xPos = -0.35f;
+    buttons[5].yPos = 0.75f;
+    buttons[5].color = ORANGE;
+    buttons[5].function = ROTATE_SIDE;
+
+    buttons[6].xPos = -0.75f;
+    buttons[6].yPos = 0.55f;
+    buttons[6].color = BLUE;
+    buttons[6].function = ROTATE_SIDE;
+
+    initCube(&testCube);
+}
 
 GLuint getShaderProgram() {
     // GLuint shaderID;
@@ -182,25 +237,25 @@ void drawSquare(GLfloat x, GLfloat y, GLfloat r, GLfloat g, GLfloat b, cubeSide 
     drawStroke(x, y, sideToDraw);
 }
 
-void drawSide(cubeSide sideToDraw, int sideColors[]) {
-    float color[3];
+void drawSide(cubeSide sideToDraw, color sideColors[]) {
+    float currentColor[3];
     switch (sideToDraw) {
         case RIGHT:
             for (int i = 0; i < 9; i++) {
-                memcpy(color, colors[sideColors[rightSideOrder[i]]], sizeof(colors[sideColors[rightSideOrder[i]]]));
-                drawSquare(rightCoords[i][0], rightCoords[i][1], color[R], color[G], color[B], sideToDraw);
+                memcpy(currentColor, colors[sideColors[rightSideOrder[i]]], sizeof(colors[sideColors[rightSideOrder[i]]]));
+                drawSquare(rightCoords[i][0], rightCoords[i][1], currentColor[R], currentColor[G], currentColor[B], sideToDraw);
             }
             break;
         case LEFT:
             for (int i = 0; i < 9; i++) {
-                memcpy(color, colors[sideColors[leftSideOrder[i]]], sizeof(colors[sideColors[leftSideOrder[i]]]));
-                drawSquare(leftCoords[i][0], leftCoords[i][1], color[R], color[G], color[B], sideToDraw);
+                memcpy(currentColor, colors[sideColors[leftSideOrder[i]]], sizeof(colors[sideColors[leftSideOrder[i]]]));
+                drawSquare(leftCoords[i][0], leftCoords[i][1], currentColor[R], currentColor[G], currentColor[B], sideToDraw);
             }
             break;
         case TOP:
             for (int i = 0; i < 9; i++) {
-                memcpy(color, colors[sideColors[topSideOrder[i]]], sizeof(colors[sideColors[topSideOrder[i]]]));
-                drawSquare(topCoords[i][0], topCoords[i][1], color[R], color[G], color[B], sideToDraw);
+                memcpy(currentColor, colors[sideColors[topSideOrder[i]]], sizeof(colors[sideColors[topSideOrder[i]]]));
+                drawSquare(topCoords[i][0], topCoords[i][1], currentColor[R], currentColor[G], currentColor[B], sideToDraw);
             }
             break;
         default:
@@ -208,12 +263,14 @@ void drawSide(cubeSide sideToDraw, int sideColors[]) {
     }
 }
 
-void drawBtn1(GLfloat x, GLfloat y, GLfloat width, GLfloat height) {
+void drawButton(GLfloat x, GLfloat y, GLfloat width, GLfloat height, color colorName) {
+    float currentColor[3];
+    memcpy(currentColor, colors[colorName], sizeof(colors[colorName]));
     GLfloat vertices[] = {
-        x, y, 0.0f, 1.0f, 1.0f, 1.0f,
-        x + width, y, 0.0f, 1.0f, 1.0f, 1.0f,
-        x + width, y - height, 0.0f, 1.0f, 1.0f, 1.0f,
-        x, y - height, 0.0f, 1.0f, 1.0f, 1.0f
+        x, y, 0.0f, currentColor[R], currentColor[G], currentColor[B],
+        x + width, y, 0.0f, currentColor[R], currentColor[G], currentColor[B],
+        x + width, y - height, 0.0f, currentColor[R], currentColor[G], currentColor[B],
+        x, y - height, 0.0f, currentColor[R], currentColor[G], currentColor[B]
     };
 
     GLuint VBO, VAO;
@@ -241,7 +298,9 @@ void drawBtn1(GLfloat x, GLfloat y, GLfloat width, GLfloat height) {
 }
 
 void drawUI() {
-    drawBtn1(btn1.xPos, btn1.yPos, btn1.width, btn1.height);
+    for (int i = 0; i < sizeof(buttons) / sizeof(buttons[0]); i++) {
+        drawButton(buttons[i].xPos, buttons[i].yPos, buttons[i].width, buttons[i].height, buttons[i].color);
+    }
 }
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
@@ -257,23 +316,23 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 }
 
 void randomizeSides() {
-    int randColor;
-    for (int i = 0; i < 8; i++) {
-        randColor = rand() % 6;
-        rightSide[i] = randColor;
-    }
-    for (int i = 0; i < 8; i++) {
-        randColor = rand() % 6;
-        leftSide[i] = randColor;
-    }
-    for (int i = 0; i < 8; i++) {
-        randColor = rand() % 6;
-        topSide[i] = randColor;
-    }
+    // int randColor;
+    // for (int i = 0; i < 8; i++) {
+    //     randColor = rand() % 6;
+    //     rightSide[i] = randColor;
+    // }
+    // for (int i = 0; i < 8; i++) {
+    //     randColor = rand() % 6;
+    //     leftSide[i] = randColor;
+    // }
+    // for (int i = 0; i < 8; i++) {
+    //     randColor = rand() % 6;
+    //     topSide[i] = randColor;
+    // }
 }
 
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+    if (action == GLFW_PRESS) {
         int width, height;
         glfwGetWindowSize(window, &width, &height);
 
@@ -285,25 +344,37 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 
         printf("%f %f -> %f %f\n", xpos, ypos, normalizedX, normalizedY);
 
-        if (normalizedX >= btn1.xPos && normalizedX <= btn1.xPos + btn1.width &&
-            normalizedY <= btn1.yPos && normalizedY >= btn1.yPos - btn1.height) {
-            // printMessage();
-            randomizeSides();
+        for (int i = 0; i < sizeof(buttons) / sizeof(buttons[0]); i++) {
+            if (normalizedX >= buttons[i].xPos && normalizedX <= buttons[i].xPos + buttons[i].width &&
+                normalizedY <= buttons[i].yPos && normalizedY >= buttons[i].yPos - buttons[i].height) {
+                switch (buttons[i].function) {
+                case REVERT:
+                    initCube(&testCube);
+                    break;
+                case ROTATE_SIDE:
+                    switch (button) {
+                        case GLFW_MOUSE_BUTTON_LEFT:
+                            rotateSideBy90(&testCube, buttons[i].color);
+                            break;
+                        case GLFW_MOUSE_BUTTON_RIGHT:
+                            rotateSideBy90Back(&testCube, buttons[i].color);
+                        default:
+                            break;
+                    }
+                    break;
+                default:
+                    break;
+                }
+            }
         }
     }
 }
 
-int main(void) {
-     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+int main (int argc, char *argv[]) {
 
-    // DATA INIT
-    btn1.xPos = -0.95f;
-    btn1.yPos = 0.95f;
-    btn1.width = 0.2f;
-    btn1.height = 0.1f;
-    // DATA INIT
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     GLFWwindow* window;
 
@@ -338,21 +409,16 @@ int main(void) {
 
     // printf("%s\n", glGetString(GL_VERSION));
 
-    // int testRightSide[] = { ORANGE, RED, GREEN, WHITE, ORANGE, BLUE, YELLOW, ORANGE, WHITE };
-    // int testLeftSide[] = { WHITE, RED, GREEN, RED, YELLOW, YELLOW, BLUE, WHITE, BLUE };
-    // int testTopSide[] = { YELLOW, GREEN, ORANGE, RED, WHITE, YELLOW, RED, WHITE, RED };
-    // memcpy(rightSide, testRightSide, sizeof(testRightSide));
-    // memcpy(leftSide, testLeftSide, sizeof(testLeftSide));
-    // memcpy(topSide, testTopSide, sizeof(testTopSide));
+    initData();
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shaderProgram);
-        drawSide(RIGHT, rightSide);
-        drawSide(LEFT, leftSide);
-        drawSide(TOP, topSide);
+        drawSide(RIGHT, testCube.whiteSide);
+        drawSide(LEFT, testCube.blueSide);
+        drawSide(TOP, testCube.redSide);
         drawUI();
 
         glfwSwapBuffers(window);
