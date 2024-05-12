@@ -3,7 +3,7 @@
 #include <string.h>
 #include "objects.h"
 #include "shaders.h"
-// #include "colors.h"
+#include "colors.h"
 #include "cube.h"
 
 #define GL_SILENCE_DEPRECATION
@@ -23,18 +23,6 @@ typedef enum {RIGHT, LEFT, TOP} cubeSide;
 void printMessage() {
     printf("MESSAGE\n");
 }
-
-typedef enum { REVERT, ROTATE_SIDE } buttonFunction;
-
-typedef struct {
-    float xPos;
-    float yPos;
-    float width;
-    float height;
-    color color;
-    buttonFunction function;
-
-} Button;
 
 Button buttons[10];
 
@@ -342,28 +330,29 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
         double normalizedX = -1.0 + 2.0 * xpos / width; 
         double normalizedY = 1.0 - 2.0 * ypos / height; 
 
-        printf("%f %f -> %f %f\n", xpos, ypos, normalizedX, normalizedY);
+        // printf("%f %f -> %f %f\n", xpos, ypos, normalizedX, normalizedY);
 
         for (int i = 0; i < sizeof(buttons) / sizeof(buttons[0]); i++) {
             if (normalizedX >= buttons[i].xPos && normalizedX <= buttons[i].xPos + buttons[i].width &&
                 normalizedY <= buttons[i].yPos && normalizedY >= buttons[i].yPos - buttons[i].height) {
                 switch (buttons[i].function) {
-                case REVERT:
-                    initCube(&testCube);
-                    break;
-                case ROTATE_SIDE:
-                    switch (button) {
-                        case GLFW_MOUSE_BUTTON_LEFT:
-                            rotateSideBy90(&testCube, buttons[i].color);
-                            break;
-                        case GLFW_MOUSE_BUTTON_RIGHT:
-                            rotateSideBy90Back(&testCube, buttons[i].color);
-                        default:
-                            break;
-                    }
-                    break;
-                default:
-                    break;
+                    case REVERT:
+                        // initCube(&testCube);
+                        firstStep(&testCube);
+                        break;
+                    case ROTATE_SIDE:
+                        switch (button) {
+                            case GLFW_MOUSE_BUTTON_LEFT:
+                                rotateSideBy90(&testCube, buttons[i].color);
+                                break;
+                            case GLFW_MOUSE_BUTTON_RIGHT:
+                                rotateSideBy90Back(&testCube, buttons[i].color);
+                            default:
+                                break;
+                        }
+                        break;
+                    default:
+                        break;
                 }
             }
         }
@@ -386,7 +375,7 @@ int main (int argc, char *argv[]) {
     glfwWindowHint(GLFW_SAMPLES, 8); // anti aliasing
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // openGL major version to be 3
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); // minor set to 3, which makes the version 3.3
-    // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // for MAC OS only
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // for MAC OS only
     glfwWindowHint(GLFW_OPENGL_COMPAT_PROFILE, GLFW_OPENGL_CORE_PROFILE); //avoid using old openGL
 
     window = glfwCreateWindow(600, 600, "RubikSolver", NULL, NULL);
