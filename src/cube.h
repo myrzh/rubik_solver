@@ -4,6 +4,8 @@
 #define CORNERWHITE 2
 #define CORNERPREV 3
 
+typedef enum { R, _R, G, _G, B, _B, W, _W, O, _O, Y, _Y } action;
+
 void swap(color* x, color* y) {
     color t;
     t = (*x);
@@ -406,15 +408,15 @@ char checkIfFourthStep(Cube* thisCube)
     return 0;
 }
 
-char checkIfFifthhStep(Cube* thisCube)
-{
+// char checkIfFifthhStep(Cube* thisCube)
+// {
 
-}
+// }
 
-char checkIfSixthStep(Cube* thisCube)
-{
+// char checkIfSixthStep(Cube* thisCube)
+// {
 
-}
+// }
 
 void makeCross(Cube* thisCube, int* countPoses)
 {
@@ -608,7 +610,10 @@ char ifCorner(Cube* thisCube, color facePanel)
         }
         return 0;
         break;
+    default:
+        break;
     }
+    return 0;
 }
 
 void solveCorner(Cube* thisCube, color facePanel, char type)

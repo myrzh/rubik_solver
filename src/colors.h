@@ -2,7 +2,6 @@
 #define COLORS_HEADER
 
 typedef enum { RED, GREEN, BLUE, WHITE, ORANGE, YELLOW } color;
-typedef enum { R, G, B } colorComponentName;
 
 const float colors[][3] = {
         { 1.0f, 0.0f, 0.0f }, // Red

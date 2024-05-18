@@ -46,7 +46,7 @@ const int rightSideOrder[] = { 1, 2, 3, 0, 8, 4, 7, 6, 5 };
 const int leftSideOrder[] = { 6, 5, 4, 7, 8, 3, 0, 1, 2 };
 const int topSideOrder[] = { 0, 1, 2, 7, 8, 3, 6, 5, 4 };
 
-typedef enum { REVERT, ROTATE_SIDE } buttonFunction;
+typedef enum { REVERT, ROTATE_SIDE, NEXTSTEP } buttonFunction;
 
 typedef struct {
     float xPos;

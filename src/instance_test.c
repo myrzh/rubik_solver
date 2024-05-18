@@ -20,16 +20,17 @@
 
 typedef enum {RIGHT, LEFT, TOP} cubeSide;
 
-void printMessage() {
-    printf("MESSAGE\n");
-}
-
 Button buttons[10];
 
 Cube testCube;
 
+FILE* inputSteps;
+action stepsFromFile[1000];
+int actionsInFile;
+int currentStep;
+
 void initData() {
-    for (int i = 0; i < 7; i++) {
+    for (int i = 0; i < 8; i++) {
         buttons[i].width = 0.15f;
         buttons[i].height = 0.15f;
     }
@@ -68,6 +69,11 @@ void initData() {
     buttons[6].yPos = 0.55f;
     buttons[6].color = BLUE;
     buttons[6].function = ROTATE_SIDE;
+
+    buttons[7].xPos = 0.8f;
+    buttons[7].yPos = 0.95f;
+    buttons[7].color = WHITE;
+    buttons[7].function = NEXTSTEP;
 
     initCube(&testCube);
 }
@@ -231,19 +237,19 @@ void drawSide(cubeSide sideToDraw, color sideColors[]) {
         case RIGHT:
             for (int i = 0; i < 9; i++) {
                 memcpy(currentColor, colors[sideColors[rightSideOrder[i]]], sizeof(colors[sideColors[rightSideOrder[i]]]));
-                drawSquare(rightCoords[i][0], rightCoords[i][1], currentColor[R], currentColor[G], currentColor[B], sideToDraw);
+                drawSquare(rightCoords[i][0], rightCoords[i][1], currentColor[RED], currentColor[GREEN], currentColor[BLUE], sideToDraw);
             }
             break;
         case LEFT:
             for (int i = 0; i < 9; i++) {
                 memcpy(currentColor, colors[sideColors[leftSideOrder[i]]], sizeof(colors[sideColors[leftSideOrder[i]]]));
-                drawSquare(leftCoords[i][0], leftCoords[i][1], currentColor[R], currentColor[G], currentColor[B], sideToDraw);
+                drawSquare(leftCoords[i][0], leftCoords[i][1], currentColor[RED], currentColor[GREEN], currentColor[BLUE], sideToDraw);
             }
             break;
         case TOP:
             for (int i = 0; i < 9; i++) {
                 memcpy(currentColor, colors[sideColors[topSideOrder[i]]], sizeof(colors[sideColors[topSideOrder[i]]]));
-                drawSquare(topCoords[i][0], topCoords[i][1], currentColor[R], currentColor[G], currentColor[B], sideToDraw);
+                drawSquare(topCoords[i][0], topCoords[i][1], currentColor[RED], currentColor[GREEN], currentColor[BLUE], sideToDraw);
             }
             break;
         default:
@@ -255,10 +261,10 @@ void drawButton(GLfloat x, GLfloat y, GLfloat width, GLfloat height, color color
     float currentColor[3];
     memcpy(currentColor, colors[colorName], sizeof(colors[colorName]));
     GLfloat vertices[] = {
-        x, y, 0.0f, currentColor[R], currentColor[G], currentColor[B],
-        x + width, y, 0.0f, currentColor[R], currentColor[G], currentColor[B],
-        x + width, y - height, 0.0f, currentColor[R], currentColor[G], currentColor[B],
-        x, y - height, 0.0f, currentColor[R], currentColor[G], currentColor[B]
+        x, y, 0.0f, currentColor[RED], currentColor[GREEN], currentColor[BLUE],
+        x + width, y, 0.0f, currentColor[RED], currentColor[GREEN], currentColor[BLUE],
+        x + width, y - height, 0.0f, currentColor[RED], currentColor[GREEN], currentColor[BLUE],
+        x, y - height, 0.0f, currentColor[RED], currentColor[GREEN], currentColor[BLUE]
     };
 
     GLuint VBO, VAO;
@@ -291,6 +297,86 @@ void drawUI() {
     }
 }
 
+void fillStepsFromFile(char filename[]) {
+    inputSteps = fopen(filename, "r");
+    if (inputSteps == NULL) {
+        printf("can't open input file!\n");
+        exit(1);
+    }
+
+    char line[256];
+
+    memset(stepsFromFile, 0, sizeof(stepsFromFile));
+    actionsInFile = 0;
+
+    int actionIndex;
+    int isReverse;
+    action currentAction;
+    int currentActionCount;
+
+    while (fgets(line, sizeof(line), inputSteps) != NULL) {
+        // printf("%s", line);
+        actionIndex = 0;
+        isReverse = 0;
+        currentActionCount = 0;
+        if (line[0] == '_') {
+            actionIndex = 1;
+            isReverse = 1;
+        }
+
+        switch (line[actionIndex]) {
+            case 'R':
+                currentAction = R;
+                break;
+            case 'G':
+                currentAction = G;
+                break;
+            case 'B':
+                currentAction = B;
+                break;
+            case 'W':
+                currentAction = W;
+                break;
+            case 'O':
+                currentAction = O;
+                break;
+            case 'Y':
+                currentAction = Y;
+                break;
+            default:
+                break;
+        }
+
+        if (isReverse) {
+            currentAction++;
+        }
+
+        currentActionCount = line[actionIndex + 1] - '0';
+
+        for (int i = 0; i < currentActionCount; i++) {
+            stepsFromFile[actionsInFile++] = currentAction;
+        }
+    }
+
+    // for (int i = 0; i < actionsInFile; i++) {
+    //     printf("%d\n", stepsFromFile[i]);
+    // }
+}
+
+void executeStep() {
+    if (currentStep + 1 > actionsInFile) {
+        printf("file is done!\n");
+        return;
+    }
+    action currentAction = stepsFromFile[currentStep++];
+
+    if (currentAction % 2 == 0) {
+        rotateSideBy90(&testCube, (color)(currentAction / 2));
+    } else {
+        rotateSideBy90Back(&testCube, (color)((currentAction - 1) / 2));
+    }
+}
+
 void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
     int minSize = (width < height) ? width : height;
     glfwSetWindowSize(window, minSize, minSize);
@@ -301,22 +387,6 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
-}
-
-void randomizeSides() {
-    // int randColor;
-    // for (int i = 0; i < 8; i++) {
-    //     randColor = rand() % 6;
-    //     rightSide[i] = randColor;
-    // }
-    // for (int i = 0; i < 8; i++) {
-    //     randColor = rand() % 6;
-    //     leftSide[i] = randColor;
-    // }
-    // for (int i = 0; i < 8; i++) {
-    //     randColor = rand() % 6;
-    //     topSide[i] = randColor;
-    // }
 }
 
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
@@ -351,6 +421,8 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                                 break;
                         }
                         break;
+                    case NEXTSTEP:
+                        executeStep();
                     default:
                         break;
                 }
@@ -359,8 +431,7 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
     }
 }
 
-int main (int argc, char *argv[]) {
-
+int main(int argc, char *argv[]) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -399,6 +470,12 @@ int main (int argc, char *argv[]) {
     // printf("%s\n", glGetString(GL_VERSION));
 
     initData();
+
+    char inputFilename[50] = "input.txt";
+    // fgets(inputFilename, sizeof(inputFilename), stdin);
+    // inputFilename[strcspn(inputFilename, "\n")] = '\0';
+    fillStepsFromFile(inputFilename);
+    currentStep = 0;
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
