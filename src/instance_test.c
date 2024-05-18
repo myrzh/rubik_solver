@@ -371,9 +371,9 @@ void executeStep() {
     action currentAction = stepsFromFile[currentStep++];
 
     if (currentAction % 2 == 0) {
-        rotateSideBy90(&testCube, (color)(currentAction / 2));
+        rotateSideBy90(&testCube, (color)(currentAction / 2), STRAIGHT);
     } else {
-        rotateSideBy90Back(&testCube, (color)((currentAction - 1) / 2));
+        rotateSideBy90(&testCube, (color)((currentAction - 1) / 2), BACK);
     }
 }
 
@@ -386,6 +386,33 @@ void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
+    }
+    if (key == GLFW_KEY_F && action == GLFW_PRESS) {
+        GLFWwindow* secondaryWindow = glfwCreateWindow(400, 300, "Authors", NULL, NULL);
+        if (!secondaryWindow) {
+            fprintf(stderr, "failed to create secondary window!\n");
+            return;
+        }
+        glfwMakeContextCurrent(secondaryWindow);
+
+        const char* authors[] = { "Author 1", "Author 2", "Author 3" };
+        for (int i = 0; i < 3; ++i) {
+            const char* name = authors[i];
+            // For simplicity, we'll just print to console
+            // You should render the text on the window using a text rendering library
+            printf("%s\n", name);
+        }
+        while (!glfwWindowShouldClose(secondaryWindow)) {
+            glClear(GL_COLOR_BUFFER_BIT);
+
+            // Render author names
+
+            glfwSwapBuffers(secondaryWindow);
+            glfwPollEvents();
+        }
+
+        glfwDestroyWindow(secondaryWindow);
+        glfwMakeContextCurrent(window);
     }
 }
 
@@ -407,16 +434,15 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                 normalizedY <= buttons[i].yPos && normalizedY >= buttons[i].yPos - buttons[i].height) {
                 switch (buttons[i].function) {
                     case REVERT:
-                        // initCube(&testCube);
-                        firstStep(&testCube);
+                        initCube(&testCube);
                         break;
                     case ROTATE_SIDE:
                         switch (button) {
                             case GLFW_MOUSE_BUTTON_LEFT:
-                                rotateSideBy90(&testCube, buttons[i].color);
+                                rotateSideBy90(&testCube, buttons[i].color, STRAIGHT);
                                 break;
                             case GLFW_MOUSE_BUTTON_RIGHT:
-                                rotateSideBy90Back(&testCube, buttons[i].color);
+                                rotateSideBy90(&testCube, buttons[i].color, BACK);
                             default:
                                 break;
                         }
