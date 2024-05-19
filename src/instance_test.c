@@ -20,7 +20,7 @@
 
 typedef enum {RIGHT, LEFT, TOP} cubeSide;
 
-Button buttons[10];
+Button buttons[20];
 
 Cube testCube;
 
@@ -30,7 +30,7 @@ int actionsInFile;
 int currentStep;
 
 void initData() {
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 15; i++) {
         buttons[i].width = 0.15f;
         buttons[i].height = 0.15f;
     }
@@ -74,6 +74,41 @@ void initData() {
     buttons[7].yPos = 0.95f;
     buttons[7].color = WHITE;
     buttons[7].function = NEXTSTEP;
+
+    buttons[8].xPos = 0.8f;
+    buttons[8].yPos = 0.75f;
+    buttons[8].color = WHITE;
+    buttons[8].function = FILLCUBE;
+
+    buttons[9].xPos = 0.6f;
+    buttons[9].yPos = -0.4f;
+    buttons[9].color = WHITE;
+    buttons[9].function = SETCOLOR;
+
+    buttons[10].xPos = 0.8f;
+    buttons[10].yPos = -0.4f;
+    buttons[10].color = GREEN;
+    buttons[10].function = SETCOLOR;
+
+    buttons[11].xPos = 0.6f;
+    buttons[11].yPos = -0.6f;
+    buttons[11].color = RED;
+    buttons[11].function = SETCOLOR;
+
+    buttons[12].xPos = 0.8f;
+    buttons[12].yPos = -0.6f;
+    buttons[12].color = BLUE;
+    buttons[12].function = SETCOLOR;
+
+    buttons[13].xPos = 0.6f;
+    buttons[13].yPos = -0.8f;
+    buttons[13].color = ORANGE;
+    buttons[13].function = SETCOLOR;
+
+    buttons[14].xPos = 0.8f;
+    buttons[14].yPos = -0.8f;
+    buttons[14].color = YELLOW;
+    buttons[14].function = SETCOLOR;
 
     initCube(&testCube);
 }
@@ -292,7 +327,13 @@ void drawButton(GLfloat x, GLfloat y, GLfloat width, GLfloat height, color color
 }
 
 void drawUI() {
-    for (int i = 0; i < sizeof(buttons) / sizeof(buttons[0]); i++) {
+    for (int i = 0; i < 9; i++) {
+        drawButton(buttons[i].xPos, buttons[i].yPos, buttons[i].width, buttons[i].height, buttons[i].color);
+    }
+}
+
+void drawFlatWindowUI() {
+    for (int i = 9; i < 15; i++) {
         drawButton(buttons[i].xPos, buttons[i].yPos, buttons[i].width, buttons[i].height, buttons[i].color);
     }
 }
@@ -383,35 +424,111 @@ void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, minSize, minSize);
 }
 
+void drawFlatSquare(GLfloat x, GLfloat y, GLfloat r, GLfloat g, GLfloat b) {
+    GLfloat vertices[] = {
+        x, y, 0.0f, r, g, b,
+        x + 0.15f, y, 0.0f, r, g, b,
+        x + 0.15f, y - 0.15f, 0.0f, r, g, b,
+        x, y - 0.15f, 0.0f, r, g, b
+    };
+
+    GLuint VBO, VAO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    // Set vertex attributes pointers
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
+
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+    glDeleteBuffers(1, &VBO);
+    glDeleteVertexArrays(1, &VAO);
+
+    // drawStroke(x, y, sideToDraw);
+}
+
+void drawFlatSide(GLfloat x, GLfloat y) {
+    // float currentColor[3];
+    for (float i = x; i < (x + 0.35f); i += 0.15f) {
+        for (float j = y; j > (y - 0.35f); j -= 0.15f) {
+            // memcpy(currentColor, colors[sideColors[rightSideOrder[i]]], sizeof(colors[sideColors[rightSideOrder[i]]]));
+            // drawFlatSquare(rightCoords[i][0], rightCoords[i][1], currentColor[RED], currentColor[GREEN], currentColor[BLUE]);
+            drawFlatSquare(i, j, 0.0f, 1.0f, 1.0f);
+        }
+    }
+}
+
+void fillCubeFromUserInput(GLFWwindow* window) {
+    Cube flatCube;
+    GLFWwindow* flatCubeWindow = glfwCreateWindow(500, 500, "User Input", NULL, NULL);
+    if (!flatCubeWindow) {
+        fprintf(stderr, "failed to create flat cube window!\n");
+        return;
+    }
+    glfwMakeContextCurrent(flatCubeWindow);
+    glfwSetFramebufferSizeCallback(flatCubeWindow, framebufferSizeCallback);
+
+    GLuint shaderProgram = getShaderProgram();
+
+    while (!glfwWindowShouldClose(flatCubeWindow)) {
+        glClear(GL_COLOR_BUFFER_BIT);
+        glUseProgram(shaderProgram);
+
+        drawFlatSide(-0.5f, 0.95f); // WHITE SIDE
+        drawFlatSide(-0.95f, 0.5f); // GREEN SIDE
+        drawFlatSide(-0.5f, 0.5f);  // RED SIDE
+        drawFlatSide(-0.05f, 0.5f); // BLUE SIDE
+        drawFlatSide(0.4f, 0.5f);   // ORANGE SIDE
+        drawFlatSide(-0.5f, 0.05f); // YELLOW SIDE
+        drawFlatWindowUI();
+
+        glfwSwapBuffers(flatCubeWindow);
+        glfwPollEvents();
+    }
+
+    glfwDestroyWindow(flatCubeWindow);
+    glfwMakeContextCurrent(window);
+    
+}
+
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
     if (key == GLFW_KEY_F && action == GLFW_PRESS) {
-        GLFWwindow* secondaryWindow = glfwCreateWindow(400, 300, "Authors", NULL, NULL);
-        if (!secondaryWindow) {
+        GLFWwindow* authorsWindows = glfwCreateWindow(400, 300, "Authors", NULL, NULL);
+        if (!authorsWindows) {
             fprintf(stderr, "failed to create secondary window!\n");
             return;
         }
-        glfwMakeContextCurrent(secondaryWindow);
+        glfwMakeContextCurrent(authorsWindows);
 
-        const char* authors[] = { "Author 1", "Author 2", "Author 3" };
-        for (int i = 0; i < 3; ++i) {
+        const char* authors[] = { "Shtarev I.A.", "Plotnikov D.A."};
+        for (int i = 0; i < 2; ++i) {
             const char* name = authors[i];
-            // For simplicity, we'll just print to console
-            // You should render the text on the window using a text rendering library
             printf("%s\n", name);
         }
-        while (!glfwWindowShouldClose(secondaryWindow)) {
+        while (!glfwWindowShouldClose(authorsWindows)) {
             glClear(GL_COLOR_BUFFER_BIT);
 
             // Render author names
 
-            glfwSwapBuffers(secondaryWindow);
+            glfwSwapBuffers(authorsWindows);
             glfwPollEvents();
         }
 
-        glfwDestroyWindow(secondaryWindow);
+        glfwDestroyWindow(authorsWindows);
         glfwMakeContextCurrent(window);
     }
 }
@@ -449,6 +566,12 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                         break;
                     case NEXTSTEP:
                         executeStep();
+                        break;
+                    case FILLCUBE:
+                        fillCubeFromUserInput(window);
+                        break;
+                    case SETCOLOR:
+                        break;
                     default:
                         break;
                 }
