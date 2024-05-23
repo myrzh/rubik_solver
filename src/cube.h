@@ -1,3 +1,6 @@
+#ifndef CUBE_H
+#define CUBE_H
+
 #include <stdio.h>
 #include "colors.h"
 
@@ -8,6 +11,27 @@
 typedef enum { R, _R, G, _G, B, _B, W, _W, O, _O, Y, _Y } action;
 
 typedef enum { STRAIGHT, BACK } rotationMode;
+
+typedef enum { LEVEL_ONE, LEVEL_TWO, LEVEL_THREE } flatCubeLevel;
+
+action getActionFromChar(char letter) {
+    switch (letter) {
+        case 'R':
+            return R;
+        case 'G':
+            return G;
+        case 'B':
+            return B;
+        case 'W':
+            return W;
+        case 'O':
+            return O;
+        case 'Y':
+            return Y;
+        default:
+            break;
+    }
+}
 
 void swap(color* x, color* y) {
     color t;
@@ -34,6 +58,23 @@ void initCube(Cube* thisCube) {
         thisCube->greenSide[index] = GREEN;
         thisCube->orangeSide[index] = ORANGE;
     }
+}
+
+void initFlatCube(Cube* thisCube) {
+    for (int index = 0; index < 8; index++) {
+        thisCube->whiteSide[index] = CYAN;
+        thisCube->yellowSide[index] = CYAN;
+        thisCube->redSide[index] = CYAN;
+        thisCube->blueSide[index] = CYAN;
+        thisCube->greenSide[index] = CYAN;
+        thisCube->orangeSide[index] = CYAN;
+    }
+    thisCube->whiteSide[8] = WHITE;
+    thisCube->yellowSide[8] = YELLOW;
+    thisCube->redSide[8] = RED;
+    thisCube->blueSide[8] = BLUE;
+    thisCube->greenSide[8] = GREEN;
+    thisCube->orangeSide[8] = ORANGE;
 }
 
 void fillSideFromArray(color* cubeSide, char sideColors[]) {
@@ -222,3 +263,5 @@ void rotateSideBy90(Cube* thisCube, color sideToRotate, rotationMode mode) {
     }
     printf("\n");
 }
+
+#endif

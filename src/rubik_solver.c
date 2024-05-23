@@ -18,19 +18,31 @@
     #error "unsupported platform!"
 #endif
 
+void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods);
+
 typedef enum {RIGHT, LEFT, TOP} cubeSide;
+
+typedef struct {
+    int index;
+    color sideColor;
+} IndexAndSide;
 
 Button buttons[20];
 
 Cube testCube;
+Cube flatCube;
 
 FILE* inputSteps;
 action stepsFromFile[1000];
 int actionsInFile;
 int currentStep;
 
+int isCubeFilledFromFile = 0;
+
+int currentFlatCubeIndex = -1;
+
 void initData() {
-    for (int i = 0; i < 15; i++) {
+    for (int i = 0; i < 16; i++) {
         buttons[i].width = 0.15f;
         buttons[i].height = 0.15f;
     }
@@ -109,6 +121,11 @@ void initData() {
     buttons[14].yPos = -0.8f;
     buttons[14].color = YELLOW;
     buttons[14].function = SETCOLOR;
+
+    buttons[15].xPos = -0.95f;
+    buttons[15].yPos = -0.8f;
+    buttons[15].color = WHITE;
+    buttons[15].function = GETFILECUBE;
 
     initCube(&testCube);
 }
@@ -333,7 +350,7 @@ void drawUI() {
 }
 
 void drawFlatWindowUI() {
-    for (int i = 9; i < 15; i++) {
+    for (int i = 9; i < 16; i++) {
         drawButton(buttons[i].xPos, buttons[i].yPos, buttons[i].width, buttons[i].height, buttons[i].color);
     }
 }
@@ -365,28 +382,7 @@ void fillStepsFromFile(char filename[]) {
             isReverse = 1;
         }
 
-        switch (line[actionIndex]) {
-            case 'R':
-                currentAction = R;
-                break;
-            case 'G':
-                currentAction = G;
-                break;
-            case 'B':
-                currentAction = B;
-                break;
-            case 'W':
-                currentAction = W;
-                break;
-            case 'O':
-                currentAction = O;
-                break;
-            case 'Y':
-                currentAction = Y;
-                break;
-            default:
-                break;
-        }
+        currentAction = getActionFromChar(line[actionIndex]);
 
         if (isReverse) {
             currentAction++;
@@ -416,6 +412,53 @@ void executeStep() {
     } else {
         rotateSideBy90(&testCube, (color)((currentAction - 1) / 2), BACK);
     }
+}
+
+void fillCubeFromFile(char filename[]) {
+    FILE *inputCube = fopen(filename, "r");
+    if (inputCube == NULL) {
+        printf("can't open input file!\n");
+        exit(1);
+    }
+
+    char line[256];
+
+    int currentLineNumber = 1;
+
+    color currentColor;
+
+    while (fgets(line, sizeof(line), inputCube) != NULL) {
+        for (int i = 0; i < 9; i++) {
+            currentColor = getColorFromChar(line[i]);
+            // printf("%c", line[i]);
+            switch (currentLineNumber) {
+                case 1:
+                    testCube.whiteSide[flatLevelOneSideOrder[i]] = currentColor;
+                    break;
+                case 2:
+                    testCube.greenSide[flatLevelTwoSideOrder[i]] = currentColor;
+                    break;
+                case 3:
+                    testCube.redSide[flatLevelTwoSideOrder[i]] = currentColor;
+                    break;
+                case 4:
+                    testCube.blueSide[flatLevelTwoSideOrder[i]] = currentColor;
+                    break;
+                case 5:
+                    testCube.orangeSide[flatLevelTwoSideOrder[i]] = currentColor;
+                    break;
+                case 6:
+                    testCube.yellowSide[flatLevelThreeSideOrder[i]] = currentColor;
+                    break;
+                default:
+                    break;
+            }
+        }
+        currentLineNumber++;
+    }
+    fclose(inputCube);
+
+    isCubeFilledFromFile = 1;
 }
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
@@ -458,19 +501,117 @@ void drawFlatSquare(GLfloat x, GLfloat y, GLfloat r, GLfloat g, GLfloat b) {
     // drawStroke(x, y, sideToDraw);
 }
 
-void drawFlatSide(GLfloat x, GLfloat y) {
-    // float currentColor[3];
-    for (float i = x; i < (x + 0.35f); i += 0.15f) {
-        for (float j = y; j > (y - 0.35f); j -= 0.15f) {
-            // memcpy(currentColor, colors[sideColors[rightSideOrder[i]]], sizeof(colors[sideColors[rightSideOrder[i]]]));
-            // drawFlatSquare(rightCoords[i][0], rightCoords[i][1], currentColor[RED], currentColor[GREEN], currentColor[BLUE]);
-            drawFlatSquare(i, j, 0.0f, 1.0f, 1.0f);
+void drawFlatSide(GLfloat x, GLfloat y, flatCubeLevel levelToDraw, color sideColors[]) {
+    int squareCount = 0;
+    float currentColor[3];
+    for (float j = y; j > (y - 0.35f); j -= 0.15f) {
+        for (float i = x; i < (x + 0.35f); i += 0.15f) {
+            switch (levelToDraw) {
+                case LEVEL_ONE:
+                    memcpy(currentColor, colors[sideColors[flatLevelOneSideOrder[squareCount]]], sizeof(colors[sideColors[flatLevelOneSideOrder[squareCount]]]));
+                    break;
+                case LEVEL_TWO:
+                    memcpy(currentColor, colors[sideColors[flatLevelTwoSideOrder[squareCount]]], sizeof(colors[sideColors[flatLevelTwoSideOrder[squareCount]]]));
+                    break;
+                case LEVEL_THREE:
+                    memcpy(currentColor, colors[sideColors[flatLevelThreeSideOrder[squareCount]]], sizeof(colors[sideColors[flatLevelThreeSideOrder[squareCount]]]));
+                    break;
+                default:
+                    break;
+            }
+            drawFlatSquare(i, j, currentColor[RED], currentColor[GREEN], currentColor[BLUE]);
+            squareCount++;
+        }
+    }
+}
+
+IndexAndSide getIndexAndSideFromNumber(int absoluteIndex) {
+    color sideColor;
+    int relativeIndex;
+
+    if (absoluteIndex >= 0 && absoluteIndex <= 8) {
+        sideColor = WHITE;
+        relativeIndex = flatLevelOneSideOrder[absoluteIndex - 9 * 0];
+    } else if (absoluteIndex >= 9 && absoluteIndex <= 17) {
+        sideColor = GREEN;
+        relativeIndex = flatLevelTwoSideOrder[absoluteIndex - 9 * 1];
+    } else if (absoluteIndex >= 18 && absoluteIndex <= 26) {
+        sideColor = RED;
+        relativeIndex = flatLevelTwoSideOrder[absoluteIndex - 9 * 2];
+    } else if (absoluteIndex >= 27 && absoluteIndex <= 35) {
+        sideColor = BLUE;
+        relativeIndex = flatLevelTwoSideOrder[absoluteIndex - 9 * 3];
+    } else if (absoluteIndex >= 36 && absoluteIndex <= 44) {
+        sideColor = ORANGE;
+        relativeIndex = flatLevelTwoSideOrder[absoluteIndex - 9 * 4];
+    } else if (absoluteIndex >= 45 && absoluteIndex <= 53) {
+        sideColor = YELLOW;
+        relativeIndex = flatLevelThreeSideOrder[absoluteIndex - 9 * 5];
+    }
+
+    IndexAndSide result;
+    result.index = relativeIndex;
+    result.sideColor = sideColor;
+    return result;
+}
+
+void updateFlatCube(color currentColor, int isFirstCall) {
+    currentFlatCubeIndex++;
+
+    IndexAndSide iterationSquare = getIndexAndSideFromNumber(currentFlatCubeIndex);
+    // if (iterationSquare.index == 8) {
+    //     currentFlatCubeIndex++;
+    // }
+    switch (iterationSquare.sideColor) {
+        case WHITE:
+            flatCube.whiteSide[iterationSquare.index] = PURPLE;
+            break;
+        case GREEN:
+            flatCube.greenSide[iterationSquare.index] = PURPLE;
+            break;
+        case RED:
+            flatCube.redSide[iterationSquare.index] = PURPLE;
+            break;
+        case BLUE:
+            flatCube.blueSide[iterationSquare.index] = PURPLE;
+            break;
+        case ORANGE:
+            flatCube.orangeSide[iterationSquare.index] = PURPLE;
+            break;
+        case YELLOW:
+            flatCube.yellowSide[iterationSquare.index] = PURPLE;
+            break;
+        default:
+            break;
+    }
+    if (!isFirstCall) {
+        IndexAndSide prevIterationSquare = getIndexAndSideFromNumber(currentFlatCubeIndex - 1);
+        switch (prevIterationSquare.sideColor) {
+            case WHITE:
+                flatCube.whiteSide[prevIterationSquare.index] = currentColor;
+                break;
+            case GREEN:
+                flatCube.greenSide[prevIterationSquare.index] = currentColor;
+                break;
+            case RED:
+                flatCube.redSide[prevIterationSquare.index] = currentColor;
+                break;
+            case BLUE:
+                flatCube.blueSide[prevIterationSquare.index] = currentColor;
+                break;
+            case ORANGE:
+                flatCube.orangeSide[prevIterationSquare.index] = currentColor;
+                break;
+            case YELLOW:
+                flatCube.yellowSide[prevIterationSquare.index] = currentColor;
+                break;
+            default:
+                break;
         }
     }
 }
 
 void fillCubeFromUserInput(GLFWwindow* window) {
-    Cube flatCube;
     GLFWwindow* flatCubeWindow = glfwCreateWindow(500, 500, "User Input", NULL, NULL);
     if (!flatCubeWindow) {
         fprintf(stderr, "failed to create flat cube window!\n");
@@ -478,35 +619,44 @@ void fillCubeFromUserInput(GLFWwindow* window) {
     }
     glfwMakeContextCurrent(flatCubeWindow);
     glfwSetFramebufferSizeCallback(flatCubeWindow, framebufferSizeCallback);
+    glfwSetMouseButtonCallback(flatCubeWindow, mouseButtonCallback);
 
     GLuint shaderProgram = getShaderProgram();
+
+    initFlatCube(&flatCube);
+    updateFlatCube(WHITE, 1);
 
     while (!glfwWindowShouldClose(flatCubeWindow)) {
         glClear(GL_COLOR_BUFFER_BIT);
         glUseProgram(shaderProgram);
 
-        drawFlatSide(-0.5f, 0.95f); // WHITE SIDE
-        drawFlatSide(-0.95f, 0.5f); // GREEN SIDE
-        drawFlatSide(-0.5f, 0.5f);  // RED SIDE
-        drawFlatSide(-0.05f, 0.5f); // BLUE SIDE
-        drawFlatSide(0.4f, 0.5f);   // ORANGE SIDE
-        drawFlatSide(-0.5f, 0.05f); // YELLOW SIDE
+        if (isCubeFilledFromFile) {
+            isCubeFilledFromFile = 0;
+            break;
+        }
+
+        drawFlatSide(-0.5f, 0.95f, LEVEL_ONE, flatCube.whiteSide); // WHITE SIDE
+        drawFlatSide(-0.95f, 0.5f, LEVEL_TWO, flatCube.greenSide); // GREEN SIDE
+        drawFlatSide(-0.5f, 0.5f, LEVEL_TWO, flatCube.redSide);  // RED SIDE
+        drawFlatSide(-0.05f, 0.5f, LEVEL_TWO, flatCube.blueSide); // BLUE SIDE
+        drawFlatSide(0.4f, 0.5f, LEVEL_TWO, flatCube.orangeSide);   // ORANGE SIDE
+        drawFlatSide(-0.5f, 0.05f, LEVEL_THREE, flatCube.yellowSide); // YELLOW SIDE
         drawFlatWindowUI();
 
         glfwSwapBuffers(flatCubeWindow);
         glfwPollEvents();
     }
 
+    currentFlatCubeIndex = -1;
     glfwDestroyWindow(flatCubeWindow);
     glfwMakeContextCurrent(window);
-    
 }
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
-    if (key == GLFW_KEY_F && action == GLFW_PRESS) {
+    if (key == GLFW_KEY_F1 && action == GLFW_PRESS) {
         GLFWwindow* authorsWindows = glfwCreateWindow(400, 300, "Authors", NULL, NULL);
         if (!authorsWindows) {
             fprintf(stderr, "failed to create secondary window!\n");
@@ -514,7 +664,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
         }
         glfwMakeContextCurrent(authorsWindows);
 
-        const char* authors[] = { "Shtarev I.A.", "Plotnikov D.A."};
+        const char* authors[] = { "Shtarev I.A.", "Plotnikov D.A." };
         for (int i = 0; i < 2; ++i) {
             const char* name = authors[i];
             printf("%s\n", name);
@@ -571,6 +721,10 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                         fillCubeFromUserInput(window);
                         break;
                     case SETCOLOR:
+                        updateFlatCube(buttons[i].color, 0);
+                        break;
+                    case GETFILECUBE:
+                        fillCubeFromFile("cube1.txt");
                         break;
                     default:
                         break;

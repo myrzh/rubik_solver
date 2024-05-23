@@ -1,1 +1,1 @@
-clang -o instance_test instance_test.c -I$(brew --prefix)/include -L$(brew --prefix)/lib -lglfw -framework OpenGL
+gcc -o rubik_solver rubik_solver.c -I$(brew --prefix)/include -L$(brew --prefix)/lib -lglfw -framework OpenGL
