@@ -1,6 +1,8 @@
 #ifndef SHADERS_H
 #define SHADERS_H
 
+#include <stdio.h>
+
 #define GL_SILENCE_DEPRECATION
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>

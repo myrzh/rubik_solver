@@ -3,7 +3,7 @@
 
 typedef enum { RED, GREEN, BLUE, WHITE, ORANGE, YELLOW, CYAN, PURPLE } color;
 
-const float colors[][3] = {
+float colors[][3] = {
         { 1.0f, 0.0f, 0.0f }, // Red
         { 0.0f, 1.0f, 0.0f }, // Green
         { 0.0f, 0.0f, 1.0f }, // Blue

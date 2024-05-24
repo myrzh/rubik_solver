@@ -631,15 +631,20 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
             const char* name = authors[i];
             printf("%s\n", name);
         }
+
+        initFreeType("roboto.ttf");
+        textData currentTextData = initTextRendering();
+
         while (!glfwWindowShouldClose(authorsWindows)) {
             glClear(GL_COLOR_BUFFER_BIT);
 
-            // Render author names
+            renderText(currentTextData, "Hello World", 0.5f, 0.5f, 25.0f, colors[3]);
 
             glfwSwapBuffers(authorsWindows);
             glfwPollEvents();
         }
 
+        glDeleteProgram(currentTextData.shaderData);
         glfwDestroyWindow(authorsWindows);
         glfwMakeContextCurrent(window);
     }
@@ -742,12 +747,6 @@ int main(int argc, char *argv[]) {
     fillStepsFromFile(inputFilename);
     currentStep = 0;
 
-    initFreeType("roboto.ttf");
-
-    textData currentTextData = initTextRendering();
-
-    float textColor[3] = {0.5f, 0.8f, 0.2f};
-
     // Main loop
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT);
@@ -757,7 +756,6 @@ int main(int argc, char *argv[]) {
         drawSide(LEFT, testCube.blueSide);
         drawSide(TOP, testCube.redSide);
         drawUI();
-        renderText(currentTextData, "Hello World", 0.5f, 0.5f, 1.0f, textColor);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -765,7 +763,6 @@ int main(int argc, char *argv[]) {
 
     // Clean up
     glDeleteProgram(shaderProgram);
-    glDeleteProgram(currentTextData.shaderData);
     glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
