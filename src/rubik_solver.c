@@ -5,6 +5,10 @@
 #include "shaders.h"
 #include "colors.h"
 #include "cube.h"
+#include "text_rendering.h"
+
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 #define GL_SILENCE_DEPRECATION
 #define GLFW_INCLUDE_NONE
@@ -130,50 +134,6 @@ void initData() {
     buttons[15].function = GETFILECUBE;
 
     initCube(&testCube);
-}
-
-GLuint getShaderProgram() {
-    // GLuint shaderID;
-    // Compile and link shaders
-    GLuint vertexShader, fragmentShader, shaderProgram;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderInstanceSource, NULL);
-    glCompileShader(vertexShader);
-
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderInstanceSource, NULL);
-    glCompileShader(fragmentShader);
-
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-    GLint success;
-    char log[512];
-
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(vertexShader, 512, NULL, log);
-        printf("Vertex shader didn't compile properly. GL Log:\n%s\n", log);
-    };
-
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, log);
-        printf("Fragment shader didn't compile properly. GL Log:\n%s\n", log);
-    };
-
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, log);
-        printf("Linking didn't work. GL Log:\n%s\n", log);
-    }
-
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
-    return shaderProgram;
 }
 
 void drawStrokeLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
@@ -623,7 +583,7 @@ void fillCubeFromUserInput(GLFWwindow* window) {
     glfwSetFramebufferSizeCallback(flatCubeWindow, framebufferSizeCallback);
     glfwSetMouseButtonCallback(flatCubeWindow, mouseButtonCallback);
 
-    GLuint shaderProgram = getShaderProgram();
+    GLuint shaderProgram = createShaderProgram(vertexShaderInstanceSource, fragmentShaderInstanceSource);
 
     initFlatCube(&flatCube);
     updateFlatCube(WHITE, 1);
@@ -770,7 +730,7 @@ int main(int argc, char *argv[]) {
         gladLoadGL();
     #endif
 
-    GLuint shaderProgram = getShaderProgram();
+    GLuint shaderProgram = createShaderProgram(vertexShaderInstanceSource, fragmentShaderInstanceSource);
 
     // printf("%s\n", glGetString(GL_VERSION));
 
@@ -782,6 +742,12 @@ int main(int argc, char *argv[]) {
     fillStepsFromFile(inputFilename);
     currentStep = 0;
 
+    initFreeType("roboto.ttf");
+
+    textData currentTextData = initTextRendering();
+
+    float textColor[3] = {0.5f, 0.8f, 0.2f};
+
     // Main loop
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT);
@@ -791,6 +757,7 @@ int main(int argc, char *argv[]) {
         drawSide(LEFT, testCube.blueSide);
         drawSide(TOP, testCube.redSide);
         drawUI();
+        renderText(currentTextData, "Hello World", 0.5f, 0.5f, 1.0f, textColor);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -798,6 +765,7 @@ int main(int argc, char *argv[]) {
 
     // Clean up
     glDeleteProgram(shaderProgram);
+    glDeleteProgram(currentTextData.shaderData);
     glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
