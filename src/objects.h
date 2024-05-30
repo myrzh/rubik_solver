@@ -57,7 +57,7 @@ const int flatLevelThreeSideOrder[] = { 3, 2, 1, 4, 8, 0, 5, 6, 7 };
 // const int flatLevelTwoSideOrder[] =   { 6, 5, 4, 7, 8, 3, 0, 1, 2 };
 // const int flatLevelThreeSideOrder[] = { 3, 4, 5, 2, 8, 6, 1, 0, 7 };
 
-typedef enum { REVERT, ROTATE_SIDE, NEXTSTEP, FILLCUBE, SETCOLOR, GETFILECUBE } buttonFunction;
+typedef enum { REVERT, ROTATE_SIDE, NEXTSTEP, FILLCUBE, SETCOLOR, GETFILECUBE, OPENSTEPSFILE } buttonFunction;
 
 typedef struct {
     float xPos;

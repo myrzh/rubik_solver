@@ -1,14 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "objects.h"
 #include "shaders.h"
 #include "colors.h"
 #include "cube.h"
-#include "text_rendering.h"
+// #include "text_rendering.h"
 
-#include <ft2build.h>
-#include FT_FREETYPE_H
+// #include <ft2build.h>
+// #include FT_FREETYPE_H
 
 #define GL_SILENCE_DEPRECATION
 #define GLFW_INCLUDE_NONE
@@ -23,6 +24,9 @@
 #else
     #error "unsupported platform!"
 #endif
+
+#define GLT_IMPLEMENTATION
+#include <gltext.h>
 
 void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods);
 
@@ -43,12 +47,14 @@ action stepsFromFile[1000];
 int actionsInFile;
 int currentStep;
 
+char currentStepText[20];
+
 int isCubeFilledFromFile = 0;
 
 int currentFlatCubeIndex = -1;
 
 void initData() {
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < 17; i++) {
         buttons[i].width = 0.15f;
         buttons[i].height = 0.15f;
     }
@@ -99,39 +105,44 @@ void initData() {
     buttons[8].function = FILLCUBE;
 
     buttons[9].xPos = 0.6f;
-    buttons[9].yPos = -0.4f;
+    buttons[9].yPos = 0.95f;
     buttons[9].color = WHITE;
-    buttons[9].function = SETCOLOR;
+    buttons[9].function = OPENSTEPSFILE;
 
-    buttons[10].xPos = 0.8f;
+    buttons[10].xPos = 0.6f;
     buttons[10].yPos = -0.4f;
-    buttons[10].color = GREEN;
+    buttons[10].color = WHITE;
     buttons[10].function = SETCOLOR;
 
-    buttons[11].xPos = 0.6f;
-    buttons[11].yPos = -0.6f;
-    buttons[11].color = RED;
+    buttons[11].xPos = 0.8f;
+    buttons[11].yPos = -0.4f;
+    buttons[11].color = GREEN;
     buttons[11].function = SETCOLOR;
 
-    buttons[12].xPos = 0.8f;
+    buttons[12].xPos = 0.6f;
     buttons[12].yPos = -0.6f;
-    buttons[12].color = BLUE;
+    buttons[12].color = RED;
     buttons[12].function = SETCOLOR;
 
-    buttons[13].xPos = 0.6f;
-    buttons[13].yPos = -0.8f;
-    buttons[13].color = ORANGE;
+    buttons[13].xPos = 0.8f;
+    buttons[13].yPos = -0.6f;
+    buttons[13].color = BLUE;
     buttons[13].function = SETCOLOR;
 
-    buttons[14].xPos = 0.8f;
+    buttons[14].xPos = 0.6f;
     buttons[14].yPos = -0.8f;
-    buttons[14].color = YELLOW;
+    buttons[14].color = ORANGE;
     buttons[14].function = SETCOLOR;
 
-    buttons[15].xPos = -0.95f;
+    buttons[15].xPos = 0.8f;
     buttons[15].yPos = -0.8f;
-    buttons[15].color = WHITE;
-    buttons[15].function = GETFILECUBE;
+    buttons[15].color = YELLOW;
+    buttons[15].function = SETCOLOR;
+
+    buttons[16].xPos = -0.95f;
+    buttons[16].yPos = -0.8f;
+    buttons[16].color = WHITE;
+    buttons[16].function = GETFILECUBE;
 
     initCube(&testCube);
 }
@@ -306,13 +317,13 @@ void drawButton(GLfloat x, GLfloat y, GLfloat width, GLfloat height, color color
 }
 
 void drawUI() {
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < 10; i++) {
         drawButton(buttons[i].xPos, buttons[i].yPos, buttons[i].width, buttons[i].height, buttons[i].color);
     }
 }
 
 void drawFlatWindowUI() {
-    for (int i = 9; i < 16; i++) {
+    for (int i = 10; i < 17; i++) {
         drawButton(buttons[i].xPos, buttons[i].yPos, buttons[i].width, buttons[i].height, buttons[i].color);
     }
 }
@@ -320,9 +331,11 @@ void drawFlatWindowUI() {
 void fillStepsFromFile(char filename[]) {
     inputSteps = fopen(filename, "r");
     if (inputSteps == NULL) {
-        printf("can't open input file!\n");
-        exit(1);
+        printf("can't open steps file!\n");
+        return;
     }
+    currentStep = 0;
+    printf("steps file opened!\n");
 
     char line[256];
 
@@ -364,10 +377,13 @@ void fillStepsFromFile(char filename[]) {
 
 void executeStep() {
     if (currentStep + 1 > actionsInFile) {
-        printf("file is done!\n");
+        // printf("no steps to execute!\n");
+        strcpy(currentStepText, "FILE IS OVER");
         return;
     }
     action currentAction = stepsFromFile[currentStep++];
+
+    getTextFromAction(currentStepText, currentAction);
 
     if (currentAction % 2 == 0) {
         rotateSideBy90(&testCube, (color)(currentAction / 2), STRAIGHT);
@@ -379,9 +395,10 @@ void executeStep() {
 void fillCubeFromFile(char filename[]) {
     FILE *inputCube = fopen(filename, "r");
     if (inputCube == NULL) {
-        printf("can't open input file!\n");
-        exit(1);
+        printf("can't open cube file!\n");
+        return;
     }
+    printf("cube file opened!\n");
 
     char line[256];
 
@@ -619,33 +636,67 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
     if (key == GLFW_KEY_F1 && action == GLFW_PRESS) {
-        GLFWwindow* authorsWindows = glfwCreateWindow(400, 300, "Authors", NULL, NULL);
-        if (!authorsWindows) {
+        glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+        GLFWwindow* authorsWindow = glfwCreateWindow(500, 500, "Authors", NULL, NULL);
+        if (!authorsWindow) {
             fprintf(stderr, "failed to create secondary window!\n");
             return;
         }
-        glfwMakeContextCurrent(authorsWindows);
+        glfwMakeContextCurrent(authorsWindow);
 
-        const char* authors[] = { "Shtarev I.A.", "Plotnikov D.A." };
-        for (int i = 0; i < 2; ++i) {
-            const char* name = authors[i];
-            printf("%s\n", name);
-        }
+        // glfwSetWindowAspectRatio(authorsWindow, 1, 1);
 
-        initFreeType("roboto.ttf");
-        textData currentTextData = initTextRendering();
+        // const char* authors[] = { "Shtarev I.A.", "Plotnikov D.A." };
+        // const char* authors[] = { "Shtarev I.A.\nPlotnikov D.A." };
+        // for (int i = 0; i < 2; ++i) {
+        //     const char* name = authors[i];
+        //     printf("%s\n", name);
+        // }
 
-        while (!glfwWindowShouldClose(authorsWindows)) {
+        const char* authorsText =
+            "RubikSolver (c)\n"
+            "\n"
+            "Made by:\n"
+            "Plotnikov D.A.\n"
+            "Shtarev I.A.\n"
+            "2024\n"
+            "\n"
+            "Peter the Great St.Petersburg Polytechnic University\n"
+            "Institute of Cybersecurity and Computer Science\n"
+            "Higher School of Cybersecurity\n";
+
+        gltInit();
+
+        GLTtext *text = gltCreateText();
+        gltSetText(text, authorsText);
+        int width, height;
+        GLfloat xpos, ypos;
+
+        while (!glfwWindowShouldClose(authorsWindow)) {
             glClear(GL_COLOR_BUFFER_BIT);
 
-            renderText(currentTextData, "Hello World", 0.5f, 0.5f, 25.0f, colors[3]);
+            glfwGetWindowSize(authorsWindow, &width, &height);
 
-            glfwSwapBuffers(authorsWindows);
+            xpos = (width * 0.0f + width) / 2.0f;
+            ypos = (height - height * 0.0f) / 2.0f;
+            printf("%f %f\n", xpos, ypos);
+
+            gltBeginDraw();
+            gltColor(1.0f, 1.0f, 1.0f, 1.0f);
+            // gltDrawText2D(text, xpos, ypos, 1.0f);
+            gltDrawText2DAligned(text, xpos, ypos, 1.0f, GLT_CENTER, GLT_CENTER);
+            gltEndDraw();
+
+            // renderText(currentTextData, "Hello World", 0.5f, 0.5f, 25.0f, colors[3]);
+
+            glfwSwapBuffers(authorsWindow);
             glfwPollEvents();
         }
 
-        glDeleteProgram(currentTextData.shaderData);
-        glfwDestroyWindow(authorsWindows);
+        gltDeleteText(text);
+        gltTerminate();
+        // glDeleteProgram(currentTextData.shaderData);
+        glfwDestroyWindow(authorsWindow);
         glfwMakeContextCurrent(window);
     }
 }
@@ -658,10 +709,14 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
 
-        double normalizedX = -1.0 + 2.0 * xpos / width; 
-        double normalizedY = 1.0 - 2.0 * ypos / height; 
+        double normalizedX = -1.0 + 2.0 * xpos / width;
+        double normalizedY =  1.0 - 2.0 * ypos / height;
 
         // printf("%f %f -> %f %f\n", xpos, ypos, normalizedX, normalizedY);
+        // char inputFilename[50] = "input.txt";
+        char inputFilename[50];
+        // char cubeFilename[50] = "input.txt";
+        char cubeFilename[50];
 
         for (int i = 0; i < sizeof(buttons) / sizeof(buttons[0]); i++) {
             if (normalizedX >= buttons[i].xPos && normalizedX <= buttons[i].xPos + buttons[i].width &&
@@ -687,11 +742,20 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                     case FILLCUBE:
                         fillCubeFromUserInput(window);
                         break;
+                    case OPENSTEPSFILE:
+                        printf("enter steps filename: ");
+                        fgets(inputFilename, sizeof(inputFilename), stdin);
+                        inputFilename[strcspn(inputFilename, "\n")] = '\0';
+                        fillStepsFromFile(inputFilename);
+                        break;
                     case SETCOLOR:
                         updateFlatCube(buttons[i].color, 0);
                         break;
                     case GETFILECUBE:
-                        fillCubeFromFile("cube1.txt");
+                        printf("enter cube filename: ");
+                        fgets(cubeFilename, sizeof(cubeFilename), stdin);
+                        cubeFilename[strcspn(cubeFilename, "\n")] = '\0';
+                        fillCubeFromFile(cubeFilename);
                         break;
                     default:
                         break;
@@ -727,9 +791,11 @@ int main(int argc, char *argv[]) {
     }
 
     glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+    // glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+    glfwSetWindowAspectRatio(window, 1, 1);
     glfwSetKeyCallback(window, keyCallback);
     glfwSetMouseButtonCallback(window, mouseButtonCallback);
+
 
     #ifdef _WIN32
         gladLoadGL();
@@ -741,11 +807,11 @@ int main(int argc, char *argv[]) {
 
     initData();
 
-    char inputFilename[50] = "input.txt";
-    // fgets(inputFilename, sizeof(inputFilename), stdin);
-    // inputFilename[strcspn(inputFilename, "\n")] = '\0';
-    fillStepsFromFile(inputFilename);
-    currentStep = 0;
+    gltInit();
+
+    GLTtext *text = gltCreateText();
+    int width, height;
+    GLfloat xpos, ypos;
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
@@ -756,6 +822,17 @@ int main(int argc, char *argv[]) {
         drawSide(LEFT, testCube.blueSide);
         drawSide(TOP, testCube.redSide);
         drawUI();
+        gltSetText(text, currentStepText);
+
+        glfwGetWindowSize(window, &width, &height);
+        xpos = (width * 0.0f + width) / 2.0f;
+        ypos = (height - height * 0.95f) / 2.0f;
+        // printf("%f %f\n", xpos, ypos);
+        gltBeginDraw();
+        gltColor(1.0f, 1.0f, 1.0f, 1.0f);
+        // gltDrawText2D(text, xpos, ypos, 1.0f);
+        gltDrawText2DAligned(text, xpos, ypos, 2.0f, GLT_CENTER, GLT_CENTER);
+        gltEndDraw();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

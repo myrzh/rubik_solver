@@ -29,6 +29,7 @@ color getColorFromChar(char letter) {
         case 'Y':
             return YELLOW;
         default:
+            return 0;
             break;
     }
 }

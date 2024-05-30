@@ -2,6 +2,7 @@
 #define CUBE_H
 
 #include <stdio.h>
+#include <string.h>
 #include "colors.h"
 
 #define CORNERFACE 1
@@ -29,7 +30,41 @@ action getActionFromChar(char letter) {
         case 'Y':
             return Y;
         default:
+            return 0;
             break;
+    }
+}
+
+void getTextFromAction(char text[], action act) {
+    // memset(text, 0, 20);
+    int backFactor = 0;
+    if (act % 2 == 1) {
+        backFactor = 1;
+    }
+    switch (act - backFactor) {
+        case R:
+            strcpy(text, "ROTATE RED");
+            break;
+        case G:
+            strcpy(text, "ROTATE GREEN");
+            break;
+        case B:
+            strcpy(text, "ROTATE BLUE");
+            break;
+        case W:
+            strcpy(text, "ROTATE WHITE");
+            break;
+        case O:
+            strcpy(text, "ROTATE ORANGE");
+            break;
+        case Y:
+            strcpy(text, "ROTATE YELLOW");
+            break;
+        default:
+            break;
+    }
+    if (backFactor == 1) {
+        strcat(text, " BACK");
     }
 }
 
