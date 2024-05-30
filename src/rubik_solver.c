@@ -346,8 +346,8 @@ void drawFlatWindowUI() {
     }
 }
 
-void fillStepsFromFile(char filename[]) {
-    replaceBackslashes(filename);
+void fillStepsFromFile(const char filename[]) {
+    // replaceBackslashes(filename);
     inputSteps = fopen(filename, "r");
     // printf("'%s\n'", filename);
     if (inputSteps == NULL) {
@@ -769,11 +769,12 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                         const char *filename = sfd_open_dialog(&openInputOpt);
                         if (filename) {
                             printf("got steps file: '%s'\n", filename);
-                        } else {
-                            printf("can't open steps file!\n");
                         }
+                        // else {
+                        //     printf("can't open steps file!\n");
+                        // }
                         // break;
-                        fillStepsFromFile(inputFilename);
+                        fillStepsFromFile(filename);
                         break;
                     case SETCOLOR:
                         updateFlatCube(buttons[i].color, 0);
@@ -820,8 +821,8 @@ int main(int argc, char *argv[]) {
     }
 
     glfwMakeContextCurrent(window);
-    // glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-    glfwSetWindowAspectRatio(window, 1, 1);
+    glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+    // glfwSetWindowAspectRatio(window, 1, 1);
     glfwSetKeyCallback(window, keyCallback);
     glfwSetMouseButtonCallback(window, mouseButtonCallback);
 
