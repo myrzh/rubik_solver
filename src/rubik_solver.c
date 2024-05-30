@@ -11,8 +11,10 @@
 // #include <ft2build.h>
 // #include FT_FREETYPE_H
 
-#define GL_SILENCE_DEPRECATION
-#define GLFW_INCLUDE_NONE
+#ifdef __APPLE__
+    #define GL_SILENCE_DEPRECATION
+    #define GLFW_INCLUDE_NONE
+#endif
 #include <GLFW/glfw3.h>
 
 #ifdef __APPLE__
