@@ -55,6 +55,14 @@ int isCubeFilledFromFile = 0;
 
 int currentFlatCubeIndex = -1;
 
+void replaceBackslashes(char str[]) {
+    for (int i = 0; i < strlen(str); i++) {
+        if (str[i] == '\\') {
+            str[i] = '/';
+        }
+    }
+}
+
 sfd_Options openInputOpt = {
   .title        = "Open Steps File",
   .filter_name  = "Text File",
@@ -337,7 +345,9 @@ void drawFlatWindowUI() {
 }
 
 void fillStepsFromFile(char filename[]) {
+    replaceBackslashes(filename);
     inputSteps = fopen(filename, "r");
+    // printf("'%s\n'", filename);
     if (inputSteps == NULL) {
         printf("can't open steps file!\n");
         return;
@@ -645,7 +655,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
     }
     if (key == GLFW_KEY_F1 && action == GLFW_PRESS) {
         glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-        GLFWwindow* authorsWindow = glfwCreateWindow(500, 500, "Authors", NULL, NULL);
+        GLFWwindow* authorsWindow = glfwCreateWindow(500, 200, "Authors", NULL, NULL);
         if (!authorsWindow) {
             fprintf(stderr, "failed to create secondary window!\n");
             return;
@@ -687,7 +697,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 
             xpos = (width * 0.0f + width) / 2.0f;
             ypos = (height - height * 0.0f) / 2.0f;
-            printf("%f %f\n", xpos, ypos);
+            // printf("%f %f\n", xpos, ypos);
 
             gltBeginDraw();
             gltColor(1.0f, 1.0f, 1.0f, 1.0f);
