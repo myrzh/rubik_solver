@@ -19,8 +19,10 @@
     #include <OpenGL/gl3.h>
 #elif defined(_WIN32)
     #include <glad/glad.h>
+    #include <sfd.h>
 #elif defined(__linux__)
     #include <glad/glad.h>
+    #include <sfd.h>
 #else
     #error "unsupported platform!"
 #endif
@@ -52,6 +54,12 @@ char currentStepText[20];
 int isCubeFilledFromFile = 0;
 
 int currentFlatCubeIndex = -1;
+
+sfd_Options openInputOpt = {
+  .title        = "Open Steps File",
+  .filter_name  = "Text File",
+  .filter       = "*.txt",
+};
 
 void initData() {
     for (int i = 0; i < 17; i++) {
@@ -743,9 +751,16 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                         fillCubeFromUserInput(window);
                         break;
                     case OPENSTEPSFILE:
-                        printf("enter steps filename: ");
-                        fgets(inputFilename, sizeof(inputFilename), stdin);
-                        inputFilename[strcspn(inputFilename, "\n")] = '\0';
+                        // printf("enter steps filename: ");
+                        // fgets(inputFilename, sizeof(inputFilename), stdin);
+                        // inputFilename[strcspn(inputFilename, "\n")] = '\0';
+                        const char *filename = sfd_open_dialog(&openInputOpt);
+                        if (filename) {
+                            printf("got steps file: '%s'\n", filename);
+                        } else {
+                            printf("can't open steps file!\n");
+                        }
+                        // break;
                         fillStepsFromFile(inputFilename);
                         break;
                     case SETCOLOR:
