@@ -57,13 +57,13 @@ int isCubeFilledFromFile = 0;
 
 int currentFlatCubeIndex = -1;
 
-void replaceBackslashes(char str[]) {
-    for (int i = 0; i < strlen(str); i++) {
-        if (str[i] == '\\') {
-            str[i] = '/';
-        }
-    }
-}
+// void replaceBackslashes(char str[]) {
+//     for (int i = 0; i < strlen(str); i++) {
+//         if (str[i] == '\\') {
+//             str[i] = '/';
+//         }
+//     }
+// }
 
 sfd_Options openInputOpt = {
   .title        = "Open Steps File",
