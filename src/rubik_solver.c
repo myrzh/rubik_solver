@@ -19,14 +19,9 @@
 
 #ifdef __APPLE__
     #include <OpenGL/gl3.h>
-#elif defined(_WIN32)
-    #include <glad/glad.h>
-    #include <sfd.h>
-#elif defined(__linux__)
-    #include <glad/glad.h>
-    #include <sfd.h>
 #else
-    #error "unsupported platform!"
+    #include <glad/glad.h>
+    #include <sfd.h>
 #endif
 
 #define GLT_IMPLEMENTATION
@@ -67,7 +62,19 @@ int currentFlatCubeIndex = -1;
 
 sfd_Options openInputOpt = {
   .title        = "Open Steps File",
-  .filter_name  = "Text File",
+  .filter_name  = "Text File (*.txt)",
+  .filter       = "*.txt",
+};
+
+sfd_Options saveInputOpt = {
+  .title        = "Save Steps File",
+  .filter_name  = "Text File (*.txt)",
+  .filter       = "*.txt",
+};
+
+sfd_Options openCubeOpt = {
+  .title        = "Open Cube File",
+  .filter_name  = "Text File (*.txt)",
   .filter       = "*.txt",
 };
 
@@ -346,7 +353,7 @@ void drawFlatWindowUI() {
     }
 }
 
-void fillStepsFromFile(const char filename[]) {
+void fillStepsFromFile(char filename[]) {
     // replaceBackslashes(filename);
     inputSteps = fopen(filename, "r");
     // printf("'%s\n'", filename);
@@ -734,9 +741,10 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 
         // printf("%f %f -> %f %f\n", xpos, ypos, normalizedX, normalizedY);
         // char inputFilename[50] = "input.txt";
-        char inputFilename[50];
+        // char inputFilename[50];
         // char cubeFilename[50] = "input.txt";
-        char cubeFilename[50];
+        // char cubeFilename[50];
+        char *filename;
 
         for (int i = 0; i < sizeof(buttons) / sizeof(buttons[0]); i++) {
             if (normalizedX >= buttons[i].xPos && normalizedX <= buttons[i].xPos + buttons[i].width &&
@@ -763,27 +771,33 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                         fillCubeFromUserInput(window);
                         break;
                     case OPENSTEPSFILE:
-                        // printf("enter steps filename: ");
-                        // fgets(inputFilename, sizeof(inputFilename), stdin);
-                        // inputFilename[strcspn(inputFilename, "\n")] = '\0';
-                        const char *filename = sfd_open_dialog(&openInputOpt);
-                        if (filename) {
-                            printf("got steps file: '%s'\n", filename);
-                        }
-                        // else {
-                        //     printf("can't open steps file!\n");
-                        // }
-                        // break;
+                        #ifdef __APPLE__
+                            printf("enter steps filename: ");
+                            fgets(filename, sizeof(filename), stdin);
+                            filename[strcspn(filename, "\n")] = '\0';
+                        #else
+                            filename = sfd_open_dialog(&openInputOpt);
+                            if (filename) {
+                                printf("got steps file: '%s'\n", filename);
+                            }
+                        #endif
                         fillStepsFromFile(filename);
                         break;
                     case SETCOLOR:
                         updateFlatCube(buttons[i].color, 0);
                         break;
                     case GETFILECUBE:
-                        printf("enter cube filename: ");
-                        fgets(cubeFilename, sizeof(cubeFilename), stdin);
-                        cubeFilename[strcspn(cubeFilename, "\n")] = '\0';
-                        fillCubeFromFile(cubeFilename);
+                        #ifdef __APPLE__
+                            printf("enter cube filename: ");
+                            fgets(cubeFilename, sizeof(cubeFilename), stdin);
+                            cubeFilename[strcspn(cubeFilename, "\n")] = '\0';
+                        #else
+                            filename = sfd_open_dialog(&openCubeOpt);
+                            if (filename) {
+                                printf("got cube file: '%s'\n", filename);
+                            }
+                        #endif
+                        fillCubeFromFile(filename);
                         break;
                     default:
                         break;
@@ -827,7 +841,7 @@ int main(int argc, char *argv[]) {
     glfwSetMouseButtonCallback(window, mouseButtonCallback);
 
 
-    #ifdef _WIN32
+    #ifndef __APPLE__
         gladLoadGL();
     #endif
 
