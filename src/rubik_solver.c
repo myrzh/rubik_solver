@@ -29,6 +29,8 @@
 
 void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods);
 
+typedef enum { MAINWND, FLATWND, AUTHORSWND } windowType;
+
 typedef enum {RIGHT, LEFT, TOP} cubeSide;
 
 typedef struct {
@@ -36,7 +38,10 @@ typedef struct {
     color sideColor;
 } IndexAndSide;
 
-Button buttons[20];
+windowType currentWindow;
+
+Button mainButtons[20];
+Button flatButtons[20];
 
 Cube testCube;
 Cube flatCube;
@@ -61,116 +66,22 @@ int currentFlatCubeIndex = -1;
 // }
 
 sfd_Options openInputOpt = {
-  .title        = "Open Steps File",
-  .filter_name  = "Text File (*.txt)",
-  .filter       = "*.txt",
+    .title        = "Open Steps File",
+    .filter_name  = "Text Files (*.txt)",
+    .filter       = "*.txt",
 };
 
 sfd_Options saveInputOpt = {
-  .title        = "Save Steps File",
-  .filter_name  = "Text File (*.txt)",
-  .filter       = "*.txt",
+    .title        = "Save Steps File",
+    .filter_name  = "Text Files (*.txt)",
+    .filter       = "*.txt",
 };
 
 sfd_Options openCubeOpt = {
-  .title        = "Open Cube File",
-  .filter_name  = "Text File (*.txt)",
-  .filter       = "*.txt",
+    .title        = "Open Cube File",
+    .filter_name  = "Text Files (*.txt)",
+    .filter       = "*.txt",
 };
-
-void initData() {
-    for (int i = 0; i < 17; i++) {
-        buttons[i].width = 0.15f;
-        buttons[i].height = 0.15f;
-    }
-
-    buttons[0].xPos = -0.95f;
-    buttons[0].yPos = 0.95f;
-    buttons[0].color = WHITE;
-    buttons[0].function = REVERT;
-
-    buttons[1].xPos = -0.75f;
-    buttons[1].yPos = 0.95f;
-    buttons[1].color = GREEN;
-    buttons[1].function = ROTATE_SIDE;
-
-    buttons[2].xPos = -0.95f;
-    buttons[2].yPos = 0.75f;
-    buttons[2].color = YELLOW;
-    buttons[2].function = ROTATE_SIDE;
-
-    buttons[3].xPos = -0.75f;
-    buttons[3].yPos = 0.75f;
-    buttons[3].color = RED;
-    buttons[3].function = ROTATE_SIDE;
-
-    buttons[4].xPos = -0.55f;
-    buttons[4].yPos = 0.75f;
-    buttons[4].color = WHITE;
-    buttons[4].function = ROTATE_SIDE;
-
-    buttons[5].xPos = -0.35f;
-    buttons[5].yPos = 0.75f;
-    buttons[5].color = ORANGE;
-    buttons[5].function = ROTATE_SIDE;
-
-    buttons[6].xPos = -0.75f;
-    buttons[6].yPos = 0.55f;
-    buttons[6].color = BLUE;
-    buttons[6].function = ROTATE_SIDE;
-
-    buttons[7].xPos = 0.8f;
-    buttons[7].yPos = 0.95f;
-    buttons[7].color = WHITE;
-    buttons[7].function = NEXTSTEP;
-
-    buttons[8].xPos = 0.8f;
-    buttons[8].yPos = 0.75f;
-    buttons[8].color = WHITE;
-    buttons[8].function = FILLCUBE;
-
-    buttons[9].xPos = 0.6f;
-    buttons[9].yPos = 0.95f;
-    buttons[9].color = WHITE;
-    buttons[9].function = OPENSTEPSFILE;
-
-    buttons[10].xPos = 0.6f;
-    buttons[10].yPos = -0.4f;
-    buttons[10].color = WHITE;
-    buttons[10].function = SETCOLOR;
-
-    buttons[11].xPos = 0.8f;
-    buttons[11].yPos = -0.4f;
-    buttons[11].color = GREEN;
-    buttons[11].function = SETCOLOR;
-
-    buttons[12].xPos = 0.6f;
-    buttons[12].yPos = -0.6f;
-    buttons[12].color = RED;
-    buttons[12].function = SETCOLOR;
-
-    buttons[13].xPos = 0.8f;
-    buttons[13].yPos = -0.6f;
-    buttons[13].color = BLUE;
-    buttons[13].function = SETCOLOR;
-
-    buttons[14].xPos = 0.6f;
-    buttons[14].yPos = -0.8f;
-    buttons[14].color = ORANGE;
-    buttons[14].function = SETCOLOR;
-
-    buttons[15].xPos = 0.8f;
-    buttons[15].yPos = -0.8f;
-    buttons[15].color = YELLOW;
-    buttons[15].function = SETCOLOR;
-
-    buttons[16].xPos = -0.95f;
-    buttons[16].yPos = -0.8f;
-    buttons[16].color = WHITE;
-    buttons[16].function = GETFILECUBE;
-
-    initCube(&testCube);
-}
 
 void drawStrokeLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
     GLfloat vertices[] = {
@@ -342,14 +253,14 @@ void drawButton(GLfloat x, GLfloat y, GLfloat width, GLfloat height, color color
 }
 
 void drawUI() {
-    for (int i = 0; i < 10; i++) {
-        drawButton(buttons[i].xPos, buttons[i].yPos, buttons[i].width, buttons[i].height, buttons[i].color);
+    for (int i = 0; i < sizeof(mainButtons) / sizeof(mainButtons[0]); i++) {
+        drawButton(mainButtons[i].xPos, mainButtons[i].yPos, mainButtons[i].width, mainButtons[i].height, mainButtons[i].color);
     }
 }
 
 void drawFlatWindowUI() {
-    for (int i = 10; i < 17; i++) {
-        drawButton(buttons[i].xPos, buttons[i].yPos, buttons[i].width, buttons[i].height, buttons[i].color);
+    for (int i = 0; i < sizeof(flatButtons) / sizeof(flatButtons[0]); i++) {
+        drawButton(flatButtons[i].xPos, flatButtons[i].yPos, flatButtons[i].width, flatButtons[i].height, flatButtons[i].color);
     }
 }
 
@@ -632,6 +543,8 @@ void fillCubeFromUserInput(GLFWwindow* window) {
     initFlatCube(&flatCube);
     updateFlatCube(WHITE, 1);
 
+    currentWindow = FLATWND;
+
     while (!glfwWindowShouldClose(flatCubeWindow)) {
         glClear(GL_COLOR_BUFFER_BIT);
         glUseProgram(shaderProgram);
@@ -652,6 +565,8 @@ void fillCubeFromUserInput(GLFWwindow* window) {
         glfwSwapBuffers(flatCubeWindow);
         glfwPollEvents();
     }
+
+    currentWindow = MAINWND;
 
     currentFlatCubeIndex = -1;
     glfwDestroyWindow(flatCubeWindow);
@@ -699,6 +614,8 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
         int width, height;
         GLfloat xpos, ypos;
 
+        currentWindow = AUTHORSWND;
+
         while (!glfwWindowShouldClose(authorsWindow)) {
             glClear(GL_COLOR_BUFFER_BIT);
 
@@ -720,6 +637,8 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
             glfwPollEvents();
         }
 
+        currentWindow = MAINWND;
+
         gltDeleteText(text);
         gltTerminate();
         // glDeleteProgram(currentTextData.shaderData);
@@ -740,72 +659,92 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
         double normalizedY =  1.0 - 2.0 * ypos / height;
 
         // printf("%f %f -> %f %f\n", xpos, ypos, normalizedX, normalizedY);
+
         // char inputFilename[50] = "input.txt";
         // char inputFilename[50];
-        // char cubeFilename[50] = "input.txt";
+        // char cubeFilename[50] = "cube1.txt";
         // char cubeFilename[50];
         char *filename;
 
-        for (int i = 0; i < sizeof(buttons) / sizeof(buttons[0]); i++) {
-            if (normalizedX >= buttons[i].xPos && normalizedX <= buttons[i].xPos + buttons[i].width &&
-                normalizedY <= buttons[i].yPos && normalizedY >= buttons[i].yPos - buttons[i].height) {
-                switch (buttons[i].function) {
-                    case REVERT:
-                        initCube(&testCube);
-                        break;
-                    case ROTATE_SIDE:
-                        switch (button) {
-                            case GLFW_MOUSE_BUTTON_LEFT:
-                                rotateSideBy90(&testCube, buttons[i].color, STRAIGHT);
+        switch (currentWindow) {
+            case MAINWND:
+                for (int i = 0; i < sizeof(mainButtons) / sizeof(mainButtons[0]); i++) {
+                    if (normalizedX >= mainButtons[i].xPos && normalizedX <= mainButtons[i].xPos + mainButtons[i].width &&
+                    normalizedY <= mainButtons[i].yPos && normalizedY >= mainButtons[i].yPos - mainButtons[i].height) {
+                        switch (mainButtons[i].function) {
+                            case REVERT:
+                                initCube(&testCube);
                                 break;
-                            case GLFW_MOUSE_BUTTON_RIGHT:
-                                rotateSideBy90(&testCube, buttons[i].color, BACK);
+                            case ROTATE_SIDE:
+                                switch (button) {
+                                    case GLFW_MOUSE_BUTTON_LEFT:
+                                        rotateSideBy90(&testCube, mainButtons[i].color, STRAIGHT);
+                                        break;
+                                    case GLFW_MOUSE_BUTTON_RIGHT:
+                                        rotateSideBy90(&testCube, mainButtons[i].color, BACK);
+                                    default:
+                                        break;
+                                }
+                                break;
+                            case NEXTSTEP:
+                                executeStep();
+                                break;
+                            case FILLCUBE:
+                                fillCubeFromUserInput(window);
+                                break;
+                            case OPENSTEPSFILE:
+                                #ifdef __APPLE__
+                                    printf("enter steps filename: ");
+                                    fgets(filename, sizeof(filename), stdin);
+                                    filename[strcspn(filename, "\n")] = '\0';
+                                #else
+                                    filename = sfd_open_dialog(&openInputOpt);
+                                    if (filename) {
+                                        printf("got steps file: '%s'\n", filename);
+                                    }
+                                #endif
+                                fillStepsFromFile(filename);
+                                break;
+                            case SOLVECUBE:
+                                // SAVE SOLUTION STEPS TO FILE AND LOAD IT TO PROGRAM
+                                break;
                             default:
                                 break;
                         }
-                        break;
-                    case NEXTSTEP:
-                        executeStep();
-                        break;
-                    case FILLCUBE:
-                        fillCubeFromUserInput(window);
-                        break;
-                    case OPENSTEPSFILE:
-                        #ifdef __APPLE__
-                            printf("enter steps filename: ");
-                            fgets(filename, sizeof(filename), stdin);
-                            filename[strcspn(filename, "\n")] = '\0';
-                        #else
-                            filename = sfd_open_dialog(&openInputOpt);
-                            if (filename) {
-                                printf("got steps file: '%s'\n", filename);
-                            }
-                        #endif
-                        fillStepsFromFile(filename);
-                        break;
-                    case SETCOLOR:
-                        updateFlatCube(buttons[i].color, 0);
-                        break;
-                    case GETFILECUBE:
-                        #ifdef __APPLE__
-                            printf("enter cube filename: ");
-                            fgets(cubeFilename, sizeof(cubeFilename), stdin);
-                            cubeFilename[strcspn(cubeFilename, "\n")] = '\0';
-                        #else
-                            filename = sfd_open_dialog(&openCubeOpt);
-                            if (filename) {
-                                printf("got cube file: '%s'\n", filename);
-                            }
-                        #endif
-                        fillCubeFromFile(filename);
-                        break;
-                    default:
-                        break;
+                    }
                 }
-            }
+                break;
+            case FLATWND:
+                for (int i = 0; i < sizeof(flatButtons) / sizeof(flatButtons[0]); i++) {
+                    if (normalizedX >= flatButtons[i].xPos && normalizedX <= flatButtons[i].xPos + flatButtons[i].width &&
+                    normalizedY <= flatButtons[i].yPos && normalizedY >= flatButtons[i].yPos - flatButtons[i].height) {
+                        switch (flatButtons[i].function) {
+                            case SETCOLOR:
+                                updateFlatCube(flatButtons[i].color, 0);
+                                break;
+                            case GETFILECUBE:
+                                #ifdef __APPLE__
+                                    printf("enter cube filename: ");
+                                    fgets(cubeFilename, sizeof(cubeFilename), stdin);
+                                    cubeFilename[strcspn(cubeFilename, "\n")] = '\0';
+                                #else
+                                    filename = sfd_open_dialog(&openCubeOpt);
+                                    if (filename) {
+                                        printf("got cube file: '%s'\n", filename);
+                                    }
+                                #endif
+                                fillCubeFromFile(filename);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+                break;
         }
     }
 }
+
 
 int main(int argc, char *argv[]) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -849,13 +788,16 @@ int main(int argc, char *argv[]) {
 
     // printf("%s\n", glGetString(GL_VERSION));
 
-    initData();
+    initButtons(mainButtons, flatButtons);
+    initCube(&testCube);
 
     gltInit();
 
     GLTtext *text = gltCreateText();
     int width, height;
     GLfloat xpos, ypos;
+
+    currentWindow = MAINWND;
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
