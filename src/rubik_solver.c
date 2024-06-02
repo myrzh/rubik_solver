@@ -57,31 +57,25 @@ int isCubeFilledFromFile = 0;
 
 int currentFlatCubeIndex = -1;
 
-// void replaceBackslashes(char str[]) {
-//     for (int i = 0; i < strlen(str); i++) {
-//         if (str[i] == '\\') {
-//             str[i] = '/';
-//         }
-//     }
-// }
+#ifndef __APPLE__
+    sfd_Options openInputOpt = {
+        .title        = "Open Steps File",
+        .filter_name  = "Text Files (*.txt)",
+        .filter       = "*.txt",
+    };
 
-sfd_Options openInputOpt = {
-    .title        = "Open Steps File",
-    .filter_name  = "Text Files (*.txt)",
-    .filter       = "*.txt",
-};
+    sfd_Options saveInputOpt = {
+        .title        = "Save Steps File",
+        .filter_name  = "Text Files (*.txt)",
+        .filter       = "*.txt",
+    };
 
-sfd_Options saveInputOpt = {
-    .title        = "Save Steps File",
-    .filter_name  = "Text Files (*.txt)",
-    .filter       = "*.txt",
-};
-
-sfd_Options openCubeOpt = {
-    .title        = "Open Cube File",
-    .filter_name  = "Text Files (*.txt)",
-    .filter       = "*.txt",
-};
+    sfd_Options openCubeOpt = {
+        .title        = "Open Cube File",
+        .filter_name  = "Text Files (*.txt)",
+        .filter       = "*.txt",
+    };
+#endif
 
 void drawStrokeLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
     GLfloat vertices[] = {
@@ -725,8 +719,8 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                             case GETFILECUBE:
                                 #ifdef __APPLE__
                                     printf("enter cube filename: ");
-                                    fgets(cubeFilename, sizeof(cubeFilename), stdin);
-                                    cubeFilename[strcspn(cubeFilename, "\n")] = '\0';
+                                    fgets(filename, sizeof(filename), stdin);
+                                    filename[strcspn(filename, "\n")] = '\0';
                                 #else
                                     filename = sfd_open_dialog(&openCubeOpt);
                                     if (filename) {
@@ -741,6 +735,8 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                     }
                 }
                 break;
+            case AUTHORSWND:
+                break;
         }
     }
 }
@@ -754,7 +750,7 @@ int main(int argc, char *argv[]) {
     GLFWwindow* window;
 
     if (!glfwInit()) {
-        fprintf(stderr, "Failed to initialize GLFW\n");
+        fprintf(stderr, "failed to initialize GLFW!\n");
         return -1;
     }
 
@@ -768,7 +764,7 @@ int main(int argc, char *argv[]) {
 
     window = glfwCreateWindow(600, 600, "RubikSolver", NULL, NULL);
     if (!window) {
-        fprintf(stderr, "Failed to create GLFW window\n");
+        fprintf(stderr, "failed to create GLFW window!\n");
         glfwTerminate();
         return -1;
     }
@@ -793,9 +789,19 @@ int main(int argc, char *argv[]) {
 
     gltInit();
 
-    GLTtext *text = gltCreateText();
+    GLTtext *stepText = gltCreateText();
+    GLTtext *revertText = gltCreateText();
+    GLTtext *openText = gltCreateText();
+    GLTtext *nextText = gltCreateText();
+    GLTtext *cubeText = gltCreateText();
+    GLTtext *solveText = gltCreateText();
+    gltSetText(revertText, "R");
+    gltSetText(openText, "O");
+    gltSetText(nextText, "N");
+    gltSetText(cubeText, "C");
+    gltSetText(solveText, "S");
+
     int width, height;
-    GLfloat xpos, ypos;
 
     currentWindow = MAINWND;
 
@@ -808,16 +814,35 @@ int main(int argc, char *argv[]) {
         drawSide(LEFT, testCube.blueSide);
         drawSide(TOP, testCube.redSide);
         drawUI();
-        gltSetText(text, currentStepText);
+        gltSetText(stepText, currentStepText);
 
         glfwGetWindowSize(window, &width, &height);
-        xpos = (width * 0.0f + width) / 2.0f;
-        ypos = (height - height * 0.95f) / 2.0f;
         // printf("%f %f\n", xpos, ypos);
         gltBeginDraw();
         gltColor(1.0f, 1.0f, 1.0f, 1.0f);
         // gltDrawText2D(text, xpos, ypos, 1.0f);
-        gltDrawText2DAligned(text, xpos, ypos, 2.0f, GLT_CENTER, GLT_CENTER);
+        gltDrawText2DAligned(stepText, NDCToPixels(0.0f, width, 'x'), NDCToPixels(0.875f, height, 'y'), 2.0f, GLT_CENTER, GLT_CENTER);
+        gltColor(1.0f, 0.0f, 0.0f, 1.0f);
+        gltDrawText2DAligned(revertText,
+                                 NDCToPixels(mainButtons[0].xPos + 0.075f, width, 'x'),
+                                 NDCToPixels(mainButtons[0].yPos - 0.075f, height, 'y'),
+                             2.0f, GLT_CENTER, GLT_CENTER);
+        gltDrawText2DAligned(openText,
+                                 NDCToPixels(mainButtons[9].xPos + 0.075f, width, 'x'),
+                                 NDCToPixels(mainButtons[9].yPos - 0.075f, height, 'y'),
+                             2.0f, GLT_CENTER, GLT_CENTER);
+        gltDrawText2DAligned(nextText,
+                                 NDCToPixels(mainButtons[7].xPos + 0.075f, width, 'x'),
+                                 NDCToPixels(mainButtons[7].yPos - 0.075f, height, 'y'),
+                             2.0f, GLT_CENTER, GLT_CENTER);
+        gltDrawText2DAligned(cubeText,
+                                 NDCToPixels(mainButtons[8].xPos + 0.075f, width, 'x'),
+                                 NDCToPixels(mainButtons[8].yPos - 0.075f, height, 'y'),
+                             2.0f, GLT_CENTER, GLT_CENTER);
+        gltDrawText2DAligned(solveText,
+                                 NDCToPixels(mainButtons[10].xPos + 0.075f, width, 'x'),
+                                 NDCToPixels(mainButtons[10].yPos - 0.075f, height, 'y'),
+                             2.0f, GLT_CENTER, GLT_CENTER);
         gltEndDraw();
 
         glfwSwapBuffers(window);
@@ -825,6 +850,12 @@ int main(int argc, char *argv[]) {
     }
 
     // Clean up
+    free(stepText);
+    free(revertText);
+    free(openText);
+    free(nextText);
+    free(cubeText);
+    free(solveText);
     glDeleteProgram(shaderProgram);
     glfwDestroyWindow(window);
     glfwTerminate();

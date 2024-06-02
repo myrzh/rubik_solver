@@ -69,6 +69,20 @@ typedef struct {
 
 } Button;
 
+float NDCToPixels(float coord, int dimension, char mode) {
+    switch (mode) {
+        case 'x':
+            return (dimension * coord + dimension) / 2.0f;
+            break;
+        case 'y':
+            return (dimension - dimension * coord) / 2.0f;
+            break;
+        default:
+            return 0;
+            break;
+    }
+}
+
 void initButtons(Button mainButtons[], Button flatButtons[]) {
     for (int i = 0; i < 11; i++) {
         mainButtons[i].width = 0.15f;

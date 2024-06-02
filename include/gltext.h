@@ -391,10 +391,23 @@ GLT_API void gltEndDraw()
 }
 
 #define _gltDrawText() \
+	glUseProgram(_gltText2DShader); \
+	\
+	glActiveTexture(GL_TEXTURE0); \
+	glBindTexture(GL_TEXTURE_2D, _gltText2DFontTexture); \
+	\
 	glUniformMatrix4fv(_gltText2DShaderMVPUniformLocation, 1, GL_FALSE, mvp); \
 	\
+    GLboolean last_enable_blend = glIsEnabled(GL_BLEND);\
+    glEnable(GL_BLEND);\
+    glBlendEquation(GL_FUNC_ADD);\
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);\
+    \
 	glBindVertexArray(text->_vao); \
-	glDrawArrays(GL_TRIANGLES, 0, text->vertexCount);
+	glDrawArrays(GL_TRIANGLES, 0, text->vertexCount); \
+	glBindVertexArray(0); \
+    \
+    if (last_enable_blend) glEnable(GL_BLEND); else glDisable(GL_BLEND);
 
 GLT_API void gltDrawText(GLTtext *text, const GLfloat mvp[16])
 {
