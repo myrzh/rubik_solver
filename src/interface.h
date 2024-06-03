@@ -160,12 +160,12 @@ static void renderMatrixCube(Cube *c) // draw cube on screen, now only working o
     GetConsoleScreenBufferInfo(h, &csbiInfo);
     wOldColorAttrs = csbiInfo.wAttributes;
 
-    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[3+i][3+j] = c->f[i][j];
-    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[3+i][9+j] = c->b[i][j];
-    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[0+i][3+j] = c->u[i][j];
-    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[6+i][3+j] = c->d[i][j];
-    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[3+i][0+j] = c->l[i][j];
-    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[3+i][6+j] = c->r[i][j];
+    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[3+i][3+j] = c->front[i][j];
+    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[3+i][9+j] = c->back[i][j];
+    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[0+i][3+j] = c->up[i][j];
+    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[6+i][3+j] = c->down[i][j];
+    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[3+i][0+j] = c->left[i][j];
+    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[3+i][6+j] = c->right[i][j];
 
     for (i=0; i<9; i++) {
         for (j=0; j<12; j++) {
