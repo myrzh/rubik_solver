@@ -492,9 +492,14 @@ IndexAndSide getIndexAndSideFromNumber(int absoluteIndex) {
 
 void updateFlatCube(color currentColor, int isFirstCall) {
     currentFlatCubeIndex++;
+    int needToJump = 0;
 
     IndexAndSide iterationSquare = getIndexAndSideFromNumber(currentFlatCubeIndex);
     if (currentFlatCubeIndex <= 53) {
+        if (iterationSquare.index == 8) {
+            iterationSquare = getIndexAndSideFromNumber(currentFlatCubeIndex + 1);
+            needToJump = 1;
+        }
         switch (iterationSquare.sideColor) {
             case WHITE:
                 flatCube.whiteSide[iterationSquare.index] = PURPLE;
@@ -542,6 +547,9 @@ void updateFlatCube(color currentColor, int isFirstCall) {
             default:
                 break;
         }
+    }
+    if (needToJump == 1) {
+        currentFlatCubeIndex++;
     }
     if (currentFlatCubeIndex > 53) {
         memcpy(&testCube, &flatCube, sizeof(flatCube));
@@ -810,7 +818,7 @@ int main(int argc, char *argv[]) {
     #ifdef __APPLE__
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // for MAC OS only
     #endif
-    glfwWindowHint(GLFW_OPENGL_COMPAT_PROFILE, GLFW_OPENGL_CORE_PROFILE); //avoid using old openGL
+    glfwWindowHint(GLFW_OPENGL_COMPAT_PROFILE, GLFW_OPENGL_CORE_PROFILE); //avoid using old OpenGL
 
     window = glfwCreateWindow(600, 600, "RubikSolver", NULL, NULL);
     if (!window) {
@@ -900,7 +908,6 @@ int main(int argc, char *argv[]) {
         glfwPollEvents();
     }
 
-    // Clean up
     free(stepText);
     free(revertText);
     free(openText);
