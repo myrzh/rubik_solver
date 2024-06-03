@@ -17,16 +17,22 @@ float colors[][3] = {
 color getColorFromChar(char letter) {
     switch (letter) {
         case 'R':
+        case 'r':
             return RED;
         case 'G':
+        case 'g':
             return GREEN;
         case 'B':
+        case 'b':
             return BLUE;
         case 'W':
+        case 'w':
             return WHITE;
         case 'O':
+        case 'o':
             return ORANGE;
         case 'Y':
+        case 'y':
             return YELLOW;
         default:
             return 0;

@@ -45,17 +45,24 @@ const float topCoords[][2] = {
     { 0.0f, 0.4f }
 };
 
-const int rightSideOrder[] = { 1, 2, 3, 0, 8, 4, 7, 6, 5 };
-const int leftSideOrder[] =  { 6, 5, 4, 7, 8, 3, 0, 1, 2 };
-const int topSideOrder[] =   { 0, 1, 2, 7, 8, 3, 6, 5, 4 };
+// const int rightSideOrder[] = { 1, 2, 3, 0, 8, 4, 7, 6, 5 };
+// const int leftSideOrder[] =  { 6, 5, 4, 7, 8, 3, 0, 1, 2 };
+// const int topSideOrder[] =   { 0, 1, 2, 7, 8, 3, 6, 5, 4 };
 
-const int flatLevelOneSideOrder[] =   { 5, 6, 7, 4, 8, 0, 3, 2, 1 };
-const int flatLevelTwoSideOrder[] =   { 6, 7, 0, 5, 8, 1, 4, 3, 2 };
-const int flatLevelThreeSideOrder[] = { 3, 2, 1, 4, 8, 0, 5, 6, 7 };
+const int rightSideOrder[] = { 0, 1, 2, 7, 8, 3, 6, 5, 4 };
+const int leftSideOrder[] =  { 1, 0, 7, 2, 8, 6, 3, 4, 5 };
+const int topSideOrder[] =   { 6, 7, 0, 5, 8, 1, 4, 3, 2 };
 
-// const int flatLevelOneSideOrder[] =   { 5, 4, 3, 6, 8, 2, 7, 0, 1 };
-// const int flatLevelTwoSideOrder[] =   { 6, 5, 4, 7, 8, 3, 0, 1, 2 };
-// const int flatLevelThreeSideOrder[] = { 3, 4, 5, 2, 8, 6, 1, 0, 7 };
+// const int flatLevelOneSideOrder[] =   { 5, 6, 7, 4, 8, 0, 3, 2, 1 };
+// const int flatLevelTwoSideOrder[] =   { 6, 7, 0, 5, 8, 1, 4, 3, 2 };
+// const int flatLevelThreeSideOrder[] = { 3, 2, 1, 4, 8, 0, 5, 6, 7 };
+
+const int flatBlueSideOrder[] =   { 2, 3, 4, 1, 8, 5, 0, 7, 6 };
+const int flatOrangeSideOrder[] = { 4, 5, 6, 3, 8, 7, 2, 1, 0 };
+const int flatWhiteSideOrder[] =  { 7, 0, 1, 6, 8, 2, 5, 4, 3 };
+const int flatRedSideOrder[] =    { 0, 1, 2, 7, 8, 3, 6, 5, 4 };
+const int flatYellowSideOrder[] = { 1, 0, 7, 2, 8, 6, 3, 4, 5 };
+const int flatGreenSideOrder[] =  { 6, 7, 0, 5, 8, 1, 4, 3, 2 };
 
 typedef enum { REVERT, ROTATE_SIDE, NEXTSTEP, FILLCUBE, SETCOLOR, GETFILECUBE, OPENSTEPSFILE, SOLVECUBE } buttonFunction;
 
@@ -100,32 +107,32 @@ void initButtons(Button mainButtons[], Button flatButtons[]) {
 
     mainButtons[1].xPos = -0.75f;
     mainButtons[1].yPos = 0.95f;
-    mainButtons[1].color = GREEN;
+    mainButtons[1].color = BLUE;
     mainButtons[1].function = ROTATE_SIDE;
 
     mainButtons[2].xPos = -0.95f;
     mainButtons[2].yPos = 0.75f;
-    mainButtons[2].color = YELLOW;
+    mainButtons[2].color = ORANGE;
     mainButtons[2].function = ROTATE_SIDE;
 
     mainButtons[3].xPos = -0.75f;
     mainButtons[3].yPos = 0.75f;
-    mainButtons[3].color = RED;
+    mainButtons[3].color = WHITE;
     mainButtons[3].function = ROTATE_SIDE;
 
     mainButtons[4].xPos = -0.55f;
     mainButtons[4].yPos = 0.75f;
-    mainButtons[4].color = WHITE;
+    mainButtons[4].color = RED;
     mainButtons[4].function = ROTATE_SIDE;
 
     mainButtons[5].xPos = -0.35f;
     mainButtons[5].yPos = 0.75f;
-    mainButtons[5].color = ORANGE;
+    mainButtons[5].color = YELLOW;
     mainButtons[5].function = ROTATE_SIDE;
 
     mainButtons[6].xPos = -0.75f;
     mainButtons[6].yPos = 0.55f;
-    mainButtons[6].color = BLUE;
+    mainButtons[6].color = GREEN;
     mainButtons[6].function = ROTATE_SIDE;
 
     mainButtons[7].xPos = 0.8f;

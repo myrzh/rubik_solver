@@ -45,6 +45,7 @@ Button flatButtons[20];
 
 Cube testCube;
 Cube flatCube;
+MatrixCube Cube3D;
 
 FILE* inputSteps;
 action stepsFromFile[1000];
@@ -344,22 +345,22 @@ void fillCubeFromFile(char filename[]) {
             // printf("%c", line[i]);
             switch (currentLineNumber) {
                 case 1:
-                    testCube.whiteSide[flatLevelOneSideOrder[i]] = currentColor;
+                    testCube.blueSide[flatBlueSideOrder[i]] = currentColor;
                     break;
                 case 2:
-                    testCube.greenSide[flatLevelTwoSideOrder[i]] = currentColor;
+                    testCube.orangeSide[flatOrangeSideOrder[i]] = currentColor;
                     break;
                 case 3:
-                    testCube.redSide[flatLevelTwoSideOrder[i]] = currentColor;
+                    testCube.whiteSide[flatWhiteSideOrder[i]] = currentColor;
                     break;
                 case 4:
-                    testCube.blueSide[flatLevelTwoSideOrder[i]] = currentColor;
+                    testCube.redSide[flatRedSideOrder[i]] = currentColor;
                     break;
                 case 5:
-                    testCube.orangeSide[flatLevelTwoSideOrder[i]] = currentColor;
+                    testCube.yellowSide[flatYellowSideOrder[i]] = currentColor;
                     break;
                 case 6:
-                    testCube.yellowSide[flatLevelThreeSideOrder[i]] = currentColor;
+                    testCube.greenSide[flatGreenSideOrder[i]] = currentColor;
                     break;
                 default:
                     break;
@@ -368,6 +369,9 @@ void fillCubeFromFile(char filename[]) {
         currentLineNumber++;
     }
     fclose(inputCube);
+
+    linearToMatrixCube (&testCube, &Cube3D);
+    renderMatrixCube(&Cube3D);
 
     isCubeFilledFromFile = 1;
 }
@@ -412,20 +416,29 @@ void drawFlatSquare(GLfloat x, GLfloat y, GLfloat r, GLfloat g, GLfloat b) {
     // drawStroke(x, y, sideToDraw);
 }
 
-void drawFlatSide(GLfloat x, GLfloat y, flatCubeLevel levelToDraw, color sideColors[]) {
+void drawFlatSide(GLfloat x, GLfloat y, color sideToDraw, color sideColors[]) {
     int squareCount = 0;
     float currentColor[3];
     for (float j = y; j > (y - 0.35f); j -= 0.15f) {
         for (float i = x; i < (x + 0.35f); i += 0.15f) {
-            switch (levelToDraw) {
-                case LEVEL_ONE:
-                    memcpy(currentColor, colors[sideColors[flatLevelOneSideOrder[squareCount]]], sizeof(colors[sideColors[flatLevelOneSideOrder[squareCount]]]));
+            switch (sideToDraw) {
+                case BLUE:
+                    memcpy(currentColor, colors[sideColors[flatBlueSideOrder[squareCount]]], sizeof(colors[sideColors[flatBlueSideOrder[squareCount]]]));
                     break;
-                case LEVEL_TWO:
-                    memcpy(currentColor, colors[sideColors[flatLevelTwoSideOrder[squareCount]]], sizeof(colors[sideColors[flatLevelTwoSideOrder[squareCount]]]));
+                case ORANGE:
+                    memcpy(currentColor, colors[sideColors[flatOrangeSideOrder[squareCount]]], sizeof(colors[sideColors[flatOrangeSideOrder[squareCount]]]));
                     break;
-                case LEVEL_THREE:
-                    memcpy(currentColor, colors[sideColors[flatLevelThreeSideOrder[squareCount]]], sizeof(colors[sideColors[flatLevelThreeSideOrder[squareCount]]]));
+                case WHITE:
+                    memcpy(currentColor, colors[sideColors[flatWhiteSideOrder[squareCount]]], sizeof(colors[sideColors[flatWhiteSideOrder[squareCount]]]));
+                    break;
+                case RED:
+                    memcpy(currentColor, colors[sideColors[flatRedSideOrder[squareCount]]], sizeof(colors[sideColors[flatRedSideOrder[squareCount]]]));
+                    break;
+                case YELLOW:
+                    memcpy(currentColor, colors[sideColors[flatYellowSideOrder[squareCount]]], sizeof(colors[sideColors[flatYellowSideOrder[squareCount]]]));
+                    break;
+                case GREEN:
+                    memcpy(currentColor, colors[sideColors[flatGreenSideOrder[squareCount]]], sizeof(colors[sideColors[flatGreenSideOrder[squareCount]]]));
                     break;
                 default:
                     break;
@@ -441,23 +454,23 @@ IndexAndSide getIndexAndSideFromNumber(int absoluteIndex) {
     int relativeIndex;
 
     if (absoluteIndex >= 0 && absoluteIndex <= 8) {
-        sideColor = WHITE;
-        relativeIndex = flatLevelOneSideOrder[absoluteIndex - 9 * 0];
-    } else if (absoluteIndex >= 9 && absoluteIndex <= 17) {
-        sideColor = GREEN;
-        relativeIndex = flatLevelTwoSideOrder[absoluteIndex - 9 * 1];
-    } else if (absoluteIndex >= 18 && absoluteIndex <= 26) {
-        sideColor = RED;
-        relativeIndex = flatLevelTwoSideOrder[absoluteIndex - 9 * 2];
-    } else if (absoluteIndex >= 27 && absoluteIndex <= 35) {
         sideColor = BLUE;
-        relativeIndex = flatLevelTwoSideOrder[absoluteIndex - 9 * 3];
-    } else if (absoluteIndex >= 36 && absoluteIndex <= 44) {
+        relativeIndex = flatBlueSideOrder[absoluteIndex - 9 * 0];
+    } else if (absoluteIndex >= 9 && absoluteIndex <= 17) {
         sideColor = ORANGE;
-        relativeIndex = flatLevelTwoSideOrder[absoluteIndex - 9 * 4];
-    } else if (absoluteIndex >= 45 && absoluteIndex <= 53) {
+        relativeIndex = flatOrangeSideOrder[absoluteIndex - 9 * 1];
+    } else if (absoluteIndex >= 18 && absoluteIndex <= 26) {
+        sideColor = WHITE;
+        relativeIndex = flatWhiteSideOrder[absoluteIndex - 9 * 2];
+    } else if (absoluteIndex >= 27 && absoluteIndex <= 35) {
+        sideColor = RED;
+        relativeIndex = flatRedSideOrder[absoluteIndex - 9 * 3];
+    } else if (absoluteIndex >= 36 && absoluteIndex <= 44) {
         sideColor = YELLOW;
-        relativeIndex = flatLevelThreeSideOrder[absoluteIndex - 9 * 5];
+        relativeIndex = flatYellowSideOrder[absoluteIndex - 9 * 4];
+    } else if (absoluteIndex >= 45 && absoluteIndex <= 53) {
+        sideColor = GREEN;
+        relativeIndex = flatGreenSideOrder[absoluteIndex - 9 * 5];
     }
 
     IndexAndSide result;
@@ -548,12 +561,12 @@ void fillCubeFromUserInput(GLFWwindow* window) {
             break;
         }
 
-        drawFlatSide(-0.5f, 0.95f, LEVEL_ONE, flatCube.whiteSide); // WHITE SIDE
-        drawFlatSide(-0.95f, 0.5f, LEVEL_TWO, flatCube.greenSide); // GREEN SIDE
-        drawFlatSide(-0.5f, 0.5f, LEVEL_TWO, flatCube.redSide);  // RED SIDE
-        drawFlatSide(-0.05f, 0.5f, LEVEL_TWO, flatCube.blueSide); // BLUE SIDE
-        drawFlatSide(0.4f, 0.5f, LEVEL_TWO, flatCube.orangeSide);   // ORANGE SIDE
-        drawFlatSide(-0.5f, 0.05f, LEVEL_THREE, flatCube.yellowSide); // YELLOW SIDE
+        drawFlatSide(-0.5f, 0.95f, BLUE, flatCube.blueSide);
+        drawFlatSide(-0.95f, 0.5f, ORANGE, flatCube.orangeSide);
+        drawFlatSide(-0.5f, 0.5f, WHITE, flatCube.whiteSide);
+        drawFlatSide(-0.05f, 0.5f, RED, flatCube.redSide);
+        drawFlatSide(0.4f, 0.5f, YELLOW, flatCube.yellowSide);
+        drawFlatSide(-0.5f, 0.05f, GREEN, flatCube.greenSide);
         drawFlatWindowUI();
 
         glfwSwapBuffers(flatCubeWindow);
@@ -658,7 +671,7 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
         // char inputFilename[50];
         // char cubeFilename[50] = "cube1.txt";
         // char cubeFilename[50];
-        char *filename;
+        char filename[256];
 
         switch (currentWindow) {
             case MAINWND:
@@ -810,9 +823,9 @@ int main(int argc, char *argv[]) {
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shaderProgram);
-        drawSide(RIGHT, testCube.whiteSide);
-        drawSide(LEFT, testCube.blueSide);
-        drawSide(TOP, testCube.redSide);
+        drawSide(RIGHT, testCube.redSide);
+        drawSide(LEFT, testCube.whiteSide);
+        drawSide(TOP, testCube.blueSide);
         drawUI();
         gltSetText(stepText, currentStepText);
 

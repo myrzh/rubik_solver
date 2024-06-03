@@ -43,22 +43,22 @@ void getTextFromAction(char text[], action act) {
     }
     switch (act - backFactor) {
         case R:
-            strcpy(text, "ROTATE RED");
+            strcpy(text, "ROTATE RIGHT");
             break;
         case G:
-            strcpy(text, "ROTATE GREEN");
+            strcpy(text, "ROTATE DOWN");
             break;
         case B:
-            strcpy(text, "ROTATE BLUE");
+            strcpy(text, "ROTATE UP");
             break;
         case W:
-            strcpy(text, "ROTATE WHITE");
+            strcpy(text, "ROTATE FRONT");
             break;
         case O:
-            strcpy(text, "ROTATE ORANGE");
+            strcpy(text, "ROTATE LEFT");
             break;
         case Y:
-            strcpy(text, "ROTATE YELLOW");
+            strcpy(text, "ROTATE BACK");
             break;
         default:
             break;
@@ -112,6 +112,132 @@ void initFlatCube(Cube* thisCube) {
     thisCube->orangeSide[8] = ORANGE;
 }
 
+typedef struct {
+    char f[3][3]; // front (white)
+    char b[3][3]; // back  (yellow)
+    char u[3][3]; // up    (blue)
+    char d[3][3]; // down  (green)
+    char l[3][3]; // left  (orange)
+    char r[3][3]; // right (red)
+} MatrixCube;
+
+void linearToMatrixCube (Cube *src, MatrixCube *dest) {
+    int counter = 0;
+    for (int row = 0; row < 3; row++) {
+        for (int column = 0; column < 3; column++) {
+            dest->u[row][column] = src->blueSide[flatBlueSideOrder[counter]];
+            counter++;
+        }
+    }
+    counter = 0;
+    for (int row = 0; row < 3; row++) {
+        for (int column = 0; column < 3; column++) {
+            dest->l[row][column] = src->orangeSide[flatOrangeSideOrder[counter]];
+            counter++;
+        }
+    }
+    counter = 0;
+    for (int row = 0; row < 3; row++) {
+        for (int column = 0; column < 3; column++) {
+            dest->f[row][column] = src->whiteSide[flatWhiteSideOrder[counter]];
+            counter++;
+        }
+    }
+    counter = 0;
+    for (int row = 0; row < 3; row++) {
+        for (int column = 0; column < 3; column++) {
+            dest->r[row][column] = src->redSide[flatRedSideOrder[counter]];
+            counter++;
+        }
+    }
+    counter = 0;
+    for (int row = 0; row < 3; row++) {
+        for (int column = 0; column < 3; column++) {
+            dest->b[row][column] = src->yellowSide[flatYellowSideOrder[counter]];
+            counter++;
+        }
+    }
+    counter = 0;
+    for (int row = 0; row < 3; row++) {
+        for (int column = 0; column < 3; column++) {
+            dest->d[row][column] = src->greenSide[flatGreenSideOrder[counter]];
+            counter++;
+        }
+    }
+}
+
+#ifndef WIN32
+static void renderMatrixCube(MatrixCube *c) { // draw cube on screen (console)
+    char buffer[9][12] = {0};
+    int  i, j;
+
+    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[3+i][3+j] = c->f[i][j];
+    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[3+i][9+j] = c->b[i][j];
+    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[0+i][3+j] = c->u[i][j];
+    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[6+i][3+j] = c->d[i][j];
+    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[3+i][0+j] = c->l[i][j];
+    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[3+i][6+j] = c->r[i][j];
+
+    for (i=0; i<9; i++) {
+        for (j=0; j<12; j++) {
+            switch (buffer[i][j]) {
+            case 'w': case 'W': printf("\x1b[30m"); break;
+            case 'y': case 'Y': printf("\x1b[33m"); break;
+            case 'b': case 'B': printf("\x1b[34m"); break;
+            case 'g': case 'G': printf("\x1b[32m"); break;
+            case 'o': case 'O': printf("\x1b[35m"); break;
+            case 'r': case 'R': printf("\x1b[31m"); break;
+            }
+            printf(buffer[i][j] ? "# " : "  ");
+            printf("\x1b[0m");
+        }
+        printf("\n");
+    }
+    printf("\x1b[0m");
+}
+#else
+#include <windows.h>
+#include <conio.h>
+static void cube_render(CUBE *c) // draw cube on screen, now only working on win32 console
+{
+    char buffer[9][12] = {0};
+    int  i, j;
+
+    HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+    WORD wOldColorAttrs;
+    CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
+
+    // save the current color
+    GetConsoleScreenBufferInfo(h, &csbiInfo);
+    wOldColorAttrs = csbiInfo.wAttributes;
+
+    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[3+i][3+j] = c->f[i][j];
+    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[3+i][9+j] = c->b[i][j];
+    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[0+i][3+j] = c->u[i][j];
+    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[6+i][3+j] = c->d[i][j];
+    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[3+i][0+j] = c->l[i][j];
+    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[3+i][6+j] = c->r[i][j];
+
+    for (i=0; i<9; i++) {
+        for (j=0; j<12; j++) {
+            switch (buffer[i][j]) {
+            case 'w': case 'W': SetConsoleTextAttribute(h, FOREGROUND_INTENSITY|FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE); break;
+            case 'y': case 'Y': SetConsoleTextAttribute(h, FOREGROUND_INTENSITY|FOREGROUND_RED|FOREGROUND_GREEN); break;
+            case 'b': case 'B': SetConsoleTextAttribute(h, FOREGROUND_INTENSITY|FOREGROUND_BLUE ); break;
+            case 'g': case 'G': SetConsoleTextAttribute(h, FOREGROUND_INTENSITY|FOREGROUND_GREEN); break;
+            case 'o': case 'O': SetConsoleTextAttribute(h, FOREGROUND_RED|FOREGROUND_BLUE       ); break;
+            case 'r': case 'R': SetConsoleTextAttribute(h, FOREGROUND_INTENSITY|FOREGROUND_RED  ); break;
+            }
+            printf(buffer[i][j] ? "# " : "  ");
+        }
+        printf("\n");
+    }
+
+    // restore the original color
+    SetConsoleTextAttribute(h, wOldColorAttrs);
+}
+#endif
+
 void fillSideFromArray(color* cubeSide, char sideColors[]) {
     for (int index = 0; index < 9; index++) {
         switch (sideColors[index]) {
@@ -151,7 +277,7 @@ void rotateSideBy90(Cube* thisCube, color sideToRotate, rotationMode mode) {
         switch (sideToRotate) {
         case WHITE:
             if (!isPrinted) {
-                printf("ROTATE WHITE");
+                printf("ROTATE FRONT");
             }
             swap(&thisCube->whiteSide[7], &thisCube->whiteSide[3]);
             swap(&thisCube->whiteSide[6], &thisCube->whiteSide[4]);
@@ -174,7 +300,7 @@ void rotateSideBy90(Cube* thisCube, color sideToRotate, rotationMode mode) {
             break;
         case YELLOW:
             if (!isPrinted) {
-                printf("ROTATE YELLOW");
+                printf("ROTATE BACK");
             }
             swap(&thisCube->yellowSide[7], &thisCube->yellowSide[3]);
             swap(&thisCube->yellowSide[6], &thisCube->yellowSide[4]);
@@ -197,7 +323,7 @@ void rotateSideBy90(Cube* thisCube, color sideToRotate, rotationMode mode) {
             break;
         case RED:
             if (!isPrinted) {
-                printf("ROTATE RED");
+                printf("ROTATE RIGHT");
             }
             swap(&thisCube->redSide[0], &thisCube->redSide[4]);
             swap(&thisCube->redSide[7], &thisCube->redSide[5]);
@@ -220,7 +346,7 @@ void rotateSideBy90(Cube* thisCube, color sideToRotate, rotationMode mode) {
             break;
         case BLUE:
             if (!isPrinted) {
-                printf("ROTATE BLUE");
+                printf("ROTATE UP");
             }
             swap(&thisCube->blueSide[1], &thisCube->blueSide[7]);
             swap(&thisCube->blueSide[2], &thisCube->blueSide[6]);
@@ -243,7 +369,7 @@ void rotateSideBy90(Cube* thisCube, color sideToRotate, rotationMode mode) {
             break;
         case GREEN:
             if (!isPrinted) {
-                printf("ROTATE GREEN");
+                printf("ROTATE DOWN");
             }
             swap(&thisCube->greenSide[6], &thisCube->greenSide[2]);
             swap(&thisCube->greenSide[5], &thisCube->greenSide[3]);
@@ -266,7 +392,7 @@ void rotateSideBy90(Cube* thisCube, color sideToRotate, rotationMode mode) {
             break;
         case ORANGE:
             if (!isPrinted) {
-                printf("ROTATE ORANGE");
+                printf("ROTATE LEFT");
             }
             swap(&thisCube->orangeSide[4], &thisCube->orangeSide[0]);
             swap(&thisCube->orangeSide[3], &thisCube->orangeSide[1]);
