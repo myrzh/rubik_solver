@@ -332,7 +332,7 @@ void fillCubeFromFile(char filename[]) {
         return;
     }
     printf("cube file opened!\n");
-
+ 
     char line[256];
 
     int currentLineNumber = 1;
@@ -370,7 +370,7 @@ void fillCubeFromFile(char filename[]) {
     }
     fclose(inputCube);
 
-    linearToMatrixCube (&testCube, &Cube3D);
+    linearToMatrixCube(&testCube, &Cube3D);
     renderMatrixCube(&Cube3D);
 
     isCubeFilledFromFile = 1;
@@ -704,13 +704,18 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                                     printf("enter steps filename: ");
                                     fgets(filename, sizeof(filename), stdin);
                                     filename[strcspn(filename, "\n")] = '\0';
-                                #else
-                                    filename = sfd_open_dialog(&openInputOpt);
                                     if (filename) {
-                                        printf("got steps file: '%s'\n", filename);
+                                        printf("got steps file: '%s'\n", filenamePointer);
                                     }
+                                    fillStepsFromFile(filename);
+                                #else
+                                    const char *filenamePointer = sfd_open_dialog(&openInputOpt);
+                                    if (filenamePointer) {
+                                        printf("got steps file: '%s'\n", filenamePointer);
+                                    }
+                                    fillStepsFromFile(filenamePointer);
+                                    // free(filenamePointer);
                                 #endif
-                                fillStepsFromFile(filename);
                                 break;
                             case SOLVECUBE:
                                 // SAVE SOLUTION STEPS TO FILE AND LOAD IT TO PROGRAM
@@ -734,13 +739,18 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                                     printf("enter cube filename: ");
                                     fgets(filename, sizeof(filename), stdin);
                                     filename[strcspn(filename, "\n")] = '\0';
-                                #else
-                                    filename = sfd_open_dialog(&openCubeOpt);
                                     if (filename) {
-                                        printf("got cube file: '%s'\n", filename);
+                                        printf("got cube file: '%s'\n", filenamePointer);
                                     }
+                                    fillStepsFromFile(filename);
+                                #else
+                                    const char *filenamePointer = sfd_open_dialog(&openCubeOpt);;
+                                    if (filenamePointer) {
+                                        printf("got cube file: '%s'\n", filenamePointer);
+                                    }
+                                    fillCubeFromFile(filenamePointer);
+                                    // free(filenamePointer);
                                 #endif
-                                fillCubeFromFile(filename);
                                 break;
                             default:
                                 break;

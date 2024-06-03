@@ -73,7 +73,6 @@ typedef struct {
     float height;
     color color;
     buttonFunction function;
-
 } Button;
 
 float NDCToPixels(float coord, int dimension, char mode) {

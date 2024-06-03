@@ -40,4 +40,23 @@ color getColorFromChar(char letter) {
     }
 }
 
+char getCharFromColor (color clr) {
+    switch (clr) {
+        case RED:
+            return 'r';
+        case GREEN:
+            return 'g';
+        case BLUE:
+            return 'b';
+        case WHITE:
+            return 'w';
+        case ORANGE:
+            return 'o';
+        case YELLOW:
+            return 'y';
+        default:
+            return 0;
+    }
+}
+
 #endif

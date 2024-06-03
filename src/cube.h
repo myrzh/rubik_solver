@@ -125,48 +125,48 @@ void linearToMatrixCube (Cube *src, MatrixCube *dest) {
     int counter = 0;
     for (int row = 0; row < 3; row++) {
         for (int column = 0; column < 3; column++) {
-            dest->u[row][column] = src->blueSide[flatBlueSideOrder[counter]];
+            dest->u[row][column] = getCharFromColor(src->blueSide[flatBlueSideOrder[counter]]);
             counter++;
         }
     }
     counter = 0;
     for (int row = 0; row < 3; row++) {
         for (int column = 0; column < 3; column++) {
-            dest->l[row][column] = src->orangeSide[flatOrangeSideOrder[counter]];
+            dest->l[row][column] = getCharFromColor(src->orangeSide[flatOrangeSideOrder[counter]]);
             counter++;
         }
     }
     counter = 0;
     for (int row = 0; row < 3; row++) {
         for (int column = 0; column < 3; column++) {
-            dest->f[row][column] = src->whiteSide[flatWhiteSideOrder[counter]];
+            dest->f[row][column] = getCharFromColor(src->whiteSide[flatWhiteSideOrder[counter]]);
             counter++;
         }
     }
     counter = 0;
     for (int row = 0; row < 3; row++) {
         for (int column = 0; column < 3; column++) {
-            dest->r[row][column] = src->redSide[flatRedSideOrder[counter]];
+            dest->r[row][column] = getCharFromColor(src->redSide[flatRedSideOrder[counter]]);
             counter++;
         }
     }
     counter = 0;
     for (int row = 0; row < 3; row++) {
         for (int column = 0; column < 3; column++) {
-            dest->b[row][column] = src->yellowSide[flatYellowSideOrder[counter]];
+            dest->b[row][column] = getCharFromColor(src->yellowSide[flatYellowSideOrder[counter]]);
             counter++;
         }
     }
     counter = 0;
     for (int row = 0; row < 3; row++) {
         for (int column = 0; column < 3; column++) {
-            dest->d[row][column] = src->greenSide[flatGreenSideOrder[counter]];
+            dest->d[row][column] = getCharFromColor(src->greenSide[flatGreenSideOrder[counter]]);
             counter++;
         }
     }
 }
 
-#ifndef WIN32
+#ifndef _WIN32
 static void renderMatrixCube(MatrixCube *c) { // draw cube on screen (console)
     char buffer[9][12] = {0};
     int  i, j;
@@ -198,7 +198,7 @@ static void renderMatrixCube(MatrixCube *c) { // draw cube on screen (console)
 #else
 #include <windows.h>
 #include <conio.h>
-static void cube_render(CUBE *c) // draw cube on screen, now only working on win32 console
+static void renderMatrixCube(MatrixCube *c) // draw cube on screen, now only working on win32 console
 {
     char buffer[9][12] = {0};
     int  i, j;
