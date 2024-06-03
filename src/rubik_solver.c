@@ -57,7 +57,7 @@ int currentStep;
 
 char currentStepText[20];
 
-int isCubeFilledFromFile = 0;
+int isCubeFilled = 0;
 
 int currentFlatCubeIndex = -1;
 
@@ -384,7 +384,7 @@ void fillCubeFromFile(char filename[]) {
 
     linearToMatrixCube(&Cube3D, &testCube);
 
-    isCubeFilledFromFile = 1;
+    isCubeFilled = 1;
 }
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
@@ -494,30 +494,29 @@ void updateFlatCube(color currentColor, int isFirstCall) {
     currentFlatCubeIndex++;
 
     IndexAndSide iterationSquare = getIndexAndSideFromNumber(currentFlatCubeIndex);
-    // if (iterationSquare.index == 8) {
-    //     currentFlatCubeIndex++;
-    // }
-    switch (iterationSquare.sideColor) {
-        case WHITE:
-            flatCube.whiteSide[iterationSquare.index] = PURPLE;
-            break;
-        case GREEN:
-            flatCube.greenSide[iterationSquare.index] = PURPLE;
-            break;
-        case RED:
-            flatCube.redSide[iterationSquare.index] = PURPLE;
-            break;
-        case BLUE:
-            flatCube.blueSide[iterationSquare.index] = PURPLE;
-            break;
-        case ORANGE:
-            flatCube.orangeSide[iterationSquare.index] = PURPLE;
-            break;
-        case YELLOW:
-            flatCube.yellowSide[iterationSquare.index] = PURPLE;
-            break;
-        default:
-            break;
+    if (currentFlatCubeIndex <= 53) {
+        switch (iterationSquare.sideColor) {
+            case WHITE:
+                flatCube.whiteSide[iterationSquare.index] = PURPLE;
+                break;
+            case GREEN:
+                flatCube.greenSide[iterationSquare.index] = PURPLE;
+                break;
+            case RED:
+                flatCube.redSide[iterationSquare.index] = PURPLE;
+                break;
+            case BLUE:
+                flatCube.blueSide[iterationSquare.index] = PURPLE;
+                break;
+            case ORANGE:
+                flatCube.orangeSide[iterationSquare.index] = PURPLE;
+                break;
+            case YELLOW:
+                flatCube.yellowSide[iterationSquare.index] = PURPLE;
+                break;
+            default:
+                break;
+        }
     }
     if (!isFirstCall) {
         IndexAndSide prevIterationSquare = getIndexAndSideFromNumber(currentFlatCubeIndex - 1);
@@ -544,6 +543,15 @@ void updateFlatCube(color currentColor, int isFirstCall) {
                 break;
         }
     }
+    if (currentFlatCubeIndex > 53) {
+        memcpy(&testCube, &flatCube, sizeof(flatCube));
+        linearToMatrixCube(&Cube3D, &testCube);
+        isCubeFilled = 1;
+    }
+    // IndexAndSide nextIterationSquare = getIndexAndSideFromNumber(currentFlatCubeIndex + 1);
+    // if (nextIterationSquare.index == 8) {
+    //     currentFlatCubeIndex++;
+    // }
 }
 
 void fillCubeFromUserInput(GLFWwindow* window) {
@@ -567,8 +575,8 @@ void fillCubeFromUserInput(GLFWwindow* window) {
         glClear(GL_COLOR_BUFFER_BIT);
         glUseProgram(shaderProgram);
 
-        if (isCubeFilledFromFile) {
-            isCubeFilledFromFile = 0;
+        if (isCubeFilled) {
+            isCubeFilled = 0;
             break;
         }
 
