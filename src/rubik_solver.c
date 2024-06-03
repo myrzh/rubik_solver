@@ -2,10 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <ctype.h>
 #include "objects.h"
 #include "shaders.h"
 #include "colors.h"
 #include "cube.h"
+#include "algo.h"
+#include "interface.h"
 // #include "text_rendering.h"
 
 // #include <ft2build.h>
@@ -43,9 +46,9 @@ windowType currentWindow;
 Button mainButtons[20];
 Button flatButtons[20];
 
-Cube testCube;
-Cube flatCube;
-MatrixCube Cube3D;
+LinearCube testCube;
+LinearCube flatCube;
+Cube Cube3D;
 
 FILE* inputSteps;
 action stepsFromFile[1000];
@@ -72,7 +75,7 @@ int currentFlatCubeIndex = -1;
     };
 
     sfd_Options openCubeOpt = {
-        .title        = "Open Cube File",
+        .title        = "Open LinearCube File",
         .filter_name  = "Text Files (*.txt)",
         .filter       = "*.txt",
     };
@@ -281,22 +284,20 @@ void fillStepsFromFile(char filename[]) {
     int currentActionCount;
 
     while (fgets(line, sizeof(line), inputSteps) != NULL) {
-        // printf("%s", line);
-        actionIndex = 0;
         isReverse = 0;
-        currentActionCount = 0;
-        if (line[0] == '_') {
-            actionIndex = 1;
+        currentActionCount = 1;
+        if (line[1] == '\'') {
             isReverse = 1;
         }
 
-        currentAction = getActionFromChar(line[actionIndex]);
+        currentAction = getActionFromChar(line[0]);
 
         if (isReverse) {
             currentAction++;
         }
-
-        currentActionCount = line[actionIndex + 1] - '0';
+        if (isdigit(line[1])) {
+            currentActionCount = line[1] - '0';
+        }
 
         for (int i = 0; i < currentActionCount; i++) {
             stepsFromFile[actionsInFile++] = currentAction;
@@ -318,10 +319,21 @@ void executeStep() {
 
     getTextFromAction(currentStepText, currentAction);
 
+    int n = 1;
+    color sideColorToRotate;
+
     if (currentAction % 2 == 0) {
-        rotateSideBy90(&testCube, (color)(currentAction / 2), STRAIGHT);
+        sideColorToRotate = (color)(currentAction / 2);
+        // rotateLinearSideBy90(&testCube, (color)(currentAction / 2), STRAIGHT);
     } else {
-        rotateSideBy90(&testCube, (color)((currentAction - 1) / 2), BACK);
+        sideColorToRotate = (color)((currentAction - 1) / 2);
+        n += 2;
+        // rotateLinearSideBy90(&testCube, (color)((currentAction - 1) / 2), BACK);
+    }
+
+    for (int i = 0; i < n; i++) {
+        cubeDoOp(&Cube3D, getRotationFromColor(sideColorToRotate));
+        matrixToLinearCube(&testCube, &Cube3D);
     }
 }
 
@@ -370,8 +382,7 @@ void fillCubeFromFile(char filename[]) {
     }
     fclose(inputCube);
 
-    linearToMatrixCube(&testCube, &Cube3D);
-    renderMatrixCube(&Cube3D);
+    linearToMatrixCube(&Cube3D, &testCube);
 
     isCubeFilledFromFile = 1;
 }
@@ -680,15 +691,23 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                     normalizedY <= mainButtons[i].yPos && normalizedY >= mainButtons[i].yPos - mainButtons[i].height) {
                         switch (mainButtons[i].function) {
                             case REVERT:
-                                initCube(&testCube);
+                                initLinearCube(&testCube);
+                                linearToMatrixCube(&Cube3D, &testCube);
                                 break;
                             case ROTATE_SIDE:
                                 switch (button) {
                                     case GLFW_MOUSE_BUTTON_LEFT:
-                                        rotateSideBy90(&testCube, mainButtons[i].color, STRAIGHT);
+                                        cubeDoOp(&Cube3D, getRotationFromColor(mainButtons[i].color));
+                                        matrixToLinearCube(&testCube, &Cube3D);
+                                        // renderMatrixCube(&Cube3D);
+                                        // rotateLinearSideBy90(&testCube, mainButtons[i].color, STRAIGHT);
                                         break;
                                     case GLFW_MOUSE_BUTTON_RIGHT:
-                                        rotateSideBy90(&testCube, mainButtons[i].color, BACK);
+                                        for (int count = 0; count < 3; count++) {
+                                            cubeDoOp(&Cube3D, getRotationFromColor(mainButtons[i].color));
+                                            matrixToLinearCube(&testCube, &Cube3D);
+                                        }
+                                        // rotateLinearSideBy90(&testCube, mainButtons[i].color, BACK);
                                     default:
                                         break;
                                 }
@@ -704,8 +723,8 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                                     printf("enter steps filename: ");
                                     fgets(filename, sizeof(filename), stdin);
                                     filename[strcspn(filename, "\n")] = '\0';
-                                    if (filename) {
-                                        printf("got steps file: '%s'\n", filenamePointer);
+                                    if (strlen(filename) != 0) {
+                                        printf("got steps file: '%s'\n", filename);
                                     }
                                     fillStepsFromFile(filename);
                                 #else
@@ -739,10 +758,10 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                                     printf("enter cube filename: ");
                                     fgets(filename, sizeof(filename), stdin);
                                     filename[strcspn(filename, "\n")] = '\0';
-                                    if (filename) {
-                                        printf("got cube file: '%s'\n", filenamePointer);
+                                    if (strlen(filename) != 0) {
+                                        printf("got cube file: '%s'\n", filename);
                                     }
-                                    fillStepsFromFile(filename);
+                                    fillCubeFromFile(filename);
                                 #else
                                     const char *filenamePointer = sfd_open_dialog(&openCubeOpt);;
                                     if (filenamePointer) {
@@ -808,7 +827,8 @@ int main(int argc, char *argv[]) {
     // printf("%s\n", glGetString(GL_VERSION));
 
     initButtons(mainButtons, flatButtons);
-    initCube(&testCube);
+    initLinearCube(&testCube);
+    initCube(&Cube3D);
 
     gltInit();
 

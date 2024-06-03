@@ -60,3 +60,5 @@ dkms.conf
 
 *.DS_Store
 rubik_solver.exe
+
+.vscode/

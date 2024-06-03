@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "colors.h"
+#include "algo.h"
 
 #define CORNERFACE 1
 #define CORNERWHITE 2
@@ -19,15 +20,15 @@ action getActionFromChar(char letter) {
     switch (letter) {
         case 'R':
             return R;
-        case 'G':
+        case 'D':
             return G;
-        case 'B':
+        case 'U':
             return B;
-        case 'W':
+        case 'F':
             return W;
-        case 'O':
+        case 'L':
             return O;
-        case 'Y':
+        case 'B':
             return Y;
         default:
             return 0;
@@ -82,9 +83,9 @@ typedef struct {
     color blueSide[9];
     color greenSide[9];
     color orangeSide[9];
-} Cube;
+} LinearCube;
 
-void initCube(Cube* thisCube) {
+void initLinearCube(LinearCube* thisCube) {
     for (int index = 0; index < 9; index++) {
         thisCube->whiteSide[index] = WHITE;
         thisCube->yellowSide[index] = YELLOW;
@@ -95,7 +96,7 @@ void initCube(Cube* thisCube) {
     }
 }
 
-void initFlatCube(Cube* thisCube) {
+void initFlatCube(LinearCube* thisCube) {
     for (int index = 0; index < 8; index++) {
         thisCube->whiteSide[index] = CYAN;
         thisCube->yellowSide[index] = CYAN;
@@ -111,132 +112,6 @@ void initFlatCube(Cube* thisCube) {
     thisCube->greenSide[8] = GREEN;
     thisCube->orangeSide[8] = ORANGE;
 }
-
-typedef struct {
-    char f[3][3]; // front (white)
-    char b[3][3]; // back  (yellow)
-    char u[3][3]; // up    (blue)
-    char d[3][3]; // down  (green)
-    char l[3][3]; // left  (orange)
-    char r[3][3]; // right (red)
-} MatrixCube;
-
-void linearToMatrixCube (Cube *src, MatrixCube *dest) {
-    int counter = 0;
-    for (int row = 0; row < 3; row++) {
-        for (int column = 0; column < 3; column++) {
-            dest->u[row][column] = getCharFromColor(src->blueSide[flatBlueSideOrder[counter]]);
-            counter++;
-        }
-    }
-    counter = 0;
-    for (int row = 0; row < 3; row++) {
-        for (int column = 0; column < 3; column++) {
-            dest->l[row][column] = getCharFromColor(src->orangeSide[flatOrangeSideOrder[counter]]);
-            counter++;
-        }
-    }
-    counter = 0;
-    for (int row = 0; row < 3; row++) {
-        for (int column = 0; column < 3; column++) {
-            dest->f[row][column] = getCharFromColor(src->whiteSide[flatWhiteSideOrder[counter]]);
-            counter++;
-        }
-    }
-    counter = 0;
-    for (int row = 0; row < 3; row++) {
-        for (int column = 0; column < 3; column++) {
-            dest->r[row][column] = getCharFromColor(src->redSide[flatRedSideOrder[counter]]);
-            counter++;
-        }
-    }
-    counter = 0;
-    for (int row = 0; row < 3; row++) {
-        for (int column = 0; column < 3; column++) {
-            dest->b[row][column] = getCharFromColor(src->yellowSide[flatYellowSideOrder[counter]]);
-            counter++;
-        }
-    }
-    counter = 0;
-    for (int row = 0; row < 3; row++) {
-        for (int column = 0; column < 3; column++) {
-            dest->d[row][column] = getCharFromColor(src->greenSide[flatGreenSideOrder[counter]]);
-            counter++;
-        }
-    }
-}
-
-#ifndef _WIN32
-static void renderMatrixCube(MatrixCube *c) { // draw cube on screen (console)
-    char buffer[9][12] = {0};
-    int  i, j;
-
-    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[3+i][3+j] = c->f[i][j];
-    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[3+i][9+j] = c->b[i][j];
-    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[0+i][3+j] = c->u[i][j];
-    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[6+i][3+j] = c->d[i][j];
-    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[3+i][0+j] = c->l[i][j];
-    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[3+i][6+j] = c->r[i][j];
-
-    for (i=0; i<9; i++) {
-        for (j=0; j<12; j++) {
-            switch (buffer[i][j]) {
-            case 'w': case 'W': printf("\x1b[30m"); break;
-            case 'y': case 'Y': printf("\x1b[33m"); break;
-            case 'b': case 'B': printf("\x1b[34m"); break;
-            case 'g': case 'G': printf("\x1b[32m"); break;
-            case 'o': case 'O': printf("\x1b[35m"); break;
-            case 'r': case 'R': printf("\x1b[31m"); break;
-            }
-            printf(buffer[i][j] ? "# " : "  ");
-            printf("\x1b[0m");
-        }
-        printf("\n");
-    }
-    printf("\x1b[0m");
-}
-#else
-#include <windows.h>
-#include <conio.h>
-static void renderMatrixCube(MatrixCube *c) // draw cube on screen, now only working on win32 console
-{
-    char buffer[9][12] = {0};
-    int  i, j;
-
-    HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
-    WORD wOldColorAttrs;
-    CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
-
-    // save the current color
-    GetConsoleScreenBufferInfo(h, &csbiInfo);
-    wOldColorAttrs = csbiInfo.wAttributes;
-
-    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[3+i][3+j] = c->f[i][j];
-    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[3+i][9+j] = c->b[i][j];
-    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[0+i][3+j] = c->u[i][j];
-    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[6+i][3+j] = c->d[i][j];
-    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[3+i][0+j] = c->l[i][j];
-    for (i=0; i<3; i++) for (j=0; j<3; j++) buffer[3+i][6+j] = c->r[i][j];
-
-    for (i=0; i<9; i++) {
-        for (j=0; j<12; j++) {
-            switch (buffer[i][j]) {
-            case 'w': case 'W': SetConsoleTextAttribute(h, FOREGROUND_INTENSITY|FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE); break;
-            case 'y': case 'Y': SetConsoleTextAttribute(h, FOREGROUND_INTENSITY|FOREGROUND_RED|FOREGROUND_GREEN); break;
-            case 'b': case 'B': SetConsoleTextAttribute(h, FOREGROUND_INTENSITY|FOREGROUND_BLUE ); break;
-            case 'g': case 'G': SetConsoleTextAttribute(h, FOREGROUND_INTENSITY|FOREGROUND_GREEN); break;
-            case 'o': case 'O': SetConsoleTextAttribute(h, FOREGROUND_RED|FOREGROUND_BLUE       ); break;
-            case 'r': case 'R': SetConsoleTextAttribute(h, FOREGROUND_INTENSITY|FOREGROUND_RED  ); break;
-            }
-            printf(buffer[i][j] ? "# " : "  ");
-        }
-        printf("\n");
-    }
-
-    // restore the original color
-    SetConsoleTextAttribute(h, wOldColorAttrs);
-}
-#endif
 
 void fillSideFromArray(color* cubeSide, char sideColors[]) {
     for (int index = 0; index < 9; index++) {
@@ -265,7 +140,7 @@ void fillSideFromArray(color* cubeSide, char sideColors[]) {
     }
 }
 
-void rotateSideBy90(Cube* thisCube, color sideToRotate, rotationMode mode) {
+void rotateLinearSideBy90(LinearCube* thisCube, color sideToRotate, rotationMode mode) {
     int count = 1;
     if (mode == BACK) {
         count += 2;
