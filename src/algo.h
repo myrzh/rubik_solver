@@ -37,10 +37,10 @@ typedef struct {
 	Cube* cubes;
 }SolutionTable;
 
-enum
+typedef enum
 {
 	FRONTROTATE, BACKROTATE, UPROTATE, DOWNROTATE, LEFTROTATE, RIGHTROTATE
-};
+} rotationType;
 
 typedef struct {
 	char op;

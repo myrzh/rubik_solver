@@ -49,6 +49,7 @@ Button flatButtons[20];
 LinearCube testCube;
 LinearCube flatCube;
 Cube Cube3D;
+Cube testCube3D;
 
 FILE* inputSteps;
 action stepsFromFile[1000];
@@ -752,7 +753,10 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                                 #endif
                                 break;
                             case SOLVECUBE:
-                                // SAVE SOLUTION STEPS TO FILE AND LOAD IT TO PROGRAM
+                                testCube3D = Cube3D;
+                                FILE* foutput = fopen("solution.txt", "w");
+                                cubeSolve(&testCube3D, foutput);
+                                fclose(foutput);
                                 break;
                             default:
                                 break;
