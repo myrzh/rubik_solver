@@ -1,5 +1,3 @@
-#define _CRT_SECURE_NO_WARNINGS
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -22,29 +20,29 @@ typedef struct Cube {
 	char down[3][3];
 	char operation;
 	struct Cube* previousState;
-}Cube;
+} Cube;
 
 typedef struct {
 	int shift;
 	char* line;
-}CubeLine;
+} CubeLine;
 
 typedef struct {
 	int openCubes;
 	int closedCubes;
 	int size;
 	Cube* cubes;
-}SolutionTable;
+} SolutionTable;
 
-enum
+typedef enum
 {
 	FRONTROTATE, BACKROTATE, UPROTATE, DOWNROTATE, LEFTROTATE, RIGHTROTATE
-};
+} rotationType;
 
 typedef struct {
 	char op;
 	char count;
-}OperationPrint;
+} OperationPrint;
 
 enum
 {

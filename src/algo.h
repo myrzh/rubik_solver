@@ -23,19 +23,19 @@ typedef struct Cube {
 	char down[3][3];
 	char operation;
 	struct Cube* previousState;
-}Cube;
+} Cube;
 
 typedef struct {
 	int shift;
 	char* line;
-}CubeLine;
+} CubeLine;
 
 typedef struct {
 	int openCubes;
 	int closedCubes;
 	int size;
 	Cube* cubes;
-}SolutionTable;
+} SolutionTable;
 
 typedef enum
 {
@@ -45,7 +45,7 @@ typedef enum
 typedef struct {
 	char op;
 	char count;
-}OperationPrint;
+} OperationPrint;
 
 enum
 {
