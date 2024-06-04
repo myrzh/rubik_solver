@@ -1,8 +1,6 @@
 #ifndef ALGO_H
 #define ALGO_H
 
-#define _CRT_SECURE_NO_WARNINGS
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
