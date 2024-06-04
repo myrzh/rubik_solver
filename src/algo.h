@@ -1040,17 +1040,17 @@ void testInit(Cube* c)
 	fgets(str, sizeof(str), stdin);
 }
 
-int main()
-{
-	FILE* foutput = fopen("solution.txt", "w");
-	Cube c;
-	initCube(&c);
-	randCube(&c, 52);
-	cubeSolve(&c, foutput);
+// int main()
+// {
+// 	FILE* foutput = fopen("solution.txt", "w");
+// 	Cube c;
+// 	initCube(&c);
+// 	randCube(&c, 52);
+// 	cubeSolve(&c, foutput);
 
-	fclose(foutput);
+// 	fclose(foutput);
 
-	return 0;
-}
+// 	return 0;
+// }
 
 #endif
