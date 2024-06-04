@@ -263,7 +263,6 @@ void drawFlatWindowUI() {
 }
 
 void fillStepsFromFile(char filename[]) {
-    // replaceBackslashes(filename);
     inputSteps = fopen(filename, "r");
     // printf("'%s\n'", filename);
     if (inputSteps == NULL) {
@@ -579,6 +578,11 @@ void fillCubeFromUserInput(GLFWwindow* window) {
 
     currentWindow = FLATWND;
 
+    // gltInit();
+    GLTtext *fileText = gltCreateText();
+    gltSetText(fileText, "F");
+    int width, height;
+
     while (!glfwWindowShouldClose(flatCubeWindow)) {
         glClear(GL_COLOR_BUFFER_BIT);
         glUseProgram(shaderProgram);
@@ -596,11 +600,23 @@ void fillCubeFromUserInput(GLFWwindow* window) {
         drawFlatSide(-0.5f, 0.05f, GREEN, flatCube.greenSide);
         drawFlatWindowUI();
 
+        gltInit();
+        glfwGetWindowSize(flatCubeWindow, &width, &height);
+        gltBeginDraw();
+        gltColor(1.0f, 0.0f, 0.0f, 1.0f);
+        gltDrawText2DAligned(fileText,
+                                 NDCToPixels(flatButtons[6].xPos + 0.075f, width, 'x'),
+                                 NDCToPixels(flatButtons[6].yPos - 0.075f, height, 'y'),
+                             1.75f, GLT_CENTER, GLT_CENTER);
+        gltEndDraw();
+        gltTerminate();
+
         glfwSwapBuffers(flatCubeWindow);
         glfwPollEvents();
     }
 
     currentWindow = MAINWND;
+    gltDeleteText(fileText);
 
     currentFlatCubeIndex = -1;
     glfwDestroyWindow(flatCubeWindow);
@@ -613,7 +629,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
     }
     if (key == GLFW_KEY_F1 && action == GLFW_PRESS) {
         glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-        GLFWwindow* authorsWindow = glfwCreateWindow(500, 200, "Authors", NULL, NULL);
+        GLFWwindow* authorsWindow = glfwCreateWindow(700, 500, "Authors", NULL, NULL);
         if (!authorsWindow) {
             fprintf(stderr, "failed to create secondary window!\n");
             return;
@@ -621,27 +637,6 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
         glfwMakeContextCurrent(authorsWindow);
 
         // glfwSetWindowAspectRatio(authorsWindow, 1, 1);
-
-        // const char* authors[] = { "Shtarev I.A.", "Plotnikov D.A." };
-        // const char* authors[] = { "Shtarev I.A.\nPlotnikov D.A." };
-        // for (int i = 0; i < 2; ++i) {
-        //     const char* name = authors[i];
-        //     printf("%s\n", name);
-        // }
-
-        const char* authorsText =
-            "RubikSolver (c)\n"
-            "\n"
-            "Made by:\n"
-            "Plotnikov D.A.\n"
-            "Shtarev I.A.\n"
-            "2024\n"
-            "\n"
-            "Peter the Great St.Petersburg Polytechnic University\n"
-            "Institute of Cybersecurity and Computer Science\n"
-            "Higher School of Cybersecurity\n";
-
-        gltInit();
 
         GLTtext *text = gltCreateText();
         gltSetText(text, authorsText);
@@ -652,6 +647,8 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 
         while (!glfwWindowShouldClose(authorsWindow)) {
             glClear(GL_COLOR_BUFFER_BIT);
+
+            gltInit();
 
             glfwGetWindowSize(authorsWindow, &width, &height);
 
@@ -665,6 +662,8 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
             gltDrawText2DAligned(text, xpos, ypos, 1.0f, GLT_CENTER, GLT_CENTER);
             gltEndDraw();
 
+            gltTerminate();
+
             // renderText(currentTextData, "Hello World", 0.5f, 0.5f, 25.0f, colors[3]);
 
             glfwSwapBuffers(authorsWindow);
@@ -674,7 +673,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
         currentWindow = MAINWND;
 
         gltDeleteText(text);
-        gltTerminate();
+        // gltTerminate();
         // glDeleteProgram(currentTextData.shaderData);
         glfwDestroyWindow(authorsWindow);
         glfwMakeContextCurrent(window);
@@ -846,8 +845,6 @@ int main(int argc, char *argv[]) {
     initLinearCube(&testCube);
     initCube(&Cube3D);
 
-    gltInit();
-
     GLTtext *stepText = gltCreateText();
     GLTtext *revertText = gltCreateText();
     GLTtext *openText = gltCreateText();
@@ -875,6 +872,7 @@ int main(int argc, char *argv[]) {
         drawUI();
         gltSetText(stepText, currentStepText);
 
+        gltInit();
         glfwGetWindowSize(window, &width, &height);
         // printf("%f %f\n", xpos, ypos);
         gltBeginDraw();
@@ -903,17 +901,19 @@ int main(int argc, char *argv[]) {
                                  NDCToPixels(mainButtons[10].yPos - 0.075f, height, 'y'),
                              2.0f, GLT_CENTER, GLT_CENTER);
         gltEndDraw();
+        gltTerminate();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    free(stepText);
-    free(revertText);
-    free(openText);
-    free(nextText);
-    free(cubeText);
-    free(solveText);
+    gltDeleteText(stepText);
+    gltDeleteText(revertText);
+    gltDeleteText(openText);
+    gltDeleteText(nextText);
+    gltDeleteText(cubeText);
+    gltDeleteText(solveText);
+    // gltTerminate();
     glDeleteProgram(shaderProgram);
     glfwDestroyWindow(window);
     glfwTerminate();

@@ -19,16 +19,22 @@ typedef enum { LEVEL_ONE, LEVEL_TWO, LEVEL_THREE } flatCubeLevel;
 action getActionFromChar(char letter) {
     switch (letter) {
         case 'R':
+        case 'r':
             return R;
         case 'D':
+        case 'd':
             return G;
         case 'U':
+        case 'u':
             return B;
         case 'F':
+        case 'f':
             return W;
         case 'L':
+        case 'l':
             return O;
         case 'B':
+        case 'b':
             return Y;
         default:
             return 0;

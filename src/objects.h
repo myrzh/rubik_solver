@@ -190,4 +190,28 @@ void initButtons(Button mainButtons[], Button flatButtons[]) {
     flatButtons[6].function = GETFILECUBE;
 }
 
+const char* authorsText =
+            "RubikSolver (c)\n"
+            "\n"
+            "Made by:\n"
+            "Plotnikov D.A.\n"
+            "Shtarev I.A.\n"
+            "2024\n"
+            "\n"
+            "Peter the Great St.Petersburg Polytechnic University\n"
+            "Institute of Cybersecurity and Computer Science\n"
+            "Higher School of Cybersecurity\n"
+            "\n"
+            "Main window usage:\n"
+            "Colored buttons -- rotate correspoding side (right-click for counterclockwise)\n"
+            "R -- revert cube to initial state\n"
+            "O -- open steps file (*.txt)\n"
+            "N -- execute next step (if steps file opened)\n"
+            "S -- solve cube and load solution to steps file\n"
+            "C -- open cube definition window\n"
+            "\n"
+            "Cube definition window usage:\n"
+            "Colored buttons -- define purple square (central squares are being skipped)\n"
+            "Down left button -- open cube from file (*.txt)\n";
+
 #endif
