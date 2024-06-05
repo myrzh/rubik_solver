@@ -380,7 +380,7 @@ int checkIfCornersFront(Cube* thisCube)
 	return count;
 }
 
-int checkIfFrontRow(Cube* thisCube)
+int checkIfMiddleRow(Cube* thisCube)
 {
 	int count = 0;
 	int ifcorrect = 0;
@@ -677,7 +677,7 @@ int doCheck(Cube* thisCube, int op)
 		return checkIfCornersFront(thisCube);
 		break;
 	case THIRDSTEP:
-		return checkIfFrontRow(thisCube);
+		return checkIfMiddleRow(thisCube);
 		break;
 	case FOURTHSTEP:
 		return checkIfBackCross(thisCube);
