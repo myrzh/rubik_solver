@@ -46,7 +46,7 @@ windowType currentWindow;
 Button mainButtons[20];
 Button flatButtons[20];
 
-LinearCube testCube;
+LinearCube Cube2D;
 LinearCube flatCube;
 Cube Cube3D;
 Cube tempCube3D;
@@ -331,16 +331,16 @@ void executeStep() {
 
     if (currentAction % 2 == 0) {
         sideColorToRotate = (color)(currentAction / 2);
-        // rotateLinearSideBy90(&testCube, (color)(currentAction / 2), STRAIGHT);
+        // rotateLinearSideBy90(&Cube2D, (color)(currentAction / 2), STRAIGHT);
     } else {
         sideColorToRotate = (color)((currentAction - 1) / 2);
         n += 2;
-        // rotateLinearSideBy90(&testCube, (color)((currentAction - 1) / 2), BACK);
+        // rotateLinearSideBy90(&Cube2D, (color)((currentAction - 1) / 2), BACK);
     }
 
     for (int i = 0; i < n; i++) {
         cubeDoOp(&Cube3D, getRotationFromColor(sideColorToRotate));
-        matrixToLinearCube(&testCube, &Cube3D);
+        matrixToLinearCube(&Cube2D, &Cube3D);
     }
 }
 
@@ -364,22 +364,22 @@ void fillCubeFromFile(char filename[]) {
             // printf("%c", line[i]);
             switch (currentLineNumber) {
                 case 1:
-                    testCube.blueSide[flatBlueSideOrder[i]] = currentColor;
+                    Cube2D.blueSide[flatBlueSideOrder[i]] = currentColor;
                     break;
                 case 2:
-                    testCube.orangeSide[flatOrangeSideOrder[i]] = currentColor;
+                    Cube2D.orangeSide[flatOrangeSideOrder[i]] = currentColor;
                     break;
                 case 3:
-                    testCube.whiteSide[flatWhiteSideOrder[i]] = currentColor;
+                    Cube2D.whiteSide[flatWhiteSideOrder[i]] = currentColor;
                     break;
                 case 4:
-                    testCube.redSide[flatRedSideOrder[i]] = currentColor;
+                    Cube2D.redSide[flatRedSideOrder[i]] = currentColor;
                     break;
                 case 5:
-                    testCube.yellowSide[flatYellowSideOrder[i]] = currentColor;
+                    Cube2D.yellowSide[flatYellowSideOrder[i]] = currentColor;
                     break;
                 case 6:
-                    testCube.greenSide[flatGreenSideOrder[i]] = currentColor;
+                    Cube2D.greenSide[flatGreenSideOrder[i]] = currentColor;
                     break;
                 default:
                     break;
@@ -389,7 +389,7 @@ void fillCubeFromFile(char filename[]) {
     }
     fclose(inputCube);
 
-    linearToMatrixCube(&Cube3D, &testCube);
+    linearToMatrixCube(&Cube3D, &Cube2D);
 
     isCubeFilled = 1;
 }
@@ -559,8 +559,8 @@ void updateFlatCube(color currentColor, int isFirstCall) {
         currentFlatCubeIndex++;
     }
     if (currentFlatCubeIndex > 53) {
-        memcpy(&testCube, &flatCube, sizeof(flatCube));
-        linearToMatrixCube(&Cube3D, &testCube);
+        memcpy(&Cube2D, &flatCube, sizeof(flatCube));
+        linearToMatrixCube(&Cube3D, &Cube2D);
         isCubeFilled = 1;
     }
     // IndexAndSide nextIterationSquare = getIndexAndSideFromNumber(currentFlatCubeIndex + 1);
@@ -718,23 +718,23 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                     normalizedY <= mainButtons[i].yPos && normalizedY >= mainButtons[i].yPos - mainButtons[i].height) {
                         switch (mainButtons[i].function) {
                             case REVERT:
-                                initLinearCube(&testCube);
-                                linearToMatrixCube(&Cube3D, &testCube);
+                                initLinearCube(&Cube2D);
+                                linearToMatrixCube(&Cube3D, &Cube2D);
                                 break;
                             case ROTATE_SIDE:
                                 switch (button) {
                                     case GLFW_MOUSE_BUTTON_LEFT:
                                         cubeDoOp(&Cube3D, getRotationFromColor(mainButtons[i].color));
-                                        matrixToLinearCube(&testCube, &Cube3D);
+                                        matrixToLinearCube(&Cube2D, &Cube3D);
                                         // renderMatrixCube(&Cube3D);
-                                        // rotateLinearSideBy90(&testCube, mainButtons[i].color, STRAIGHT);
+                                        // rotateLinearSideBy90(&Cube2D, mainButtons[i].color, STRAIGHT);
                                         break;
                                     case GLFW_MOUSE_BUTTON_RIGHT:
                                         for (int count = 0; count < 3; count++) {
                                             cubeDoOp(&Cube3D, getRotationFromColor(mainButtons[i].color));
-                                            matrixToLinearCube(&testCube, &Cube3D);
+                                            matrixToLinearCube(&Cube2D, &Cube3D);
                                         }
-                                        // rotateLinearSideBy90(&testCube, mainButtons[i].color, BACK);
+                                        // rotateLinearSideBy90(&Cube2D, mainButtons[i].color, BACK);
                                     default:
                                         break;
                                 }
@@ -787,6 +787,10 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                                     fclose(foutput);
                                     fillStepsFromFile(filenamePointer);
                                 #endif
+                                break;
+                            case SHUFFLE:
+                                randCube(&Cube3D, 52);
+                                matrixToLinearCube(&Cube2D, &Cube3D);
                                 break;
                             default:
                                 break;
@@ -882,7 +886,7 @@ int main(int argc, char **argv) {
     // printf("%s\n", glGetString(GL_VERSION));
 
     initButtons(mainButtons, flatButtons);
-    initLinearCube(&testCube);
+    initLinearCube(&Cube2D);
     initCube(&Cube3D);
 
     GLTtext *stepText = gltCreateText();
@@ -891,11 +895,13 @@ int main(int argc, char **argv) {
     GLTtext *nextText = gltCreateText();
     GLTtext *cubeText = gltCreateText();
     GLTtext *solveText = gltCreateText();
-    gltSetText(revertText, "R");
+    GLTtext *shuffleText = gltCreateText();
+    gltSetText(revertText, "I");
     gltSetText(openText, "O");
     gltSetText(nextText, "N");
     gltSetText(cubeText, "C");
     gltSetText(solveText, "S");
+    gltSetText(shuffleText, "R");
 
     int width, height;
 
@@ -906,9 +912,9 @@ int main(int argc, char **argv) {
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shaderProgram);
-        drawSide(RIGHT, testCube.redSide);
-        drawSide(LEFT, testCube.whiteSide);
-        drawSide(TOP, testCube.blueSide);
+        drawSide(RIGHT, Cube2D.redSide);
+        drawSide(LEFT, Cube2D.whiteSide);
+        drawSide(TOP, Cube2D.blueSide);
         drawUI();
         gltSetText(stepText, currentStepText);
 
@@ -940,6 +946,10 @@ int main(int argc, char **argv) {
                                  NDCToPixels(mainButtons[10].xPos + 0.075f, width, 'x'),
                                  NDCToPixels(mainButtons[10].yPos - 0.075f, height, 'y'),
                              2.0f, GLT_CENTER, GLT_CENTER);
+        gltDrawText2DAligned(shuffleText,
+                                 NDCToPixels(mainButtons[11].xPos + 0.075f, width, 'x'),
+                                 NDCToPixels(mainButtons[11].yPos - 0.075f, height, 'y'),
+                             2.0f, GLT_CENTER, GLT_CENTER);
         gltEndDraw();
         gltTerminate();
 
@@ -953,6 +963,7 @@ int main(int argc, char **argv) {
     gltDeleteText(nextText);
     gltDeleteText(cubeText);
     gltDeleteText(solveText);
+    gltDeleteText(shuffleText);
     // gltTerminate();
     glDeleteProgram(shaderProgram);
     glfwDestroyWindow(window);

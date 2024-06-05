@@ -64,7 +64,7 @@ const int flatRedSideOrder[] =    { 0, 1, 2, 7, 8, 3, 6, 5, 4 };
 const int flatYellowSideOrder[] = { 1, 0, 7, 2, 8, 6, 3, 4, 5 };
 const int flatGreenSideOrder[] =  { 6, 7, 0, 5, 8, 1, 4, 3, 2 };
 
-typedef enum { REVERT, ROTATE_SIDE, NEXTSTEP, FILLCUBE, SETCOLOR, GETFILECUBE, OPENSTEPSFILE, SOLVECUBE } buttonFunction;
+typedef enum { REVERT, ROTATE_SIDE, NEXTSTEP, FILLCUBE, SETCOLOR, GETFILECUBE, OPENSTEPSFILE, SOLVECUBE, SHUFFLE } buttonFunction;
 
 typedef struct {
     float xPos;
@@ -90,7 +90,7 @@ float NDCToPixels(float coord, int dimension, char mode) {
 }
 
 void initButtons(Button mainButtons[], Button flatButtons[]) {
-    for (int i = 0; i < 11; i++) {
+    for (int i = 0; i < 12; i++) {
         mainButtons[i].width = 0.15f;
         mainButtons[i].height = 0.15f;
     }
@@ -140,12 +140,12 @@ void initButtons(Button mainButtons[], Button flatButtons[]) {
     mainButtons[7].function = NEXTSTEP;
 
     mainButtons[8].xPos = 0.8f;
-    mainButtons[8].yPos = 0.75f;
+    mainButtons[8].yPos = 0.55f;
     mainButtons[8].color = WHITE;
     mainButtons[8].function = FILLCUBE;
 
-    mainButtons[9].xPos = 0.6f;
-    mainButtons[9].yPos = 0.95f;
+    mainButtons[9].xPos = 0.8f;
+    mainButtons[9].yPos = 0.75f;
     mainButtons[9].color = WHITE;
     mainButtons[9].function = OPENSTEPSFILE;
 
@@ -153,6 +153,11 @@ void initButtons(Button mainButtons[], Button flatButtons[]) {
     mainButtons[10].yPos = -0.8f;
     mainButtons[10].color = WHITE;
     mainButtons[10].function = SOLVECUBE;
+
+    mainButtons[11].xPos = -0.95f;
+    mainButtons[11].yPos = 0.55f;
+    mainButtons[11].color = WHITE;
+    mainButtons[11].function = SHUFFLE;
 
     flatButtons[0].xPos = 0.6f;
     flatButtons[0].yPos = -0.4f;
@@ -204,11 +209,12 @@ const char* authorsText =
             "\n"
             "Main window usage:\n"
             "Colored buttons -- rotate correspoding side (right-click for counterclockwise)\n"
-            "R -- revert cube to initial state\n"
-            "O -- open steps file (*.txt)\n"
+            "I -- initialize cube (restore original state)\n"
+            "R -- randomize cube\n"
             "N -- execute next step (if steps file is opened)\n"
-            "S -- solve cube and load solution to steps file\n"
+            "O -- open steps file (*.txt)\n"
             "C -- open cube definition window\n"
+            "S -- solve cube and load solution to steps file\n"
             "\n"
             "Cube definition window usage:\n"
             "Colored buttons -- define purple square (central squares are being skipped)\n"
