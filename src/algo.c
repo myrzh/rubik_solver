@@ -983,11 +983,11 @@ void cubeSolve(Cube* thisCube, FILE* foutput)
 			FILE* foutput = fopen("ops.txt", "w");
 			fputc('_', foutput);
 			//Couldn't find
-			deleteTable(&table);
 			fclose(foutput);
 			break;
 		}
 	}
+	deleteTable(&table);
 }
 
 void testInit(Cube* c)
