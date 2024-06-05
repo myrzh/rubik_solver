@@ -36,11 +36,6 @@ typedef enum { MAINWND, FLATWND, AUTHORSWND } windowType;
 
 typedef enum {RIGHT, LEFT, TOP} cubeSide;
 
-typedef struct {
-    int index;
-    color sideColor;
-} IndexAndSide;
-
 windowType currentWindow;
 
 Button mainButtons[20];
@@ -272,7 +267,7 @@ void fillStepsFromFile(char filename[]) {
     }
     currentStep = 0;
     printf("steps file opened!\n");
-    strcpy(currentStepText, "");
+    strcpy(currentStepText, "STEPS LOADED");
 
     char line[256];
 
@@ -390,6 +385,7 @@ void fillCubeFromFile(char filename[]) {
     fclose(inputCube);
 
     linearToMatrixCube(&Cube3D, &Cube2D);
+    printf("is correct: %d\n", isLinearCubeCorrect(&Cube2D));
 
     isCubeFilled = 1;
 }
@@ -467,36 +463,6 @@ void drawFlatSide(GLfloat x, GLfloat y, color sideToDraw, color sideColors[]) {
     }
 }
 
-IndexAndSide getIndexAndSideFromNumber(int absoluteIndex) {
-    color sideColor;
-    int relativeIndex;
-
-    if (absoluteIndex >= 0 && absoluteIndex <= 8) {
-        sideColor = BLUE;
-        relativeIndex = flatBlueSideOrder[absoluteIndex - 9 * 0];
-    } else if (absoluteIndex >= 9 && absoluteIndex <= 17) {
-        sideColor = ORANGE;
-        relativeIndex = flatOrangeSideOrder[absoluteIndex - 9 * 1];
-    } else if (absoluteIndex >= 18 && absoluteIndex <= 26) {
-        sideColor = WHITE;
-        relativeIndex = flatWhiteSideOrder[absoluteIndex - 9 * 2];
-    } else if (absoluteIndex >= 27 && absoluteIndex <= 35) {
-        sideColor = RED;
-        relativeIndex = flatRedSideOrder[absoluteIndex - 9 * 3];
-    } else if (absoluteIndex >= 36 && absoluteIndex <= 44) {
-        sideColor = YELLOW;
-        relativeIndex = flatYellowSideOrder[absoluteIndex - 9 * 4];
-    } else if (absoluteIndex >= 45 && absoluteIndex <= 53) {
-        sideColor = GREEN;
-        relativeIndex = flatGreenSideOrder[absoluteIndex - 9 * 5];
-    }
-
-    IndexAndSide result;
-    result.index = relativeIndex;
-    result.sideColor = sideColor;
-    return result;
-}
-
 void updateFlatCube(color currentColor, int isFirstCall) {
     currentFlatCubeIndex++;
     int needToJump = 0;
@@ -561,6 +527,7 @@ void updateFlatCube(color currentColor, int isFirstCall) {
     if (currentFlatCubeIndex > 53) {
         memcpy(&Cube2D, &flatCube, sizeof(flatCube));
         linearToMatrixCube(&Cube3D, &Cube2D);
+        printf("is correct: %d\n", isLinearCubeCorrect(&Cube2D));
         isCubeFilled = 1;
     }
     // IndexAndSide nextIterationSquare = getIndexAndSideFromNumber(currentFlatCubeIndex + 1);
@@ -764,6 +731,7 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                                 #endif
                                 break;
                             case SOLVECUBE:
+                                strcpy(currentStepText, "PLEASE WAIT");
                                 #ifdef __APPLE__
                                     printf("enter steps filename: ");
                                     fgets(filename, sizeof(filename), stdin);
@@ -773,6 +741,11 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                                     }
                                     tempCube3D = Cube3D;
                                     FILE* foutput = fopen(filename, "w");
+                                    if (foutput == NULL) {
+                                        printf("can't open output file!\n");
+                                        strcpy(currentStepText, "");
+                                        break;
+                                    }
                                     cubeSolve(&tempCube3D, foutput, filename);
                                     fclose(foutput);
                                     fillStepsFromFile(filename);
@@ -783,6 +756,11 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                                     }
                                     tempCube3D = Cube3D;
                                     FILE* foutput = fopen(filenamePointer, "w");
+                                    if (foutput == NULL) {
+                                        printf("can't open output file!\n");
+                                        strcpy(currentStepText, "");
+                                        break;
+                                    }
                                     cubeSolve(&tempCube3D, foutput, filenamePointer);
                                     fclose(foutput);
                                     fillStepsFromFile(filenamePointer);
@@ -815,12 +793,14 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                                         printf("got cube file: '%s'\n", filename);
                                     }
                                     fillCubeFromFile(filename);
+                                    strcpy(currentStepText, "CUBE LOADED");
                                 #else
                                     filenamePointer = sfd_open_dialog(&openCubeOpt);;
                                     if (filenamePointer) {
                                         printf("got cube file: '%s'\n", filenamePointer);
                                     }
                                     fillCubeFromFile(filenamePointer);
+                                    strcpy(currentStepText, "CUBE LOADED");
                                     // free(filenamePointer);
                                 #endif
                                 break;
