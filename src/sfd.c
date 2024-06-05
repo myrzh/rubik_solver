@@ -249,12 +249,12 @@ static const char* file_dialog(sfd_Options *opt, int save) {
 
 
 char* sfd_open_dialog(sfd_Options *opt) {
-  return file_dialog(opt, 0);
+  return (char *)file_dialog(opt, 0);
 }
 
 
 char* sfd_save_dialog(sfd_Options *opt) {
-  return file_dialog(opt, 1);
+  return (char *)file_dialog(opt, 1);
 }
 
 
