@@ -3,21 +3,18 @@
 #include <string.h>
 #include <math.h>
 #include <ctype.h>
-#include "objects.h"
-#include "shaders.h"
-#include "colors.h"
-#include "cube.h"
-#include "algo.h"
-#include "interface.h"
-// #include "text_rendering.h"
-
-// #include <ft2build.h>
-// #include FT_FREETYPE_H
+#include <objects.h>
+#include <shaders.h>
+#include <colors.h>
+#include <cube.h>
+#include <algo.h>
+#include <interface.h>
 
 #ifdef __APPLE__
     #define GL_SILENCE_DEPRECATION
-    #define GLFW_INCLUDE_NONE
 #endif
+
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 #ifdef __APPLE__
@@ -76,6 +73,47 @@ int currentFlatCubeIndex = -1;
         .filter       = "*.txt",
     };
 #endif
+
+unsigned int compileShader(unsigned int type, const char* source) {
+    unsigned int id = glCreateShader(type);
+    glShaderSource(id, 1, &source, NULL);
+    glCompileShader(id);
+
+    // Error handling
+    int success;
+    glGetShaderiv(id, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        char infoLog[512];
+        glGetShaderInfoLog(id, 512, NULL, infoLog);
+        fprintf(stderr, "ERROR::SHADER::COMPILATION_FAILED\n%s\n", infoLog);
+    }
+
+    return id;
+}
+
+unsigned int createShaderProgram(const char* vertexSource, const char* fragmentSource) {
+    unsigned int vertexShader = compileShader(GL_VERTEX_SHADER, vertexSource);
+    unsigned int fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentSource);
+
+    unsigned int program = glCreateProgram();
+    glAttachShader(program, vertexShader);
+    glAttachShader(program, fragmentShader);
+    glLinkProgram(program);
+
+    // Error handling
+    int success;
+    glGetProgramiv(program, GL_LINK_STATUS, &success);
+    if (!success) {
+        char infoLog[512];
+        glGetProgramInfoLog(program, 512, NULL, infoLog);
+        fprintf(stderr, "ERROR::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
+    }
+
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    return program;
+}
 
 void drawStrokeLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
     GLfloat vertices[] = {

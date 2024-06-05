@@ -1,5 +1,11 @@
-gcc -o rubik_solver src/rubik_solver.c -I./include -L./lib_macos -lglfw -framework OpenGL
-gcc -o rubik_solver src/rubik_solver.c src/glad.c src/sfd.c -I./include -L./lib_win -lglfw3 -lgdi32 -lopengl32 -lglu32 -lcomdlg32
-gcc -o rubik_solver src/rubik_solver.c src/glad.c src/sfd.c -I./include -L./lib_linux -lGL -lglfw
+MACOS:
+gcc -o rubik_solver src/rubik_solver.c src/glad.c src/sfd.c src/algo.c src/colors.c src/cube.c src/interface.c src/objects.c src/shaders.c -I./include -L./lib_macos -lglfw -framework OpenGL
 
-gcc -o rubik_solver rubik_solver.c -I$(brew --prefix)/include -L$(brew --prefix)/lib -lglfw -framework OpenGL
+WIN32:
+gcc -o rubik_solver src/rubik_solver.c src/glad.c src/sfd.c src/algo.c src/colors.c src/cube.c src/interface.c src/objects.c src/shaders.c -I./include -L./lib_win -lglfw3 -lgdi32 -lopengl32 -lglu32 -lcomdlg32
+
+LINUX:
+gcc -o rubik_solver src/rubik_solver.c src/glad.c src/sfd.c src/algo.c src/colors.c src/cube.c src/interface.c src/objects.c src/shaders.c -I./include -L./lib_linux -lGL -lglfw
+
+MACOS (GLFW FROM HOMEBREW):
+gcc -o rubik_solver src/rubik_solver.c src/glad.c src/sfd.c src/algo.c src/colors.c src/cube.c src/interface.c src/objects.c src/shaders.c -I$(brew --prefix)/include -L$(brew --prefix)/lib -lglfw -framework OpenGL

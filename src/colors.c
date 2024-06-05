@@ -1,6 +1,3 @@
-#ifndef COLORS_H
-#define COLORS_H
-
 typedef enum { RED, GREEN, BLUE, WHITE, ORANGE, YELLOW, CYAN, PURPLE } color;
 
 float colors[][3] = {
@@ -58,5 +55,3 @@ char getCharFromColor (color clr) {
             return 0;
     }
 }
-
-#endif

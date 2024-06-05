@@ -1,6 +1,3 @@
-#ifndef OBJECTS_H
-#define OBJECTS_H
-
 #include "colors.h"
 
 const float rightCoords[][2] = {
@@ -220,5 +217,3 @@ const char* authorsText =
             "Cube definition window usage:\n"
             "Colored buttons -- define purple square (central squares are being skipped)\n"
             "Down left button -- open cube from file (*.txt)\n";
-
-#endif

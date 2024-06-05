@@ -1,10 +1,8 @@
-#ifndef CUBE_H
-#define CUBE_H
-
 #include <stdio.h>
 #include <string.h>
-#include "colors.h"
-#include "algo.h"
+#include <colors.h>
+#include <algo.h>
+#include <objects.h>
 
 #define CORNERFACE 1
 #define CORNERWHITE 2
@@ -210,5 +208,3 @@ int isLinearCubeCorrect(LinearCube* thisCube) {
     }
     return 1;
 }
-
-#endif
