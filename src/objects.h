@@ -206,7 +206,7 @@ const char* authorsText =
             "Colored buttons -- rotate correspoding side (right-click for counterclockwise)\n"
             "R -- revert cube to initial state\n"
             "O -- open steps file (*.txt)\n"
-            "N -- execute next step (if steps file opened)\n"
+            "N -- execute next step (if steps file is opened)\n"
             "S -- solve cube and load solution to steps file\n"
             "C -- open cube definition window\n"
             "\n"

@@ -636,7 +636,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
     }
     if (key == GLFW_KEY_F1 && action == GLFW_PRESS) {
         glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-        GLFWwindow* authorsWindow = glfwCreateWindow(700, 500, "Authors", NULL, NULL);
+        GLFWwindow* authorsWindow = glfwCreateWindow(700, 450, "Authors", NULL, NULL);
         if (!authorsWindow) {
             fprintf(stderr, "failed to create secondary window!\n");
             return;
@@ -704,7 +704,11 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
         // char inputFilename[50];
         // char cubeFilename[50] = "cube1.txt";
         // char cubeFilename[50];
-        char filename[256];
+        #ifdef __APPLE__
+            char filename[256];
+        #else
+            char *filenamePointer;
+        #endif
 
         switch (currentWindow) {
             case MAINWND:
@@ -750,7 +754,7 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                                     }
                                     fillStepsFromFile(filename);
                                 #else
-                                    const char *filenamePointer = sfd_open_dialog(&openInputOpt);
+                                    filenamePointer = sfd_open_dialog(&openInputOpt);
                                     if (filenamePointer) {
                                         printf("got steps file: '%s'\n", filenamePointer);
                                     }
@@ -772,12 +776,12 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                                     fclose(foutput);
                                     fillStepsFromFile(filename);
                                 #else
-                                    const char *filenamePointer = sfd_save_dialog(&saveInputOpt);
+                                    filenamePointer = sfd_save_dialog(&saveInputOpt);
                                     if (filenamePointer) {
                                         printf("got steps file: '%s'\n", filenamePointer);
                                     }
                                     tempCube3D = Cube3D;
-                                    FILE* foutput = fopen(filename, "w");
+                                    FILE* foutput = fopen(filenamePointer, "w");
                                     cubeSolve(&tempCube3D, foutput, filenamePointer);
                                     fclose(foutput);
                                     fillStepsFromFile(filenamePointer);
@@ -807,7 +811,7 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                                     }
                                     fillCubeFromFile(filename);
                                 #else
-                                    const char *filenamePointer = sfd_open_dialog(&openCubeOpt);;
+                                    filenamePointer = sfd_open_dialog(&openCubeOpt);;
                                     if (filenamePointer) {
                                         printf("got cube file: '%s'\n", filenamePointer);
                                     }

@@ -31,10 +31,10 @@
 static const char *last_error;
 
 
-const char* sfd_get_error(void) {
+char* sfd_get_error(void) {
   const char *res = last_error;
   last_error = NULL;
-  return res;
+  return (char *)res;
 }
 
 
@@ -141,7 +141,7 @@ static void init_ofn(OPENFILENAME *ofn, sfd_Options *opt) {
 }
 
 
-const char* sfd_open_dialog(sfd_Options *opt) {
+char* sfd_open_dialog(sfd_Options *opt) {
   int ok;
   OPENFILENAME ofn;
   last_error = NULL;
@@ -151,7 +151,7 @@ const char* sfd_open_dialog(sfd_Options *opt) {
 }
 
 
-const char* sfd_save_dialog(sfd_Options *opt) {
+char* sfd_save_dialog(sfd_Options *opt) {
   int ok;
   OPENFILENAME ofn;
   last_error = NULL;
@@ -248,12 +248,12 @@ static const char* file_dialog(sfd_Options *opt, int save) {
 }
 
 
-const char* sfd_open_dialog(sfd_Options *opt) {
+char* sfd_open_dialog(sfd_Options *opt) {
   return file_dialog(opt, 0);
 }
 
 
-const char* sfd_save_dialog(sfd_Options *opt) {
+char* sfd_save_dialog(sfd_Options *opt) {
   return file_dialog(opt, 1);
 }
 

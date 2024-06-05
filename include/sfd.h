@@ -18,8 +18,8 @@ typedef struct {
   const char *extension;
 } sfd_Options;
 
-const char* sfd_get_error(void);
-const char* sfd_open_dialog(sfd_Options *opt);
-const char* sfd_save_dialog(sfd_Options *opt);
+char* sfd_get_error(void);
+char* sfd_open_dialog(sfd_Options *opt);
+char* sfd_save_dialog(sfd_Options *opt);
 
 #endif
