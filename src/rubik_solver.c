@@ -778,9 +778,9 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                                     }
                                     tempCube3D = Cube3D;
                                     FILE* foutput = fopen(filename, "w");
-                                    cubeSolve(&tempCube3D, foutput, filename);
+                                    cubeSolve(&tempCube3D, foutput, filenamePointer);
                                     fclose(foutput);
-                                    fillStepsFromFile(filename);
+                                    fillStepsFromFile(filenamePointer);
                                 #endif
                                 break;
                             default:
