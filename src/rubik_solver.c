@@ -833,7 +833,13 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 }
 
 
-int main(int argc, char *argv[]) {
+#if defined(_WIN32)
+#define WIN32_LEAN_AND_MEAN
+#include "windows.h"
+INT WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT ) {
+#else
+int main(int argc, char **argv) {
+#endif
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
