@@ -933,7 +933,7 @@ void printOpToFile(Cube* thisCube, FILE* foutput)
 	}
 }
 
-void cubeSolve(Cube* thisCube, FILE* foutput)
+void cubeSolve(Cube* thisCube, FILE* foutput, char filename[])
 {
 	SolutionTable table;
 
@@ -983,11 +983,12 @@ void cubeSolve(Cube* thisCube, FILE* foutput)
 		}
 		else
 		{
-			FILE* foutput = fopen("ops.txt", "w");
+			// FILE* foutput = fopen("ops.txt", "w");
+			freopen(filename, "w", foutput);
 			fputc('_', foutput);
 			//Couldn't find
 			deleteTable(&table);
-			fclose(foutput);
+			// fclose(foutput);
 			break;
 		}
 	}

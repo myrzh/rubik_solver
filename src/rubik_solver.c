@@ -49,7 +49,7 @@ Button flatButtons[20];
 LinearCube testCube;
 LinearCube flatCube;
 Cube Cube3D;
-Cube testCube3D;
+Cube tempCube3D;
 
 FILE* inputSteps;
 action stepsFromFile[1000];
@@ -284,6 +284,10 @@ void fillStepsFromFile(char filename[]) {
     int currentActionCount;
 
     while (fgets(line, sizeof(line), inputSteps) != NULL) {
+        if (line[0] == '_') {
+            strcpy(currentStepText, "UNSOLVEABLE");
+            break;
+        }
         isReverse = 0;
         currentActionCount = 1;
         if (line[1] == '\'') {
@@ -303,6 +307,8 @@ void fillStepsFromFile(char filename[]) {
             stepsFromFile[actionsInFile++] = currentAction;
         }
     }
+
+    fclose(inputSteps);
 
     // for (int i = 0; i < actionsInFile; i++) {
     //     printf("%d\n", stepsFromFile[i]);
@@ -753,10 +759,29 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                                 #endif
                                 break;
                             case SOLVECUBE:
-                                testCube3D = Cube3D;
-                                FILE* foutput = fopen("solution.txt", "w");
-                                cubeSolve(&testCube3D, foutput);
-                                fclose(foutput);
+                                #ifdef __APPLE__
+                                    printf("enter steps filename: ");
+                                    fgets(filename, sizeof(filename), stdin);
+                                    filename[strcspn(filename, "\n")] = '\0';
+                                    if (strlen(filename) != 0) {
+                                        printf("got steps file: '%s'\n", filename);
+                                    }
+                                    tempCube3D = Cube3D;
+                                    FILE* foutput = fopen(filename, "w");
+                                    cubeSolve(&tempCube3D, foutput, filename);
+                                    fclose(foutput);
+                                    fillStepsFromFile(filename);
+                                #else
+                                    const char *filenamePointer = sfd_save_dialog(&saveInputOpt);
+                                    if (filenamePointer) {
+                                        printf("got steps file: '%s'\n", filenamePointer);
+                                    }
+                                    tempCube3D = Cube3D;
+                                    FILE* foutput = fopen(filename, "w");
+                                    cubeSolve(&tempCube3D, foutput, filename);
+                                    fclose(foutput);
+                                    fillStepsFromFile(filename);
+                                #endif
                                 break;
                             default:
                                 break;
