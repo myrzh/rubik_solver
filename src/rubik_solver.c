@@ -353,28 +353,30 @@ void fillCubeFromFile(char filename[]) {
 
     color currentColor;
 
+    LinearCube tempCube2D;
+
     while (fgets(line, sizeof(line), inputCube) != NULL) {
         for (int i = 0; i < 9; i++) {
             currentColor = getColorFromChar(line[i]);
             // printf("%c", line[i]);
             switch (currentLineNumber) {
                 case 1:
-                    Cube2D.blueSide[flatBlueSideOrder[i]] = currentColor;
+                    tempCube2D.blueSide[flatBlueSideOrder[i]] = currentColor;
                     break;
                 case 2:
-                    Cube2D.orangeSide[flatOrangeSideOrder[i]] = currentColor;
+                    tempCube2D.orangeSide[flatOrangeSideOrder[i]] = currentColor;
                     break;
                 case 3:
-                    Cube2D.whiteSide[flatWhiteSideOrder[i]] = currentColor;
+                    tempCube2D.whiteSide[flatWhiteSideOrder[i]] = currentColor;
                     break;
                 case 4:
-                    Cube2D.redSide[flatRedSideOrder[i]] = currentColor;
+                    tempCube2D.redSide[flatRedSideOrder[i]] = currentColor;
                     break;
                 case 5:
-                    Cube2D.yellowSide[flatYellowSideOrder[i]] = currentColor;
+                    tempCube2D.yellowSide[flatYellowSideOrder[i]] = currentColor;
                     break;
                 case 6:
-                    Cube2D.greenSide[flatGreenSideOrder[i]] = currentColor;
+                    tempCube2D.greenSide[flatGreenSideOrder[i]] = currentColor;
                     break;
                 default:
                     break;
@@ -384,10 +386,12 @@ void fillCubeFromFile(char filename[]) {
     }
     fclose(inputCube);
 
-    linearToMatrixCube(&Cube3D, &Cube2D);
-    printf("is correct: %d\n", isLinearCubeCorrect(&Cube2D));
-
-    isCubeFilled = 1;
+    if (isLinearCubeCorrect(&tempCube2D) == 1) {
+        Cube2D = tempCube2D;
+        linearToMatrixCube(&Cube3D, &Cube2D);
+        isCubeFilled = 1;
+        strcpy(currentStepText, "CUBE LOADED");
+    }
 }
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
@@ -525,10 +529,16 @@ void updateFlatCube(color currentColor, int isFirstCall) {
         currentFlatCubeIndex++;
     }
     if (currentFlatCubeIndex > 53) {
-        memcpy(&Cube2D, &flatCube, sizeof(flatCube));
-        linearToMatrixCube(&Cube3D, &Cube2D);
-        printf("is correct: %d\n", isLinearCubeCorrect(&Cube2D));
-        isCubeFilled = 1;
+        if (isLinearCubeCorrect(&flatCube) == 1) {
+            memcpy(&Cube2D, &flatCube, sizeof(flatCube));
+            linearToMatrixCube(&Cube3D, &Cube2D);
+            isCubeFilled = 1;
+            strcpy(currentStepText, "CUBE LOADED");
+        } else {
+            currentFlatCubeIndex = -1;
+            initFlatCube(&flatCube);
+            updateFlatCube(WHITE, 1);
+        }
     }
     // IndexAndSide nextIterationSquare = getIndexAndSideFromNumber(currentFlatCubeIndex + 1);
     // if (nextIterationSquare.index == 8) {
@@ -793,14 +803,12 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                                         printf("got cube file: '%s'\n", filename);
                                     }
                                     fillCubeFromFile(filename);
-                                    strcpy(currentStepText, "CUBE LOADED");
                                 #else
                                     filenamePointer = sfd_open_dialog(&openCubeOpt);;
                                     if (filenamePointer) {
                                         printf("got cube file: '%s'\n", filenamePointer);
                                     }
                                     fillCubeFromFile(filenamePointer);
-                                    strcpy(currentStepText, "CUBE LOADED");
                                     // free(filenamePointer);
                                 #endif
                                 break;

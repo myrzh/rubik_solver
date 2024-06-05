@@ -201,6 +201,7 @@ const char* authorsText =
             "Made by:\n"
             "Plotnikov D.A.\n"
             "Shtarev I.A.\n"
+            "Group 5151003/30002\n"
             "2024\n"
             "\n"
             "Peter the Great St.Petersburg Polytechnic University\n"
