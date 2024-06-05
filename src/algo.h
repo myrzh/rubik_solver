@@ -739,8 +739,20 @@ void createTable(SolutionTable* table, int size)
     }
 }
 
+// void deleteTable(SolutionTable* table)
+// {
+//     free(table->cubes);
+//     table->cubes = NULL;
+// }
+
 void deleteTable(SolutionTable* table)
 {
+    for (int i = 0; i < table->size; i++)
+    {
+        free(table->cubes[i].previousState);
+        table->cubes[i].previousState = NULL;
+    }
+
     free(table->cubes);
     table->cubes = NULL;
 }
@@ -935,6 +947,9 @@ void printOpToFile(Cube* thisCube, FILE* foutput)
 
 void cubeSolve(Cube* thisCube, FILE* foutput, char filename[])
 {
+    if (foutput == NULL) {
+        return;
+    }
     SolutionTable table;
 
     createTable(&table, TABLESIZE);
