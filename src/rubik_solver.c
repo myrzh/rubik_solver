@@ -272,6 +272,7 @@ void fillStepsFromFile(char filename[]) {
     }
     currentStep = 0;
     printf("steps file opened!\n");
+    strcpy(currentStepText, "UNSOLVEABLE");
 
     char line[256];
 
