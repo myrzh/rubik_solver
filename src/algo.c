@@ -895,8 +895,8 @@ void printOpToFile(Cube* thisCube, FILE* foutput)
 			{
 				if (lastop != LASTOP)
 				{
-					setOpToChar(&ops, countops, lastop);
-					setCountToChar(&ops, countops, rotatecounts);
+					setOpToChar(ops, countops, lastop);
+					setCountToChar(ops, countops, rotatecounts);
 					countops++;
 				}
 				lastop = thisCube->operation;
@@ -911,8 +911,8 @@ void printOpToFile(Cube* thisCube, FILE* foutput)
 		{
 			if (lastop != LASTOP)
 			{
-				setOpToChar(&ops, countops, lastop);
-				setCountToChar(&ops, countops, rotatecounts);
+				setOpToChar(ops, countops, lastop);
+				setCountToChar(ops, countops, rotatecounts);
 				countops++;
 			}
 		}
@@ -981,7 +981,7 @@ void cubeSolve(Cube* thisCube, FILE* foutput, char filename[])
 		else
 		{
             // FILE* foutput = fopen("ops.txt", "w");
-            freopen(filename, "w", foutput);
+            FILE* r = freopen(filename, "w", foutput);
             fputc('_', foutput);
             //Couldn't find
             // fclose(foutput);
@@ -1039,14 +1039,14 @@ void testInit(Cube* c)
 }
 
 // int main()
-// {
-//     FILE* foutput = fopen("solution.txt", "w");
-//     Cube c;
-//     initCube(&c);
-//     randCube(&c, 52);
-//     cubeSolve(&c, foutput);
-
-//     fclose(foutput);
-
-//     return 0;
+//{
+////     FILE* foutput = fopen("solution.txt", "w");
+////     Cube c;
+////     initCube(&c);
+////     randCube(&c, 52);
+////     cubeSolve(&c, foutput);
+//
+////     fclose(foutput);
+//
+//   return 0;
 // }
