@@ -216,4 +216,4 @@ const char* authorsText =
             "\n"
             "Cube definition window usage:\n"
             "Colored buttons -- define purple square (central squares are being skipped)\n"
-            "Down left button -- open cube from file (*.txt)\n";
+            "F -- open cube from file (*.txt)\n";

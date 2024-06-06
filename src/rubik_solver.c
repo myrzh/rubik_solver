@@ -584,6 +584,12 @@ void updateFlatCube(color currentColor, int isFirstCall) {
     // }
 }
 
+void keyCallbackEscapeOnly(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
+    }
+}
+
 void fillCubeFromUserInput(GLFWwindow* window) {
     GLFWwindow* flatCubeWindow = glfwCreateWindow(500, 500, "User Input", NULL, NULL);
     if (!flatCubeWindow) {
@@ -593,6 +599,7 @@ void fillCubeFromUserInput(GLFWwindow* window) {
     glfwMakeContextCurrent(flatCubeWindow);
     glfwSetFramebufferSizeCallback(flatCubeWindow, framebufferSizeCallback);
     glfwSetMouseButtonCallback(flatCubeWindow, mouseButtonCallback);
+    glfwSetKeyCallback(flatCubeWindow, keyCallbackEscapeOnly);
 
     GLuint shaderProgram = createShaderProgram(vertexShaderInstanceSource, fragmentShaderInstanceSource);
 
@@ -658,6 +665,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
             return;
         }
         glfwMakeContextCurrent(authorsWindow);
+        glfwSetKeyCallback(authorsWindow, keyCallbackEscapeOnly);
 
         // glfwSetWindowAspectRatio(authorsWindow, 1, 1);
 
