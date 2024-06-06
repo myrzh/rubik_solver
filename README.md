@@ -32,7 +32,7 @@ gcc -o rubik_solver src/rubik_solver.c src/glad.c src/sfd.c src/algo.c src/color
 Для сборки проекта на Linux используйте следующую команду в терминале:
 
 ```sh
-gcc -o rubik_solver src/rubik_solver.c src/glad.c src/sfd.c src/algo.c src/colors.c src/cube.c src/interface.c src/objects.c src/shaders.c -I./include -L./lib_linux -lGL -lglfw -lm -w
+gcc -o rubik_solver src/rubik_solver.c src/glad.c src/sfd.c src/algo.c src/colors.c src/cube.c src/interface.c src/objects.c src/shaders.c -I./include -L./lib_linux -lGL -lglfw3 -lm -w
 ```
 
 **Внимание!** Если при сборке возникает ошибка типа `cannot find -lGL`, необходимо с помощью команды `locate` найти расположение библиотеки libGL, например, с помощью команды locate:
@@ -54,7 +54,6 @@ $ locate libGL
 ```
 
 Далее необходимо создать в системе символическую ссылку на эту библиотеку, чтобы линковщик смог обратить по привычному пути и получить эту библиотеку. Пример:
-у
 ```sh
 $ sudo ln -s /usr/lib/x86_64-linux-gnu/libGL.so.1 /usr/lib/libGL.so
 ```
