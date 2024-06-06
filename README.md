@@ -29,33 +29,13 @@ gcc -o rubik_solver src/rubik_solver.c src/glad.c src/sfd.c src/algo.c src/color
 
 ### Linux
 
-Для сборки проекта на Linux используйте следующую команду в терминале:
+Для сборки проекта на Linux используйте следующие команды в терминале:
 
+```sh
+sudo ln -s /usr/lib/x86_64-linux-gnu/libGL.so.1 /usr/lib/libGL.so
+```
 ```sh
 gcc -o rubik_solver src/rubik_solver.c src/glad.c src/sfd.c src/algo.c src/colors.c src/cube.c src/interface.c src/objects.c src/shaders.c -I./include -L./lib_linux -lGL -lglfw3 -lm -w
-```
-
-**Внимание!** Если при сборке возникает ошибка типа `cannot find -lGL`, необходимо с помощью команды `locate` найти расположение библиотеки libGL, например, с помощью команды locate:
-
-```sh
-$ locate libGL
-/usr/lib/i386-linux-gnu/libGL.so.1
-/usr/lib/i386-linux-gnu/libGL.so.1.2.0
-/usr/lib/x86_64-linux-gnu/libGLEW.so.1.10
-/usr/lib/x86_64-linux-gnu/libGLEW.so.1.10.0
-/usr/lib/x86_64-linux-gnu/libGLEWmx.so.1.10
-/usr/lib/x86_64-linux-gnu/libGLEWmx.so.1.10.0
-/usr/lib/x86_64-linux-gnu/libGLU.so.1
-/usr/lib/x86_64-linux-gnu/libGLU.so.1.3.1
-/usr/lib/x86_64-linux-gnu/libGL.so.1
-/usr/lib/x86_64-linux-gnu/libGL.so.1.2.0
-/usr/lib/x86_64-linux-gnu/libGLESv2.so.2
-/usr/lib/x86_64-linux-gnu/libGLESv2.so.2.0.0
-```
-
-Далее необходимо создать в системе символическую ссылку на эту библиотеку, чтобы линковщик смог обратить по привычному пути и получить эту библиотеку. Пример:
-```sh
-$ sudo ln -s /usr/lib/x86_64-linux-gnu/libGL.so.1 /usr/lib/libGL.so
 ```
 
 ## Запуск
