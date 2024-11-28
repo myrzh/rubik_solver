@@ -17,7 +17,7 @@
 ## Требования
 
 - GCC (GNU Compiler Collection)
-- MinGW (для сборки на Windows, содержит mingw32-make)
+- MinGW (для сборки на Windows, содержит `mingw32-make`)
 
 ## Инструкции по сборке
 
