@@ -1,4 +1,4 @@
-# Simulation of Solving a 3x3 Rubik's Cube
+# 3x3 Rubik's Cube Solver
 ## Ivan Alekseevich Shtarev, Danil Andreevich Plotnikov, Group 5151003/30002
 ### Peter the Great St. Petersburg Polytechnic University. Institute of Computer Science and Cybersecurity. Higher School of Cybersecurity.
 
@@ -45,19 +45,19 @@ After a successful build, run the resulting executable file:
   - File format: each line represents an action. Notation: F (Front), B (Back), U (Up), D (Down), L (Left), R (Right), number of rotations (optional), `'` for counterclockwise rotation (optional).
 - **N** — performs the next step from the file with solving steps:
   - Displays the instruction for the step.
-  - If no file is open or steps are exhausted, displays a message.
+  - If no file is open or there are no more steps to execute, displays a message.
 - **C** — opens a cube input window for solving:
   - Switches the context, making the main window inactive.
 - **S** — solves the cube and offers to save the solution steps to a file:
-  - Loads the step file for subsequent execution.
+  - Loads the step file to be executed.
   - After solving, steps can be executed sequentially by pressing the N button.
 
 ## Cube Input Window
 
 ### Description
 
-- **Turquoise squares** — squares with undefined colors.
-- **Purple square** — the square awaiting color input from the user.
+- **Cyan squares** — squares with undefined colors.
+- **Magenta square** — the square awaiting color input from the user.
 - **Colored buttons in the bottom right corner** — used to select the color of the current square.
 - After all square colors are set, the input window automatically closes, and the entered cube state is transferred to the main window.
 
@@ -70,4 +70,4 @@ After a successful build, run the resulting executable file:
 
 ## License
 
-This project is distributed under the MIT License. See the `LICENSE` file for more details.
+This project is distributed under the MIT License. Refer to the `LICENSE` file for more details.
