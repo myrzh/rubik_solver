@@ -10,21 +10,23 @@
 
 - `src/` - исходные файлы программы
 - `include/` - заголовочные файлы
-- `lib_win/` - библиотеки для сборки под Windows
-- `lib_linux/` - библиотеки для сборки под Linux
+- `lib_macos/` - библиотеки для сборки на macOS
+- `lib_linux/` - библиотеки для сборки на Linux
+- `lib_win/` - библиотеки для сборки на Windows
 
 ## Требования
 
 - GCC (GNU Compiler Collection)
+- MinGW (для сборки на Windows, содержит mingw32-make)
 
 ## Инструкции по сборке
 
-### Windows
+### macOS
 
-Для сборки проекта на Windows используйте следующую команду в командной строке:
+Для сборки проекта на macOS используйте следующую команду в терминале:
 
 ```sh
-gcc -o rubik_solver src/rubik_solver.c src/glad.c src/sfd.c src/draw.c src/window.c src/algo.c src/colors.c src/cube.c src/interface.c src/objects.c src/shaders.c -I./include -L./lib_win -lglfw3 -lgdi32 -lopengl32 -lglu32 -lcomdlg32 -mwindows -w
+make
 ```
 
 ### Linux
@@ -35,18 +37,21 @@ gcc -o rubik_solver src/rubik_solver.c src/glad.c src/sfd.c src/draw.c src/windo
 sudo ln -s /usr/lib/x86_64-linux-gnu/libGL.so.1 /usr/lib/libGL.so
 ```
 ```sh
-gcc -o rubik_solver src/rubik_solver.c src/glad.c src/sfd.c src/draw.c src/window.c src/algo.c src/colors.c src/cube.c src/interface.c src/objects.c src/shaders.c -I./include -L./lib_linux -lGL -lglfw3 -lm -w
+make
+```
+
+### Windows
+
+Для сборки проекта на Windows используйте следующую команду в терминале:
+
+```sh
+mingw32-make
 ```
 
 ## Запуск
 
 После успешной сборки выполните получившийся исполняемый файл:
 
-### Windows
-```sh
-rubik_solver
-```
-### Linux
 ```sh
 ./rubik_solver
 ```

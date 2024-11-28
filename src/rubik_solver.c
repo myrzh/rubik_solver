@@ -12,6 +12,26 @@
 #include <string.h>
 #include <window.h>
 
+windowType currentWindow;
+
+Button mainButtons[20];
+Button flatButtons[20];
+
+LinearCube Cube2D;
+LinearCube flatCube;
+Cube Cube3D;
+Cube tempCube3D;
+
+FILE *inputSteps;
+action stepsFromFile[1000];
+int actionsInFile;
+int currentStep;
+
+char currentStepText[20];
+
+int isCubeFilled;
+int currentFlatCubeIndex;
+
 unsigned int compileShader(unsigned int type, const char *source) {
     unsigned int id = glCreateShader(type);
     glShaderSource(id, 1, &source, NULL);

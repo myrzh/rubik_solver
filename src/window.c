@@ -1,5 +1,25 @@
 #include <window.h>
 
+#ifndef __APPLE__
+    sfd_Options openInputOpt = {
+        .title        = "Open Steps File",
+        .filter_name  = "Text Files (*.txt)",
+        .filter       = "*.txt",
+    };
+
+    sfd_Options saveInputOpt = {
+        .title        = "Save Steps File",
+        .filter_name  = "Text Files (*.txt)",
+        .filter       = "*.txt",
+    };
+
+    sfd_Options openCubeOpt = {
+        .title        = "Open LinearCube File",
+        .filter_name  = "Text Files (*.txt)",
+        .filter       = "*.txt",
+    };
+#endif
+
 void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
     int minSize = (width < height) ? width : height;
     glfwSetWindowSize(window, minSize, minSize);

@@ -26,25 +26,25 @@ typedef enum { RIGHT, LEFT, TOP } cubeSide;
 #include <cube.h>
 #include <algo.h>
 
-windowType currentWindow;
+extern windowType currentWindow;
 
-Button mainButtons[20];
-Button flatButtons[20];
+extern Button mainButtons[20];
+extern Button flatButtons[20];
 
-LinearCube Cube2D;
-LinearCube flatCube;
-Cube Cube3D;
-Cube tempCube3D;
+extern LinearCube Cube2D;
+extern LinearCube flatCube;
+extern Cube Cube3D;
+extern Cube tempCube3D;
 
-FILE *inputSteps;
-action stepsFromFile[1000];
-int actionsInFile;
-int currentStep;
+extern FILE *inputSteps;
+extern action stepsFromFile[1000];
+extern int actionsInFile;
+extern int currentStep;
 
-char currentStepText[20];
+extern char currentStepText[20];
 
-int isCubeFilled;
-int currentFlatCubeIndex;
+extern int isCubeFilled;
+extern int currentFlatCubeIndex;
 
 unsigned int compileShader(unsigned int type, const char *source);
 
