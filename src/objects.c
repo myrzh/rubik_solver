@@ -1,76 +1,36 @@
-#include "colors.h"
+#include <colors.h>
+#include <objects.h>
 
 const float rightCoords[][2] = {
-    { 0.0f, 0.0f },
-    { 0.173f, 0.1f },
-    { 0.346f, 0.2f },
+    {0.0f, 0.0f},  {0.173f, 0.1f},  {0.346f, 0.2f},
 
-    { 0.0f, -0.2f },
-    { 0.173f, -0.1f },
-    { 0.346f, 0.0f },
+    {0.0f, -0.2f}, {0.173f, -0.1f}, {0.346f, 0.0f},
 
-    { 0.0f, -0.4f },
-    { 0.173f, -0.3f },
-    { 0.346f, -0.2f }
-};
+    {0.0f, -0.4f}, {0.173f, -0.3f}, {0.346f, -0.2f}};
 
 const float leftCoords[][2] = {
-    { 0.0f, 0.0f },
-    { -0.173f, 0.1f },
-    { -0.346f, 0.2f },
+    {0.0f, 0.0f},  {-0.173f, 0.1f},  {-0.346f, 0.2f},
 
-    { 0.0f, -0.2f },
-    { -0.173f, -0.1f },
-    { -0.346f, 0.0f },
+    {0.0f, -0.2f}, {-0.173f, -0.1f}, {-0.346f, 0.0f},
 
-    { 0.0f, -0.4f },
-    { -0.173f, -0.3f },
-    { -0.346f, -0.2f }
-};
+    {0.0f, -0.4f}, {-0.173f, -0.3f}, {-0.346f, -0.2f}};
 
-const float topCoords[][2] = {
-    { 0.0f, 0.0f },
-    { -0.173f, 0.1f },
-    { -0.346f, 0.2f },
+const float topCoords[][2] = {{0.0f, 0.0f},   {-0.173f, 0.1f}, {-0.346f, 0.2f},
 
-    { 0.173f, 0.1f },
-    { 0.0f, 0.2f },
-    { -0.173f, 0.3f },
+                              {0.173f, 0.1f}, {0.0f, 0.2f},    {-0.173f, 0.3f},
 
-    { 0.346f, 0.2f },
-    { 0.173f, 0.3f },
-    { 0.0f, 0.4f }
-};
+                              {0.346f, 0.2f}, {0.173f, 0.3f},  {0.0f, 0.4f}};
 
-// const int rightSideOrder[] = { 1, 2, 3, 0, 8, 4, 7, 6, 5 };
-// const int leftSideOrder[] =  { 6, 5, 4, 7, 8, 3, 0, 1, 2 };
-// const int topSideOrder[] =   { 0, 1, 2, 7, 8, 3, 6, 5, 4 };
+const int rightSideOrder[] = {0, 1, 2, 7, 8, 3, 6, 5, 4};
+const int leftSideOrder[] = {1, 0, 7, 2, 8, 6, 3, 4, 5};
+const int topSideOrder[] = {6, 7, 0, 5, 8, 1, 4, 3, 2};
 
-const int rightSideOrder[] = { 0, 1, 2, 7, 8, 3, 6, 5, 4 };
-const int leftSideOrder[] =  { 1, 0, 7, 2, 8, 6, 3, 4, 5 };
-const int topSideOrder[] =   { 6, 7, 0, 5, 8, 1, 4, 3, 2 };
-
-// const int flatLevelOneSideOrder[] =   { 5, 6, 7, 4, 8, 0, 3, 2, 1 };
-// const int flatLevelTwoSideOrder[] =   { 6, 7, 0, 5, 8, 1, 4, 3, 2 };
-// const int flatLevelThreeSideOrder[] = { 3, 2, 1, 4, 8, 0, 5, 6, 7 };
-
-const int flatBlueSideOrder[] =   { 2, 3, 4, 1, 8, 5, 0, 7, 6 };
-const int flatOrangeSideOrder[] = { 4, 5, 6, 3, 8, 7, 2, 1, 0 };
-const int flatWhiteSideOrder[] =  { 7, 0, 1, 6, 8, 2, 5, 4, 3 };
-const int flatRedSideOrder[] =    { 0, 1, 2, 7, 8, 3, 6, 5, 4 };
-const int flatYellowSideOrder[] = { 1, 0, 7, 2, 8, 6, 3, 4, 5 };
-const int flatGreenSideOrder[] =  { 6, 7, 0, 5, 8, 1, 4, 3, 2 };
-
-typedef enum { REVERT, ROTATE_SIDE, NEXTSTEP, FILLCUBE, SETCOLOR, GETFILECUBE, OPENSTEPSFILE, SOLVECUBE, SHUFFLE } buttonFunction;
-
-typedef struct {
-    float xPos;
-    float yPos;
-    float width;
-    float height;
-    color color;
-    buttonFunction function;
-} Button;
+const int flatBlueSideOrder[] = {2, 3, 4, 1, 8, 5, 0, 7, 6};
+const int flatOrangeSideOrder[] = {4, 5, 6, 3, 8, 7, 2, 1, 0};
+const int flatWhiteSideOrder[] = {7, 0, 1, 6, 8, 2, 5, 4, 3};
+const int flatRedSideOrder[] = {0, 1, 2, 7, 8, 3, 6, 5, 4};
+const int flatYellowSideOrder[] = {1, 0, 7, 2, 8, 6, 3, 4, 5};
+const int flatGreenSideOrder[] = {6, 7, 0, 5, 8, 1, 4, 3, 2};
 
 float NDCToPixels(float coord, int dimension, char mode) {
     switch (mode) {
@@ -192,28 +152,30 @@ void initButtons(Button mainButtons[], Button flatButtons[]) {
     flatButtons[6].function = GETFILECUBE;
 }
 
-const char* authorsText =
-            "RubikSolver (c)\n"
-            "\n"
-            "Made by:\n"
-            "Plotnikov D.A.\n"
-            "Shtarev I.A.\n"
-            "Group 5151003/30002\n"
-            "2024\n"
-            "\n"
-            "Peter the Great St.Petersburg Polytechnic University\n"
-            "Institute of Cybersecurity and Computer Science\n"
-            "Higher School of Cybersecurity\n"
-            "\n"
-            "Main window usage:\n"
-            "Colored buttons -- rotate correspoding side (right-click for counterclockwise)\n"
-            "I -- initialize cube (restore original state)\n"
-            "R -- randomize cube\n"
-            "N -- execute next step (if steps file is opened)\n"
-            "O -- open steps file (*.txt)\n"
-            "C -- open cube definition window\n"
-            "S -- solve cube and load solution to steps file\n"
-            "\n"
-            "Cube definition window usage:\n"
-            "Colored buttons -- define purple square (central squares are being skipped)\n"
-            "F -- open cube from file (*.txt)\n";
+const char *authorsText =
+    "RubikSolver (c)\n"
+    "\n"
+    "Made by:\n"
+    "Plotnikov D.A.\n"
+    "Shtarev I.A.\n"
+    "Group 5151003/30002\n"
+    "2024\n"
+    "\n"
+    "Peter the Great St.Petersburg Polytechnic University\n"
+    "Institute of Cybersecurity and Computer Science\n"
+    "Higher School of Cybersecurity\n"
+    "\n"
+    "Main window usage:\n"
+    "Colored buttons -- rotate correspoding side (right-click for "
+    "counterclockwise)\n"
+    "I -- initialize cube (restore original state)\n"
+    "R -- randomize cube\n"
+    "N -- execute next step (if steps file is opened)\n"
+    "O -- open steps file (*.txt)\n"
+    "C -- open cube definition window\n"
+    "S -- solve cube and load solution to steps file\n"
+    "\n"
+    "Cube definition window usage:\n"
+    "Colored buttons -- define purple square (central squares are being "
+    "skipped)\n"
+    "F -- open cube from file (*.txt)\n";

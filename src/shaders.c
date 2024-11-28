@@ -1,4 +1,6 @@
-const char* vertexShaderInstanceSource = 
+#include <shaders.h>
+
+const char *vertexShaderInstanceSource =
     "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
     "layout (location = 1) in vec3 aColor;\n"
@@ -9,9 +11,9 @@ const char* vertexShaderInstanceSource =
     "    ourColor = aColor;\n"
     "}";
 
-const char* fragmentShaderInstanceSource = 
+const char *fragmentShaderInstanceSource =
     "#version 330 core\n"
-    "in vec3 ourColor;\n" 
+    "in vec3 ourColor;\n"
     "out vec4 FragColor;\n"
     "void main() {\n"
     "    FragColor = vec4(ourColor, 1.0f);\n"

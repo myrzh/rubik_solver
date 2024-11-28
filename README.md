@@ -24,7 +24,7 @@
 Для сборки проекта на Windows используйте следующую команду в командной строке:
 
 ```sh
-gcc -o rubik_solver src/rubik_solver.c src/glad.c src/sfd.c src/algo.c src/colors.c src/cube.c src/interface.c src/objects.c src/shaders.c -I./include -L./lib_win -lglfw3 -lgdi32 -lopengl32 -lglu32 -lcomdlg32 -mwindows -w
+gcc -o rubik_solver src/rubik_solver.c src/glad.c src/sfd.c src/draw.c src/window.c src/algo.c src/colors.c src/cube.c src/interface.c src/objects.c src/shaders.c -I./include -L./lib_win -lglfw3 -lgdi32 -lopengl32 -lglu32 -lcomdlg32 -mwindows -w
 ```
 
 ### Linux
@@ -35,7 +35,7 @@ gcc -o rubik_solver src/rubik_solver.c src/glad.c src/sfd.c src/algo.c src/color
 sudo ln -s /usr/lib/x86_64-linux-gnu/libGL.so.1 /usr/lib/libGL.so
 ```
 ```sh
-gcc -o rubik_solver src/rubik_solver.c src/glad.c src/sfd.c src/algo.c src/colors.c src/cube.c src/interface.c src/objects.c src/shaders.c -I./include -L./lib_linux -lGL -lglfw3 -lm -w
+gcc -o rubik_solver src/rubik_solver.c src/glad.c src/sfd.c src/draw.c src/window.c src/algo.c src/colors.c src/cube.c src/interface.c src/objects.c src/shaders.c -I./include -L./lib_linux -lGL -lglfw3 -lm -w
 ```
 
 ## Запуск

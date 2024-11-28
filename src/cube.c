@@ -1,23 +1,8 @@
-#include <stdio.h>
-#include <string.h>
-#include <colors.h>
 #include <algo.h>
+#include <colors.h>
+#include <cube.h>
 #include <objects.h>
-
-#define CORNERFACE 1
-#define CORNERWHITE 2
-#define CORNERPREV 3
-
-typedef enum { R, _R, G, _G, B, _B, W, _W, O, _O, Y, _Y } action;
-
-typedef enum { STRAIGHT, BACK } rotationMode;
-
-typedef enum { LEVEL_ONE, LEVEL_TWO, LEVEL_THREE } flatCubeLevel;
-
-typedef struct {
-    int index;
-    color sideColor;
-} IndexAndSide;
+#include <string.h>
 
 IndexAndSide getIndexAndSideFromNumber(int absoluteIndex) {
     color sideColor;
@@ -108,23 +93,14 @@ void getTextFromAction(char text[], action act) {
     }
 }
 
-void swap(color* x, color* y) {
+void swap(color *x, color *y) {
     color t;
     t = (*x);
     (*x) = (*y);
     (*y) = t;
 }
 
-typedef struct {
-    color whiteSide[9];
-    color yellowSide[9];
-    color redSide[9];
-    color blueSide[9];
-    color greenSide[9];
-    color orangeSide[9];
-} LinearCube;
-
-void initLinearCube(LinearCube* thisCube) {
+void initLinearCube(LinearCube *thisCube) {
     for (int index = 0; index < 9; index++) {
         thisCube->whiteSide[index] = WHITE;
         thisCube->yellowSide[index] = YELLOW;
@@ -135,7 +111,7 @@ void initLinearCube(LinearCube* thisCube) {
     }
 }
 
-void initFlatCube(LinearCube* thisCube) {
+void initFlatCube(LinearCube *thisCube) {
     for (int index = 0; index < 8; index++) {
         thisCube->whiteSide[index] = CYAN;
         thisCube->yellowSide[index] = CYAN;
@@ -152,7 +128,7 @@ void initFlatCube(LinearCube* thisCube) {
     thisCube->orangeSide[8] = ORANGE;
 }
 
-int isLinearCubeCorrect(LinearCube* thisCube) {
+int isLinearCubeCorrect(LinearCube *thisCube) {
     IndexAndSide iterationSquare;
     int colorCount[6];
     memset(colorCount, 0, sizeof(colorCount));
