@@ -22,6 +22,7 @@ else
 		LIB_DIR = ./lib_linux
 		LIBS = -lGL -lglfw3 -lm
 		CFLAGS = -I$(INCLUDE_DIR) -L$(LIB_DIR)
+		PREBUILD = sudo ln -sf /usr/lib/x86_64-linux-gnu/libGL.so.1 /usr/lib/libGL.so
 	endif
 	ifeq ($(UNAME_S),Darwin)
 		LIB_DIR = ./lib_macos
@@ -32,6 +33,7 @@ endif
 
 # Build target
 $(OUTPUT):
+	$(PREBUILD)
 	$(CC) -o $(OUTPUT) $(SRC_FILES) $(CFLAGS) $(LIBS)
 
 # Clean target

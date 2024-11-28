@@ -1,98 +1,73 @@
-# Моделирование решения Кубика Рубика 3x3
-## Штарев Иван Алексеевич, Плотников Данил Андреевич, группа 5151003/30002
-### Санкт-Петербургский политехнический университет Петра Великого. Институт компьютерных наук и кибербезопасности. Высшая школа кибербезопасности
+# Simulation of Solving a 3x3 Rubik's Cube
+## Ivan Alekseevich Shtarev, Danil Andreevich Plotnikov, Group 5151003/30002
+### Peter the Great St. Petersburg Polytechnic University. Institute of Computer Science and Cybersecurity. Higher School of Cybersecurity.
 
-## Описание
+## Description
 
-Это проект для моделирования и решения кубика Рубика 3x3. Программа написана на языке C и использует несколько сторонних библиотек для реализации и визуализации алгоритма решения. Все необходимые библиотеки уже включены в проект и подключаются статически.
+This project simulates and solves a 3x3 Rubik's Cube. The program is written in C and uses several external libraries for the implementation and visualization of the solving algorithm. All required libraries are included in the project and linked statically.
 
-## Структура проекта
+## Project Structure
 
-- `src/` - исходные файлы программы
-- `include/` - заголовочные файлы
-- `lib_macos/` - библиотеки для сборки на macOS
-- `lib_linux/` - библиотеки для сборки на Linux
-- `lib_win/` - библиотеки для сборки на Windows
+- `src/` - source files of the program
+- `include/` - header files
+- `lib_macos/` - libraries for building on macOS
+- `lib_linux/` - libraries for building on Linux
+- `lib_win/` - libraries for building on Windows
 
-## Требования
+## Requirements
 
 - GCC (GNU Compiler Collection)
-- MinGW (для сборки на Windows, содержит mingw32-make)
+- MinGW (for building on Windows, includes `mingw32-make`)
 
-## Инструкции по сборке
+## Build Instructions
 
-### macOS
+To build the project on macOS and Linux, use the following command: `make`. For Windows, use the same command or an equivalent alternative.
 
-Для сборки проекта на macOS используйте следующую команду в терминале:
+## Running the Program
 
-```sh
-make
-```
-
-### Linux
-
-Для сборки проекта на Linux используйте следующие команды в терминале:
-
-```sh
-sudo ln -s /usr/lib/x86_64-linux-gnu/libGL.so.1 /usr/lib/libGL.so
-```
-```sh
-make
-```
-
-### Windows
-
-Для сборки проекта на Windows используйте следующую команду в терминале:
-
-```sh
-mingw32-make
-```
-
-## Запуск
-
-После успешной сборки выполните получившийся исполняемый файл:
+After a successful build, run the resulting executable file:
 
 ```sh
 ./rubik_solver
 ```
 
-## Инструкция по использованию
+## Usage Instructions
 
-### Управление
+### Controls
 
-- **I** — возвращает кубик в изначальное (собранное) состояние.
-- **R** — рандомизирует куб, выполняя ряд случайных поворотов.
-- **Цветные кнопки рядом с I и R** — поворот сторон кубика:
-  - Левая кнопка мыши — поворот по часовой стрелке.
-  - Правая кнопка мыши — поворот против часовой стрелки.
-- **O** — открытие файла с шагами решения:
-  - Открывается системный диалог выбора файла.
-  - Формат файла: каждая строка — действие. Нотация: F (Front), B (Back), U (Up), D (Down), L (Left), R (Right), количество поворотов (опционально), `'` для поворота против часовой (опционально).
-- **N** — исполнение следующего шага из файла с шагами:
-  - Выводит инструкцию к шагу.
-  - Если файл не открыт или шаги закончились, выводит сообщение.
-- **C** — открывает окно ввода кубика для решения:
-  - Переключает контекст, делая главное окно неактивным.
-- **S** — решает кубик и предлагает сохранить решение в файл с шагами:
-  - Загружает файл с шагами для дальнейшего исполнения.
-  - После решения можно последовательно выполнять шаги, нажимая на кнопку N.
+- **I** — resets the cube to its initial (solved) state.
+- **R** — randomizes the cube by performing a series of random rotations.
+- **Colored buttons next to I and R** — rotate the cube's faces:
+  - Left mouse button — clockwise rotation.
+  - Right mouse button — counterclockwise rotation.
+- **O** — opens a file with solving steps:
+  - Displays a system dialog for file selection.
+  - File format: each line represents an action. Notation: F (Front), B (Back), U (Up), D (Down), L (Left), R (Right), number of rotations (optional), `'` for counterclockwise rotation (optional).
+- **N** — performs the next step from the file with solving steps:
+  - Displays the instruction for the step.
+  - If no file is open or steps are exhausted, displays a message.
+- **C** — opens a cube input window for solving:
+  - Switches the context, making the main window inactive.
+- **S** — solves the cube and offers to save the solution steps to a file:
+  - Loads the step file for subsequent execution.
+  - After solving, steps can be executed sequentially by pressing the N button.
 
-## Окно ввода кубика
+## Cube Input Window
 
-### Описание
+### Description
 
-- **Бирюзовые квадраты** — квадраты, цвет которых еще не определен.
-- **Фиолетовый квадрат** — квадрат, ввод цвета которого ожидается от пользователя.
-- **Цветные кнопки в правом нижнем углу** — используются для выбора цвета текущего квадрата.
-- После указания цветов всех квадратов окно ввода кубика автоматически закрывается, а введенный кубик переносится в главное окно.
+- **Turquoise squares** — squares with undefined colors.
+- **Purple square** — the square awaiting color input from the user.
+- **Colored buttons in the bottom right corner** — used to select the color of the current square.
+- After all square colors are set, the input window automatically closes, and the entered cube state is transferred to the main window.
 
-### Выбор кубика из файла
+### Loading a Cube from a File
 
-- Кнопка **F** в левом нижнем углу окна ввода кубика — открывает системный диалог выбора файла.
-  - Формат файла: шесть строк, каждая строка представляет одну сторону кубика в следующем порядке: синяя, оранжевая, белая, красная, желтая, зеленая.
-  - Допускаются как строчные, так и прописные буквы.
-- При вводе из файла все квадраты, введенные вручную, игнорируются, и на главном окне появляется кубик, состояние которого отражено в файле.
+- The **F** button in the bottom left corner of the cube input window — opens a system dialog for file selection.
+  - File format: six lines, each representing one face of the cube in the following order: blue, orange, white, red, yellow, green.
+  - Both uppercase and lowercase letters are accepted.
+- When loading from a file, all manually entered squares are ignored, and the cube's state from the file is displayed in the main window.
 
-## Лицензия
+## License
 
-Этот проект распространяется под лицензией MIT. См. файл `LICENSE` для получения дополнительной информации.
+This project is distributed under the MIT License. See the `LICENSE` file for more details.
