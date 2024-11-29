@@ -61,12 +61,12 @@ clean_obj:
 ifeq ($(OS),Windows_NT)
 	-$(RM) $(call CONVERT_PATH,$(OBJ_FILES)) > nul 2>&1
 else
-	-$(RM) $(call CONVERT_PATH,$(OBJ_FILES))
+	-$(RM) $(OBJ_FILES)
 endif
 
 clean:
 ifeq ($(OS),Windows_NT)
 	-$(RM) $(call CONVERT_PATH,$(OBJ_FILES)) $(call CONVERT_PATH,$(OUTPUT)) > nul 2>&1
 else
-	-$(RM) $(call CONVERT_PATH,$(OBJ_FILES)) $(call CONVERT_PATH,$(OUTPUT))
+	-$(RM) $(OBJ_FILES) $(OUTPUT)
 endif
