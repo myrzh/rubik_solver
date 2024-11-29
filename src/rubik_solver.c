@@ -360,6 +360,11 @@ void fillCubeFromUserInput(GLFWwindow *window) {
         glfwPollEvents();
     }
 
+    glDeleteVertexArrays(1, &flatWndData.VAO_button);
+    glDeleteBuffers(1, &flatWndData.VBO_button);
+    glDeleteVertexArrays(1, &flatWndData.VAO_square);
+    glDeleteBuffers(1, &flatWndData.VBO_square);
+
     currentWindow = MAINWND;
     gltDeleteText(fileText);
 
@@ -410,13 +415,13 @@ int main(int argc, char **argv) {
     glfwSetKeyCallback(window, keyCallback);
     glfwSetMouseButtonCallback(window, mouseButtonCallback);
 
-    initBuffers(&mainWndData.VAO_button, &mainWndData.VBO_button);
-    initBuffers(&mainWndData.VAO_square, &mainWndData.VBO_square);
-    initBuffers(&mainWndData.VAO_stroke, &mainWndData.VBO_stroke);
-
 #ifndef __APPLE__
     gladLoadGL();
 #endif
+
+    initBuffers(&mainWndData.VAO_button, &mainWndData.VBO_button);
+    initBuffers(&mainWndData.VAO_square, &mainWndData.VBO_square);
+    initBuffers(&mainWndData.VAO_stroke, &mainWndData.VBO_stroke);
 
     GLuint shaderProgram = createShaderProgram(vertexShaderInstanceSource,
                                                fragmentShaderInstanceSource);
@@ -499,6 +504,13 @@ int main(int argc, char **argv) {
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+
+    glDeleteVertexArrays(1, &mainWndData.VAO_button);
+    glDeleteBuffers(1, &mainWndData.VBO_button);
+    glDeleteVertexArrays(1, &mainWndData.VAO_square);
+    glDeleteBuffers(1, &mainWndData.VBO_square);
+    glDeleteVertexArrays(1, &mainWndData.VAO_stroke);
+    glDeleteBuffers(1, &mainWndData.VBO_stroke);
 
     gltDeleteText(stepText);
     gltDeleteText(revertText);
