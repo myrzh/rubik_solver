@@ -22,11 +22,25 @@ typedef enum { MAINWND, FLATWND, AUTHORSWND } windowType;
 
 typedef enum { RIGHT, LEFT, TOP } cubeSide;
 
-#include <stdio.h>
-#include <cube.h>
+typedef struct {
+    GLuint VBO_button;
+    GLuint VAO_button;
+    GLuint VBO_stroke;
+    GLuint VAO_stroke;
+
+    // flat square or 3D square, depending on the window
+    GLuint VBO_square;
+    GLuint VAO_square;
+} windowData;
+
 #include <algo.h>
+#include <cube.h>
+#include <stdio.h>
 
 extern windowType currentWindow;
+
+extern windowData mainWndData;
+extern windowData flatWndData;
 
 extern Button mainButtons[20];
 extern Button flatButtons[20];

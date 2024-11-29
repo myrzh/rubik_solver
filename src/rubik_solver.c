@@ -14,6 +14,9 @@
 
 windowType currentWindow;
 
+windowData mainWndData;
+windowData flatWndData;
+
 Button mainButtons[20];
 Button flatButtons[20];
 
@@ -317,6 +320,9 @@ void fillCubeFromUserInput(GLFWwindow *window) {
 
     currentWindow = FLATWND;
 
+    initBuffers(&flatWndData.VAO_button, &flatWndData.VBO_button);
+    initBuffers(&flatWndData.VAO_square, &flatWndData.VBO_square);
+
     gltInit();
     GLTtext *fileText = gltCreateText();
     gltSetText(fileText, "F");
@@ -403,6 +409,10 @@ int main(int argc, char **argv) {
     // glfwSetWindowAspectRatio(window, 1, 1);
     glfwSetKeyCallback(window, keyCallback);
     glfwSetMouseButtonCallback(window, mouseButtonCallback);
+
+    initBuffers(&mainWndData.VAO_button, &mainWndData.VBO_button);
+    initBuffers(&mainWndData.VAO_square, &mainWndData.VBO_square);
+    initBuffers(&mainWndData.VAO_stroke, &mainWndData.VBO_stroke);
 
 #ifndef __APPLE__
     gladLoadGL();
