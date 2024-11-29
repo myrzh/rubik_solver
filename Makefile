@@ -11,8 +11,8 @@ SRC_FILES = $(wildcard $(SRC_DIR)/*.c)
 # Object files
 OBJ_FILES = $(SRC_FILES:.c=.o)
 
-# Output executable
-OUTPUT = rubik_solver
+# Base output executable name
+BASE_OUTPUT = rubik_solver
 
 # Platform-specific settings
 ifeq ($(OS),Windows_NT)
@@ -20,6 +20,9 @@ ifeq ($(OS),Windows_NT)
 	LIBS = -lglfw3 -lgdi32 -lopengl32 -lglu32 -lcomdlg32 -mwindows
 	CFLAGS = -I$(INCLUDE_DIR)
 	LDFLAGS = -L$(LIB_DIR)
+	RM = cmd /C del /Q /F
+	CONVERT_PATH = $(subst /,\,$1)
+	OUTPUT = $(BASE_OUTPUT).exe
 else
 	UNAME_S := $(shell uname -s)
 	ifeq ($(UNAME_S),Linux)
@@ -27,18 +30,22 @@ else
 		LIBS = -lGL -lglfw3 -lm
 		CFLAGS = -I$(INCLUDE_DIR)
 		LDFLAGS = -L$(LIB_DIR)
+		RM = rm -f
 		PREBUILD = sudo ln -sf /usr/lib/x86_64-linux-gnu/libGL.so.1 /usr/lib/libGL.so
+		OUTPUT = $(BASE_OUTPUT)
 	endif
 	ifeq ($(UNAME_S),Darwin)
 		LIB_DIR = ./lib_macos
 		LIBS = -lglfw -framework OpenGL
 		CFLAGS = -I$(INCLUDE_DIR)
 		LDFLAGS = -L$(LIB_DIR)
+		RM = rm -f
+		OUTPUT = $(BASE_OUTPUT)
 	endif
 endif
 
 # Default target
-all: $(OUTPUT) clean_objs
+all: $(OUTPUT) clean_obj
 
 # Build target (linking stage)
 $(OUTPUT): $(OBJ_FILES)
@@ -49,10 +56,17 @@ $(OUTPUT): $(OBJ_FILES)
 $(SRC_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) -c $< -o $@ $(CFLAGS)
 
-# Rule to clean up object files
-clean_objs:
-	rm -f $(OBJ_FILES)
+# Clean object files
+clean_obj:
+ifeq ($(OS),Windows_NT)
+	-$(RM) $(call CONVERT_PATH,$(OBJ_FILES)) > nul 2>&1
+else
+	-$(RM) $(call CONVERT_PATH,$(OBJ_FILES))
+endif
 
-# Clean target
 clean:
-	rm -f $(OBJ_FILES) $(OUTPUT)
+ifeq ($(OS),Windows_NT)
+	-$(RM) $(call CONVERT_PATH,$(OBJ_FILES)) $(call CONVERT_PATH,$(OUTPUT)) > nul 2>&1
+else
+	-$(RM) $(call CONVERT_PATH,$(OBJ_FILES)) $(call CONVERT_PATH,$(OUTPUT))
+endif
