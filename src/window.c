@@ -1,4 +1,5 @@
 #include <window.h>
+#include <time.h>
 
 #ifndef __APPLE__
     sfd_Options openInputOpt = {
@@ -219,8 +220,13 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                                     strcpy(currentStepText, "");
                                     break;
                                 }
+                                start = clock(); // start measuring time
                                 cubeSolve(&tempCube3D, foutput,
                                           filenamePointer);
+                                printf("cubesolve took %0.f ms to execute\n",
+                                       ((double)(clock() - start)) /
+                                           (CLOCKS_PER_SEC /
+                                            1000));  // end measuring time
                                 fclose(foutput);
                                 fillStepsFromFile(filenamePointer);
 #endif

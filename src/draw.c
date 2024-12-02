@@ -1,5 +1,14 @@
 #include <draw.h>
 
+#define DELAY_VALUE 20000
+
+void artificialDelay(unsigned iterations) {
+    volatile double result = 0.0;
+    for (int i = 0; i < iterations; ++i) {
+        result += i * 0.0001;
+    }
+}
+
 void drawStrokeLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
     GLfloat vertices[] = {x1, y1, 0.0f, 0.0f, 0.0f, 0.0f,
                           x2, y2, 0.0f, 0.0f, 0.0f, 0.0f};
@@ -28,6 +37,7 @@ void drawStrokeLine(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2) {
 
     glDeleteBuffers(1, &VBO);
     glDeleteVertexArrays(1, &VAO);
+    artificialDelay(DELAY_VALUE);
 }
 
 void drawStroke(GLfloat x, GLfloat y, cubeSide sideToDraw) {
@@ -103,6 +113,7 @@ void drawSquare(GLfloat x, GLfloat y, GLfloat r, GLfloat g, GLfloat b,
     glDeleteVertexArrays(1, &VAO);
 
     drawStroke(x, y, sideToDraw);
+    artificialDelay(DELAY_VALUE);
 }
 
 void drawSide(cubeSide sideToDraw, color sideColors[]) {
@@ -192,6 +203,7 @@ void drawButton(GLfloat x, GLfloat y, GLfloat width, GLfloat height,
 
     glDeleteBuffers(1, &VBO);
     glDeleteVertexArrays(1, &VAO);
+    artificialDelay(DELAY_VALUE);
 }
 
 void drawUI() {
@@ -240,6 +252,7 @@ void drawFlatSquare(GLfloat x, GLfloat y, GLfloat r, GLfloat g, GLfloat b) {
 
     glDeleteBuffers(1, &VBO);
     glDeleteVertexArrays(1, &VAO);
+    artificialDelay(DELAY_VALUE);
 
     // drawStroke(x, y, sideToDraw);
 }
