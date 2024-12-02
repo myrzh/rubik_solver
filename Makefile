@@ -55,7 +55,7 @@ $(OUTPUT): $(OBJ_FILES)
 
 # Rule to compile object files (compilation stage)
 $(SRC_DIR)/%.o: $(SRC_DIR)/%.c
-	$(CC) -c $< -o $@ $(CFLAGS)
+	$(CC) -c $< -o $@ $(CFLAGS) -Ofast -Wno-stringop-overflow -Wno-unused-result -Wno-unknown-warning-option
 
 # Clean object files
 clean_obj:
