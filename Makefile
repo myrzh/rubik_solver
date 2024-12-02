@@ -35,6 +35,7 @@ else
 		OUTPUT = $(BASE_OUTPUT)
 	endif
 	ifeq ($(UNAME_S),Darwin)
+		CC = gcc-14
 		LIB_DIR = ./lib_macos
 		LIBS = -lglfw -framework OpenGL
 		CFLAGS = -I$(INCLUDE_DIR)
