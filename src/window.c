@@ -97,6 +97,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action,
 
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
     if (action == GLFW_PRESS) {
+        printTime = 1;
         int width, height;
         glfwGetWindowSize(window, &width, &height);
 
@@ -218,8 +219,15 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                                     strcpy(currentStepText, "");
                                     break;
                                 }
+                                start = clock();
                                 cubeSolve(&tempCube3D, foutput,
                                           filenamePointer);
+                                if (printTime) {
+                                    printf("cubesolve took %0.f ms to execute\n",
+                                        ((double)(clock() - start)) /
+                                            (CLOCKS_PER_SEC / 1000));  // end measuring time
+                                    printTime = 0;
+                                }
                                 fclose(foutput);
                                 fillStepsFromFile(filenamePointer);
 #endif

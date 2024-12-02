@@ -36,6 +36,7 @@ typedef struct {
 #include <algo.h>
 #include <cube.h>
 #include <stdio.h>
+#include <time.h>
 
 extern windowType currentWindow;
 
@@ -59,6 +60,9 @@ extern char currentStepText[20];
 
 extern int isCubeFilled;
 extern int currentFlatCubeIndex;
+
+extern int printTime;
+extern clock_t start;
 
 unsigned int compileShader(unsigned int type, const char *source);
 

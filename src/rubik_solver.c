@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <window.h>
+#include <time.h>
 
 windowType currentWindow;
 
@@ -34,6 +35,9 @@ char currentStepText[20];
 
 int isCubeFilled;
 int currentFlatCubeIndex;
+
+int printTime;
+clock_t start;
 
 unsigned int compileShader(unsigned int type, const char *source) {
     unsigned int id = glCreateShader(type);
@@ -329,6 +333,7 @@ void fillCubeFromUserInput(GLFWwindow *window) {
     int width, height;
 
     while (!glfwWindowShouldClose(flatCubeWindow)) {
+        start = clock(); // start measuring time
         glClear(GL_COLOR_BUFFER_BIT);
         glUseProgram(shaderProgram);
 
@@ -358,6 +363,12 @@ void fillCubeFromUserInput(GLFWwindow *window) {
 
         glfwSwapBuffers(flatCubeWindow);
         glfwPollEvents();
+        if (printTime) {
+            printf("input window took %0.f ms to render\n",
+                   ((double)(clock() - start)) /
+                       (CLOCKS_PER_SEC / 1000));  // end measuring time
+            printTime = 0;
+        }
     }
 
     glDeleteVertexArrays(1, &flatWndData.VAO_button);
@@ -455,6 +466,7 @@ int main(int argc, char **argv) {
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
+        start = clock();  // start measuring time
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shaderProgram);
@@ -503,6 +515,12 @@ int main(int argc, char **argv) {
 
         glfwSwapBuffers(window);
         glfwPollEvents();
+        if (printTime) {
+            printf("main window took %0.f ms to render\n",
+                   ((double)(clock() - start)) /
+                       (CLOCKS_PER_SEC / 1000));  // end measuring time
+            printTime = 0;
+        }
     }
 
     glDeleteVertexArrays(1, &mainWndData.VAO_button);
