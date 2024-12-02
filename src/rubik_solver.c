@@ -10,6 +10,7 @@
 #include <shaders.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <window.h>
 
 windowType currentWindow;
@@ -31,6 +32,8 @@ char currentStepText[20];
 
 int isCubeFilled;
 int currentFlatCubeIndex;
+
+int printTime;
 
 unsigned int compileShader(unsigned int type, const char *source) {
     unsigned int id = glCreateShader(type);
@@ -369,6 +372,9 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT) {
 #else
 int main(int argc, char **argv) {
 #endif
+    printTime = 0;
+    clock_t start;
+
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -442,11 +448,19 @@ int main(int argc, char **argv) {
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT);
 
+        start = clock();  // start measuring time
         glUseProgram(shaderProgram);
         drawSide(RIGHT, Cube2D.redSide);
         drawSide(LEFT, Cube2D.whiteSide);
         drawSide(TOP, Cube2D.blueSide);
         drawUI();
+        if (printTime) {
+            printf("draw took %0.f ms to execute\n",
+                   ((double)(clock() - start)) /
+                       (CLOCKS_PER_SEC / 1000));  // end measuring time
+            printTime = 0;
+        }
+
         gltSetText(stepText, currentStepText);
 
         gltInit();

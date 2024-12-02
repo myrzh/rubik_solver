@@ -97,6 +97,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action,
 
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
     if (action == GLFW_PRESS) {
+        printTime = 1;
         int width, height;
         glfwGetWindowSize(window, &width, &height);
 

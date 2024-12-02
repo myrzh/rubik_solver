@@ -46,6 +46,8 @@ extern char currentStepText[20];
 extern int isCubeFilled;
 extern int currentFlatCubeIndex;
 
+extern int printTime;
+
 unsigned int compileShader(unsigned int type, const char *source);
 
 unsigned int createShaderProgram(const char *vertexSource,

@@ -17,7 +17,7 @@ BASE_OUTPUT = rubik_solver
 # Platform-specific settings
 ifeq ($(OS),Windows_NT)
 	LIB_DIR = ./lib_win
-	LIBS = -lglfw3 -lgdi32 -lopengl32 -lglu32 -lcomdlg32 -mwindows
+	LIBS = -lglfw3 -lgdi32 -lopengl32 -lglu32 -lcomdlg32
 	CFLAGS = -I$(INCLUDE_DIR)
 	LDFLAGS = -L$(LIB_DIR)
 	RM = cmd /C del /Q /F
