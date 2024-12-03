@@ -1,23 +1,23 @@
 #include <window.h>
 
 #ifndef __APPLE__
-    sfd_Options openInputOpt = {
-        .title        = "Open Steps File",
-        .filter_name  = "Text Files (*.txt)",
-        .filter       = "*.txt",
-    };
+sfd_Options openInputOpt = {
+    .title = "Open Steps File",
+    .filter_name = "Text Files (*.txt)",
+    .filter = "*.txt",
+};
 
-    sfd_Options saveInputOpt = {
-        .title        = "Save Steps File",
-        .filter_name  = "Text Files (*.txt)",
-        .filter       = "*.txt",
-    };
+sfd_Options saveInputOpt = {
+    .title = "Save Steps File",
+    .filter_name = "Text Files (*.txt)",
+    .filter = "*.txt",
+};
 
-    sfd_Options openCubeOpt = {
-        .title        = "Open LinearCube File",
-        .filter_name  = "Text Files (*.txt)",
-        .filter       = "*.txt",
-    };
+sfd_Options openCubeOpt = {
+    .title = "Open LinearCube File",
+    .filter_name = "Text Files (*.txt)",
+    .filter = "*.txt",
+};
 #endif
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
@@ -202,7 +202,21 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                                     strcpy(currentStepText, "");
                                     break;
                                 }
+                                clock_t start = clock();
                                 cubeSolve(&tempCube3D, foutput, filename);
+                                clock_t end = clock();  // end measuring time
+                                if (printTime) {
+                                    printf(
+                                        "cubesolve took %0.f ms to execute\n",
+                                        ((double)(end - start)) /
+                                            (CLOCKS_PER_SEC / 1000));
+                                    fprintf(
+                                        logFile,
+                                        "cubesolve took %0.f ms to execute\n",
+                                        ((double)(end - start)) /
+                                            (CLOCKS_PER_SEC / 1000));
+                                    printTime = 0;
+                                }
                                 fclose(foutput);
                                 fillStepsFromFile(filename);
 #else
@@ -219,13 +233,20 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                                     strcpy(currentStepText, "");
                                     break;
                                 }
-                                start = clock();
+                                clock_t start = clock();
                                 cubeSolve(&tempCube3D, foutput,
                                           filenamePointer);
+                                clock_t end = clock();  // end measuring time
                                 if (printTime) {
-                                    printf("cubesolve took %0.f ms to execute\n",
-                                        ((double)(clock() - start)) /
-                                            (CLOCKS_PER_SEC / 1000));  // end measuring time
+                                    printf(
+                                        "cubesolve took %0.f ms to execute\n",
+                                        ((double)(end - start)) /
+                                            (CLOCKS_PER_SEC / 1000));
+                                    fprintf(
+                                        logFile,
+                                        "cubesolve took %0.f ms to execute\n",
+                                        ((double)(end - start)) /
+                                            (CLOCKS_PER_SEC / 1000));
                                     printTime = 0;
                                 }
                                 fclose(foutput);

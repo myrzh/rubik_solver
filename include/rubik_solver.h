@@ -62,7 +62,7 @@ extern int isCubeFilled;
 extern int currentFlatCubeIndex;
 
 extern int printTime;
-extern clock_t start;
+extern FILE *logFile;
 
 unsigned int compileShader(unsigned int type, const char *source);
 
