@@ -22,9 +22,9 @@ typedef enum { MAINWND, FLATWND, AUTHORSWND } windowType;
 
 typedef enum { RIGHT, LEFT, TOP } cubeSide;
 
-#include <stdio.h>
-#include <cube.h>
 #include <algo.h>
+#include <cube.h>
+#include <stdio.h>
 #include <time.h>
 
 extern windowType currentWindow;
@@ -48,7 +48,7 @@ extern int isCubeFilled;
 extern int currentFlatCubeIndex;
 
 extern int printTime;
-extern clock_t start;
+extern FILE *logFile;
 
 unsigned int compileShader(unsigned int type, const char *source);
 
