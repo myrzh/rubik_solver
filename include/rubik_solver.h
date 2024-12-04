@@ -1,6 +1,8 @@
 #ifndef RUBIK_SOLVER_H
 #define RUBIK_SOLVER_H
 
+#define DEBUG_MODE
+
 #ifdef __APPLE__
 #define GL_SILENCE_DEPRECATION
 #endif
@@ -36,7 +38,11 @@ typedef struct {
 #include <algo.h>
 #include <cube.h>
 #include <stdio.h>
+#include <objects.h>
+
+#ifdef DEBUG_MODE
 #include <time.h>
+#endif
 
 extern windowType currentWindow;
 
@@ -61,8 +67,10 @@ extern char currentStepText[20];
 extern int isCubeFilled;
 extern int currentFlatCubeIndex;
 
+#ifdef DEBUG_MODE
 extern int printTime;
 extern FILE *logFile;
+#endif
 
 unsigned int compileShader(unsigned int type, const char *source);
 

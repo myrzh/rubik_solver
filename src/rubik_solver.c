@@ -1,3 +1,4 @@
+#include <rubik_solver.h>
 #include <algo.h>
 #include <colors.h>
 #include <ctype.h>
@@ -6,11 +7,9 @@
 #include <interface.h>
 #include <math.h>
 #include <objects.h>
-#include <rubik_solver.h>
 #include <shaders.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include <window.h>
 
 windowType currentWindow;
@@ -36,10 +35,12 @@ char currentStepText[20];
 int isCubeFilled;
 int currentFlatCubeIndex;
 
+int needToReInitGLT;
+
+#ifdef DEBUG_MODE
 int printTime;
 FILE *logFile;
-
-int needToReInitGLT;
+#endif
 
 unsigned int compileShader(unsigned int type, const char *source) {
     unsigned int id = glCreateShader(type);
@@ -338,7 +339,9 @@ void fillCubeFromUserInput(GLFWwindow *window) {
     int width, height;
 
     while (!glfwWindowShouldClose(flatCubeWindow)) {
+#ifdef DEBUG_MODE
         clock_t start = clock();  // start measuring time
+#endif
         glClear(GL_COLOR_BUFFER_BIT);
         glUseProgram(shaderProgram);
 
@@ -366,6 +369,7 @@ void fillCubeFromUserInput(GLFWwindow *window) {
 
         glfwSwapBuffers(flatCubeWindow);
         glfwPollEvents();
+#ifdef DEBUG_MODE
         clock_t end = clock();  // end measuring time
         if (printTime) {
             printf("input window took %0.f ms to render\n",
@@ -374,6 +378,7 @@ void fillCubeFromUserInput(GLFWwindow *window) {
                     ((double)(end - start)) / (CLOCKS_PER_SEC / 1000));
             printTime = 0;
         }
+#endif
     }
 
     gltTerminate();
@@ -397,8 +402,10 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT) {
 #else
 int main(int argc, char **argv) {
 #endif
+#ifdef DEBUG_MODE
     printTime = 0;
     logFile = fopen("log.txt", "w");
+#endif
 
     needToReInitGLT = 0;
 
@@ -478,7 +485,9 @@ int main(int argc, char **argv) {
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
+#ifdef DEBUG_MODE
         clock_t start = clock();  // start measuring time
+#endif
 
         if (needToReInitGLT) {
             gltInit();
@@ -531,15 +540,16 @@ int main(int argc, char **argv) {
 
         glfwSwapBuffers(window);
         glfwPollEvents();
+#ifdef DEBUG_MODE
         clock_t end = clock();  // end measuring time
         if (printTime) {
             printf("main window took %0.f ms to render\n",
-                   ((double)(end - start)) /
-                       (CLOCKS_PER_SEC / 1000));
+                   ((double)(end - start)) / (CLOCKS_PER_SEC / 1000));
             fprintf(logFile, "main window took %0.f ms to render\n",
                     ((double)(end - start)) / (CLOCKS_PER_SEC / 1000));
             printTime = 0;
         }
+#endif
     }
 
     glDeleteVertexArrays(1, &mainWndData.VAO_button);

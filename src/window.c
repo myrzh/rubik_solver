@@ -1,3 +1,4 @@
+#include <rubik_solver.h>
 #include <window.h>
 
 #ifndef __APPLE__
@@ -97,7 +98,9 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action,
 
 void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
     if (action == GLFW_PRESS) {
+#ifdef DEBUG_MODE
         printTime = 1;
+#endif
         int width, height;
         glfwGetWindowSize(window, &width, &height);
 
@@ -202,8 +205,11 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                                     strcpy(currentStepText, "");
                                     break;
                                 }
+#ifdef DEBUG_MODE
                                 clock_t start = clock();
+#endif
                                 cubeSolve(&tempCube3D, foutput, filename);
+#ifdef DEBUG_MODE
                                 clock_t end = clock();  // end measuring time
                                 if (printTime) {
                                     printf(
@@ -217,6 +223,7 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                                             (CLOCKS_PER_SEC / 1000));
                                     printTime = 0;
                                 }
+#endif
                                 fclose(foutput);
                                 fillStepsFromFile(filename);
 #else
@@ -233,9 +240,12 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                                     strcpy(currentStepText, "");
                                     break;
                                 }
+#ifdef DEBUG_MODE
                                 clock_t start = clock();
+#endif
                                 cubeSolve(&tempCube3D, foutput,
                                           filenamePointer);
+#ifdef DEBUG_MODE
                                 clock_t end = clock();  // end measuring time
                                 if (printTime) {
                                     printf(
@@ -249,6 +259,7 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                                             (CLOCKS_PER_SEC / 1000));
                                     printTime = 0;
                                 }
+#endif
                                 fclose(foutput);
                                 fillStepsFromFile(filenamePointer);
 #endif
