@@ -39,6 +39,8 @@ int currentFlatCubeIndex;
 int printTime;
 FILE *logFile;
 
+int needToReInitGLT;
+
 unsigned int compileShader(unsigned int type, const char *source) {
     unsigned int id = glCreateShader(type);
     glShaderSource(id, 1, &source, NULL);
@@ -327,7 +329,10 @@ void fillCubeFromUserInput(GLFWwindow *window) {
     initBuffers(&flatWndData.VAO_button, &flatWndData.VBO_button);
     initBuffers(&flatWndData.VAO_square, &flatWndData.VBO_square);
 
+    gltTerminate();
     gltInit();
+    needToReInitGLT = 1;
+
     GLTtext *fileText = gltCreateText();
     gltSetText(fileText, "F");
     int width, height;
@@ -350,7 +355,6 @@ void fillCubeFromUserInput(GLFWwindow *window) {
         drawFlatSide(-0.5f, 0.05f, GREEN, flatCube.greenSide);
         drawFlatWindowUI();
 
-        gltInit();
         glfwGetWindowSize(flatCubeWindow, &width, &height);
         gltBeginDraw();
         gltColor(1.0f, 0.0f, 0.0f, 1.0f);
@@ -359,7 +363,6 @@ void fillCubeFromUserInput(GLFWwindow *window) {
             NDCToPixels(flatButtons[6].yPos - 0.075f, height, 'y'), 1.75f,
             GLT_CENTER, GLT_CENTER);
         gltEndDraw();
-        gltTerminate();
 
         glfwSwapBuffers(flatCubeWindow);
         glfwPollEvents();
@@ -373,6 +376,7 @@ void fillCubeFromUserInput(GLFWwindow *window) {
         }
     }
 
+    gltTerminate();
     glDeleteVertexArrays(1, &flatWndData.VAO_button);
     glDeleteBuffers(1, &flatWndData.VBO_button);
     glDeleteVertexArrays(1, &flatWndData.VAO_square);
@@ -395,6 +399,8 @@ int main(int argc, char **argv) {
 #endif
     printTime = 0;
     logFile = fopen("log.txt", "w");
+
+    needToReInitGLT = 0;
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -464,6 +470,7 @@ int main(int argc, char **argv) {
     gltSetText(cubeText, "C");
     gltSetText(solveText, "S");
     gltSetText(shuffleText, "R");
+    gltInit();
 
     int width, height;
 
@@ -472,6 +479,12 @@ int main(int argc, char **argv) {
     // Main loop
     while (!glfwWindowShouldClose(window)) {
         clock_t start = clock();  // start measuring time
+
+        if (needToReInitGLT) {
+            gltInit();
+            needToReInitGLT = 0;
+        }
+
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shaderProgram);
@@ -481,7 +494,6 @@ int main(int argc, char **argv) {
         drawUI();
         gltSetText(stepText, currentStepText);
 
-        gltInit();
         glfwGetWindowSize(window, &width, &height);
         // printf("%f %f\n", xpos, ypos);
         gltBeginDraw();
@@ -516,7 +528,6 @@ int main(int argc, char **argv) {
             NDCToPixels(mainButtons[11].yPos - 0.075f, height, 'y'), 2.0f,
             GLT_CENTER, GLT_CENTER);
         gltEndDraw();
-        gltTerminate();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
