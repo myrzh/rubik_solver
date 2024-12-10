@@ -36,6 +36,7 @@ int isCubeFilled;
 int currentFlatCubeIndex;
 
 int needToReInitGLT;
+int isAuxWindowActive;
 
 #ifdef DEBUG_MODE
 int printTime;
@@ -324,6 +325,7 @@ void fillCubeFromUserInput(GLFWwindow *window) {
 
     initFlatCube(&flatCube);
     updateFlatCube(WHITE, 1);
+    isAuxWindowActive = 1;
 
     currentWindow = FLATWND;
 
@@ -393,6 +395,7 @@ void fillCubeFromUserInput(GLFWwindow *window) {
     currentFlatCubeIndex = -1;
     glfwDestroyWindow(flatCubeWindow);
     glfwMakeContextCurrent(window);
+    isAuxWindowActive = 0;
 }
 
 #if defined(_WIN32)
@@ -408,6 +411,7 @@ int main(int argc, char **argv) {
 #endif
 
     needToReInitGLT = 0;
+    isAuxWindowActive = 0;
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -485,71 +489,73 @@ int main(int argc, char **argv) {
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
+        if (!isAuxWindowActive) {
 #ifdef DEBUG_MODE
-        clock_t start = clock();  // start measuring time
+            clock_t start = clock();  // start measuring time
 #endif
 
-        if (needToReInitGLT) {
-            gltInit();
-            needToReInitGLT = 0;
-        }
+            if (needToReInitGLT) {
+                gltInit();
+                needToReInitGLT = 0;
+            }
 
-        glClear(GL_COLOR_BUFFER_BIT);
+            glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(shaderProgram);
-        drawSide(RIGHT, Cube2D.redSide);
-        drawSide(LEFT, Cube2D.whiteSide);
-        drawSide(TOP, Cube2D.blueSide);
-        drawUI();
-        gltSetText(stepText, currentStepText);
+            glUseProgram(shaderProgram);
+            drawSide(RIGHT, Cube2D.redSide);
+            drawSide(LEFT, Cube2D.whiteSide);
+            drawSide(TOP, Cube2D.blueSide);
+            drawUI();
+            gltSetText(stepText, currentStepText);
 
-        glfwGetWindowSize(window, &width, &height);
-        // printf("%f %f\n", xpos, ypos);
-        gltBeginDraw();
-        gltColor(1.0f, 1.0f, 1.0f, 1.0f);
-        // gltDrawText2D(text, xpos, ypos, 1.0f);
-        gltDrawText2DAligned(stepText, NDCToPixels(0.0f, width, 'x'),
-                             NDCToPixels(0.875f, height, 'y'), 2.0f, GLT_CENTER,
-                             GLT_CENTER);
-        gltColor(1.0f, 0.0f, 0.0f, 1.0f);
-        gltDrawText2DAligned(
-            revertText, NDCToPixels(mainButtons[0].xPos + 0.075f, width, 'x'),
-            NDCToPixels(mainButtons[0].yPos - 0.075f, height, 'y'), 2.0f,
-            GLT_CENTER, GLT_CENTER);
-        gltDrawText2DAligned(
-            openText, NDCToPixels(mainButtons[9].xPos + 0.075f, width, 'x'),
-            NDCToPixels(mainButtons[9].yPos - 0.075f, height, 'y'), 2.0f,
-            GLT_CENTER, GLT_CENTER);
-        gltDrawText2DAligned(
-            nextText, NDCToPixels(mainButtons[7].xPos + 0.075f, width, 'x'),
-            NDCToPixels(mainButtons[7].yPos - 0.075f, height, 'y'), 2.0f,
-            GLT_CENTER, GLT_CENTER);
-        gltDrawText2DAligned(
-            cubeText, NDCToPixels(mainButtons[8].xPos + 0.075f, width, 'x'),
-            NDCToPixels(mainButtons[8].yPos - 0.075f, height, 'y'), 2.0f,
-            GLT_CENTER, GLT_CENTER);
-        gltDrawText2DAligned(
-            solveText, NDCToPixels(mainButtons[10].xPos + 0.075f, width, 'x'),
-            NDCToPixels(mainButtons[10].yPos - 0.075f, height, 'y'), 2.0f,
-            GLT_CENTER, GLT_CENTER);
-        gltDrawText2DAligned(
-            shuffleText, NDCToPixels(mainButtons[11].xPos + 0.075f, width, 'x'),
-            NDCToPixels(mainButtons[11].yPos - 0.075f, height, 'y'), 2.0f,
-            GLT_CENTER, GLT_CENTER);
-        gltEndDraw();
+            glfwGetWindowSize(window, &width, &height);
+            // printf("%f %f\n", xpos, ypos);
+            gltBeginDraw();
+            gltColor(1.0f, 1.0f, 1.0f, 1.0f);
+            // gltDrawText2D(text, xpos, ypos, 1.0f);
+            gltDrawText2DAligned(stepText, NDCToPixels(0.0f, width, 'x'),
+                                NDCToPixels(0.875f, height, 'y'), 2.0f, GLT_CENTER,
+                                GLT_CENTER);
+            gltColor(1.0f, 0.0f, 0.0f, 1.0f);
+            gltDrawText2DAligned(
+                revertText, NDCToPixels(mainButtons[0].xPos + 0.075f, width, 'x'),
+                NDCToPixels(mainButtons[0].yPos - 0.075f, height, 'y'), 2.0f,
+                GLT_CENTER, GLT_CENTER);
+            gltDrawText2DAligned(
+                openText, NDCToPixels(mainButtons[9].xPos + 0.075f, width, 'x'),
+                NDCToPixels(mainButtons[9].yPos - 0.075f, height, 'y'), 2.0f,
+                GLT_CENTER, GLT_CENTER);
+            gltDrawText2DAligned(
+                nextText, NDCToPixels(mainButtons[7].xPos + 0.075f, width, 'x'),
+                NDCToPixels(mainButtons[7].yPos - 0.075f, height, 'y'), 2.0f,
+                GLT_CENTER, GLT_CENTER);
+            gltDrawText2DAligned(
+                cubeText, NDCToPixels(mainButtons[8].xPos + 0.075f, width, 'x'),
+                NDCToPixels(mainButtons[8].yPos - 0.075f, height, 'y'), 2.0f,
+                GLT_CENTER, GLT_CENTER);
+            gltDrawText2DAligned(
+                solveText, NDCToPixels(mainButtons[10].xPos + 0.075f, width, 'x'),
+                NDCToPixels(mainButtons[10].yPos - 0.075f, height, 'y'), 2.0f,
+                GLT_CENTER, GLT_CENTER);
+            gltDrawText2DAligned(
+                shuffleText, NDCToPixels(mainButtons[11].xPos + 0.075f, width, 'x'),
+                NDCToPixels(mainButtons[11].yPos - 0.075f, height, 'y'), 2.0f,
+                GLT_CENTER, GLT_CENTER);
+            gltEndDraw();
 
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+            glfwSwapBuffers(window);
+            glfwPollEvents();
 #ifdef DEBUG_MODE
-        clock_t end = clock();  // end measuring time
-        if (printTime) {
-            printf("main window took %0.f ms to render\n",
-                   ((double)(end - start)) / (CLOCKS_PER_SEC / 1000));
-            fprintf(logFile, "main window took %0.f ms to render\n",
+            clock_t end = clock();  // end measuring time
+            if (printTime) {
+                printf("main window took %0.f ms to render\n",
                     ((double)(end - start)) / (CLOCKS_PER_SEC / 1000));
-            printTime = 0;
-        }
+                fprintf(logFile, "main window took %0.f ms to render\n",
+                        ((double)(end - start)) / (CLOCKS_PER_SEC / 1000));
+                printTime = 0;
+            }
 #endif
+        }
     }
 
     glDeleteVertexArrays(1, &mainWndData.VAO_button);

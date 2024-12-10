@@ -40,6 +40,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action,
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
     if (key == GLFW_KEY_F1 && action == GLFW_PRESS) {
+        isAuxWindowActive = 1;
         glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
         GLFWwindow* authorsWindow =
             glfwCreateWindow(700, 450, "Authors", NULL, NULL);
@@ -93,6 +94,8 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action,
         // glDeleteProgram(currentTextData.shaderData);
         glfwDestroyWindow(authorsWindow);
         glfwMakeContextCurrent(window);
+
+        isAuxWindowActive = 0;
     }
 }
 
@@ -110,6 +113,8 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
         double normalizedX = -1.0 + 2.0 * xpos / width;
         double normalizedY = 1.0 - 2.0 * ypos / height;
 
+        float btnXPos, btnYPos;
+
 // printf("%f %f -> %f %f\n", xpos, ypos, normalizedX, normalizedY);
 
 // char inputFilename[50] = "input.txt";
@@ -126,16 +131,15 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
             case MAINWND:
                 for (int i = 0;
                      i < sizeof(mainButtons) / sizeof(mainButtons[0]); i++) {
-                    if (normalizedX >= mainButtons[i].xPos &&
-                        normalizedX <=
-                            mainButtons[i].xPos + mainButtons[i].width &&
-                        normalizedY <= mainButtons[i].yPos &&
-                        normalizedY >=
-                            mainButtons[i].yPos - mainButtons[i].height) {
+                    btnXPos = mainButtons[i].xPos;
+                    btnYPos = mainButtons[i].yPos;
+                    if (normalizedX >= btnXPos &&
+                        normalizedX <= btnXPos + mainButtons[i].width &&
+                        normalizedY <= btnYPos &&
+                        normalizedY >= btnYPos - mainButtons[i].height) {
                         switch (mainButtons[i].function) {
-                            case REVERT:
-                                initLinearCube(&Cube2D);
-                                linearToMatrixCube(&Cube3D, &Cube2D);
+                            case NEXTSTEP:
+                                executeStep();
                                 break;
                             case ROTATE_SIDE:
                                 switch (button) {
@@ -144,9 +148,6 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                                                  getRotationFromColor(
                                                      mainButtons[i].color));
                                         matrixToLinearCube(&Cube2D, &Cube3D);
-                                        // renderMatrixCube(&Cube3D);
-                                        // rotateLinearSideBy90(&Cube2D,
-                                        // mainButtons[i].color, STRAIGHT);
                                         break;
                                     case GLFW_MOUSE_BUTTON_RIGHT:
                                         for (int count = 0; count < 3;
@@ -157,14 +158,9 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                                             matrixToLinearCube(&Cube2D,
                                                                &Cube3D);
                                         }
-                                        // rotateLinearSideBy90(&Cube2D,
-                                        // mainButtons[i].color, BACK);
                                     default:
                                         break;
                                 }
-                                break;
-                            case NEXTSTEP:
-                                executeStep();
                                 break;
                             case FILLCUBE:
                                 fillCubeFromUserInput(window);
@@ -264,6 +260,10 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
                                 fillStepsFromFile(filenamePointer);
 #endif
                                 break;
+                            case REVERT:
+                                initLinearCube(&Cube2D);
+                                linearToMatrixCube(&Cube3D, &Cube2D);
+                                break;
                             case SHUFFLE:
                                 randCube(&Cube3D, 52);
                                 matrixToLinearCube(&Cube2D, &Cube3D);
@@ -277,12 +277,12 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
             case FLATWND:
                 for (int i = 0;
                      i < sizeof(flatButtons) / sizeof(flatButtons[0]); i++) {
-                    if (normalizedX >= flatButtons[i].xPos &&
-                        normalizedX <=
-                            flatButtons[i].xPos + flatButtons[i].width &&
-                        normalizedY <= flatButtons[i].yPos &&
-                        normalizedY >=
-                            flatButtons[i].yPos - flatButtons[i].height) {
+                    btnXPos = flatButtons[i].xPos;
+                    btnYPos = flatButtons[i].yPos;
+                    if (normalizedX >= btnXPos &&
+                        normalizedX <= btnXPos + flatButtons[i].width &&
+                        normalizedY <= btnYPos &&
+                        normalizedY >= btnYPos - flatButtons[i].height) {
                         switch (flatButtons[i].function) {
                             case SETCOLOR:
                                 updateFlatCube(flatButtons[i].color, 0);

@@ -67,6 +67,8 @@ extern char currentStepText[20];
 extern int isCubeFilled;
 extern int currentFlatCubeIndex;
 
+extern int isAuxWindowActive;
+
 #ifdef DEBUG_MODE
 extern int printTime;
 extern FILE *logFile;

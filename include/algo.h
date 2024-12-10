@@ -91,5 +91,4 @@ void setOpToChar(OperationPrint *ops, int countops, char lastop);
 void setCountToChar(OperationPrint *ops, int countops, char rotatecounts);
 void printOpToFile(Cube *thisCube, FILE *foutput);
 void cubeSolve(Cube *thisCube, FILE *foutput, char filename[]);
-void testInit(Cube *c);
 #endif

@@ -765,71 +765,10 @@ void cubeSolve(Cube *thisCube, FILE *foutput, char filename[]) {
                 printOpToFile(find, foutput);
             }
         } else {
-            // FILE* foutput = fopen("ops.txt", "w");
             FILE *r = freopen(filename, "w", foutput);
             fputc('_', foutput);
-            // Couldn't find
-            //  fclose(foutput);
             break;
         }
     }
     deleteTable(&table);
 }
-
-void testInit(Cube *c) {
-    char str[256];
-
-    // printf("please input F surface of cube:\n");
-    (void)scanf(" %c %c %c %c %c %c %c %c %c", &(c->front[0][0]),
-                &(c->front[0][1]), &(c->front[0][2]), &(c->front[1][0]),
-                &(c->front[1][1]), &(c->front[1][2]), &(c->front[2][0]),
-                &(c->front[2][1]), &(c->front[2][2]));
-    fgets(str, sizeof(str), stdin);
-
-    // printf("please input U surface of cube:\n");
-    (void)scanf(" %c %c %c %c %c %c %c %c %c", &(c->up[0][0]), &(c->up[0][1]),
-                &(c->up[0][2]), &(c->up[1][0]), &(c->up[1][1]), &(c->up[1][2]),
-                &(c->up[2][0]), &(c->up[2][1]), &(c->up[2][2]));
-    fgets(str, sizeof(str), stdin);
-
-    // printf("please input D surface of cube:\n");
-    (void)scanf(" %c %c %c %c %c %c %c %c %c", &(c->down[0][0]),
-                &(c->down[0][1]), &(c->down[0][2]), &(c->down[1][0]),
-                &(c->down[1][1]), &(c->down[1][2]), &(c->down[2][0]),
-                &(c->down[2][1]), &(c->down[2][2]));
-    fgets(str, sizeof(str), stdin);
-
-    // printf("please input L surface of cube:\n");
-    (void)scanf(" %c %c %c %c %c %c %c %c %c", &(c->left[0][0]),
-                &(c->left[0][1]), &(c->left[0][2]), &(c->left[1][0]),
-                &(c->left[1][1]), &(c->left[1][2]), &(c->left[2][0]),
-                &(c->left[2][1]), &(c->left[2][2]));
-    fgets(str, sizeof(str), stdin);
-
-    // printf("please input R surface of cube:\n");
-    (void)scanf(" %c %c %c %c %c %c %c %c %c", &(c->right[0][0]),
-                &(c->right[0][1]), &(c->right[0][2]), &(c->right[1][0]),
-                &(c->right[1][1]), &(c->right[1][2]), &(c->right[2][0]),
-                &(c->right[2][1]), &(c->right[2][2]));
-    fgets(str, sizeof(str), stdin);
-
-    // printf("please input B surface of cube:\n");
-    (void)scanf(" %c %c %c %c %c %c %c %c %c", &(c->back[0][0]),
-                &(c->back[0][1]), &(c->back[0][2]), &(c->back[1][0]),
-                &(c->back[1][1]), &(c->back[1][2]), &(c->back[2][0]),
-                &(c->back[2][1]), &(c->back[2][2]));
-    fgets(str, sizeof(str), stdin);
-}
-
-// int main()
-//{
-////     FILE* foutput = fopen("solution.txt", "w");
-////     Cube c;
-////     initCube(&c);
-////     randCube(&c, 52);
-////     cubeSolve(&c, foutput);
-//
-////     fclose(foutput);
-//
-//   return 0;
-// }
