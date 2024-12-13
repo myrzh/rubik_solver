@@ -2,10 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>   
+//#include <time.h>   
 
-clock_t start, end, start1, end1;
-double cpu_time_used, cpu_time_used1;
+//clock_t start, end, start1, end1;
+//double cpu_time_used, cpu_time_used1;
 
 void shuffle(int* arr, int N)
 {
@@ -641,8 +641,8 @@ Cube *search(SolutionTable *table, Cube *startCube, int state, char *operlist,
 
     //if (state == 28)
     //{
-        printf("Search state %d\n", state);
-        start1 = clock();
+        /*printf("Search state %d\n", state);
+        start1 = clock();*/
     //}
 
         /*if (state == 32)
@@ -740,9 +740,9 @@ Cube *search(SolutionTable *table, Cube *startCube, int state, char *operlist,
 
                 //if (state == 28)
                 //{
-                    end1 = clock();
+                    /*end1 = clock();
                     cpu_time_used1 = ((double)(end1 - start1));
-                    printf("Search state %d done %f ms\n Tables opened %d\n", state, cpu_time_used1, table->openCubes);
+                    printf("Search state %d done %f ms\n Tables opened %d\n", state, cpu_time_used1, table->openCubes);*/
                 //}
 
                 return newcube;
@@ -862,8 +862,8 @@ void cubeSolve(Cube *thisCube, FILE *foutput, char filename[]) {
     Cube *startCube = thisCube;
     Cube *find = NULL;
 
-    printf("Start search loop\n");
-    start = clock();
+    /*printf("Start search loop\n");
+    start = clock();*/
 
     for (int i = 0; i < SMALLSTEPSCOUNT; i++) {
         find = search(&table, startCube, parametrs[i][0],
@@ -876,7 +876,7 @@ void cubeSolve(Cube *thisCube, FILE *foutput, char filename[]) {
                 printOpToFile(find, foutput);
             }
         } else {
-            printf("Search failed \n");
+            //printf("Search failed \n");
             FILE *r = freopen(filename, "w", foutput);
             fputc('_', foutput);
             break;
@@ -884,9 +884,9 @@ void cubeSolve(Cube *thisCube, FILE *foutput, char filename[]) {
     }
     deleteTable(&table);
 
-    end = clock();
+    /*end = clock();
     cpu_time_used = ((double)(end - start));
-    printf("Search all done %f ms\n", cpu_time_used);
+    printf("Search all done %f ms\n", cpu_time_used);*/
 }
 
  int main()
