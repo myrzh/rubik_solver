@@ -1,12 +1,21 @@
-/* ──────────────────────────── *
-│  TODO: Parallelize algorithm  │
-*──────────────────────────────*/
-
 #include "algo.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
+void shuffle(int* arr, int N)
+{
+    // реализация алгоритма перестановки
+    for (int i = N - 1; i >= 1; i--)
+    {
+        int j = rand() % (i + 1);
+
+        int tmp = arr[j];
+        arr[j] = arr[i];
+        arr[i] = tmp;
+    }
+}
 
 void initCube(Cube *thisCube) {
     memset(thisCube->front, 'w', sizeof(thisCube->front));
@@ -627,6 +636,9 @@ Cube *search(SolutionTable *table, Cube *startCube, int state, char *operlist,
     table->cubes[table->openCubes] = *startCube;
     table->openCubes++;
 
+        int arrI[] = { 0,1,2,3,4,5};
+        int countshuffle = 0;
+
     while (table->closedCubes < table->openCubes) {
         if (table->openCubes + 6 >= table->size - 1) {
             // all memory was used
@@ -635,12 +647,19 @@ Cube *search(SolutionTable *table, Cube *startCube, int state, char *operlist,
 
         currcube = &(table->cubes[table->closedCubes++]);
 
+        if (countshuffle % 15 == 0 && (state!=26 && state != 28 && state != 32)) // %3 == 3s all; %4 == 7s all; %
+        {
+            shuffle(arrI, opernum);
+        }
+
+        countshuffle++;
+
         for (int i = 0; i < opernum; i++) {
             newcube = &(table->cubes[table->openCubes]);
             memcpy(newcube, currcube, sizeof(Cube));
-            cubeDoOp(newcube, operlist[i]);
 
-            newcube->operation = operlist[i];
+            cubeDoOp(newcube, operlist[arrI[i]]);
+            newcube->operation = operlist[arrI[i]];
             newcube->previousState = currcube;
 
             newstate = checkAllCube(newcube, 0);
@@ -753,7 +772,7 @@ void cubeSolve(Cube *thisCube) {
                           {21, 1, 5, 11},  // начало сборки желтого креста
                           {24, 1, 5, 11},  // конец сборки желтого креста
                           {26, 2, 3, 12},  // начало сборки всей желтой стороны
-                          {28, 2, 3, 12},  // конец сборки всей желтой стороны
+                          {28, 2, 3, 12},  // конец сборки всей желтой стороны //Было 12
                           {32, 2, 2, 12},  // начало и конец сборки нижнего слоя
                           {0, 0, 0, 0}};
 
@@ -777,51 +796,6 @@ void cubeSolve(Cube *thisCube) {
         }
     }
     deleteTable(&table);
-}
-
-void testInit(Cube *c) {
-    char str[256];
-
-    // printf("please input F surface of cube:\n");
-    (void)scanf(" %c %c %c %c %c %c %c %c %c", &(c->front[0][0]),
-                &(c->front[0][1]), &(c->front[0][2]), &(c->front[1][0]),
-                &(c->front[1][1]), &(c->front[1][2]), &(c->front[2][0]),
-                &(c->front[2][1]), &(c->front[2][2]));
-    fgets(str, sizeof(str), stdin);
-
-    // printf("please input U surface of cube:\n");
-    (void)scanf(" %c %c %c %c %c %c %c %c %c", &(c->up[0][0]), &(c->up[0][1]),
-                &(c->up[0][2]), &(c->up[1][0]), &(c->up[1][1]), &(c->up[1][2]),
-                &(c->up[2][0]), &(c->up[2][1]), &(c->up[2][2]));
-    fgets(str, sizeof(str), stdin);
-
-    // printf("please input D surface of cube:\n");
-    (void)scanf(" %c %c %c %c %c %c %c %c %c", &(c->down[0][0]),
-                &(c->down[0][1]), &(c->down[0][2]), &(c->down[1][0]),
-                &(c->down[1][1]), &(c->down[1][2]), &(c->down[2][0]),
-                &(c->down[2][1]), &(c->down[2][2]));
-    fgets(str, sizeof(str), stdin);
-
-    // printf("please input L surface of cube:\n");
-    (void)scanf(" %c %c %c %c %c %c %c %c %c", &(c->left[0][0]),
-                &(c->left[0][1]), &(c->left[0][2]), &(c->left[1][0]),
-                &(c->left[1][1]), &(c->left[1][2]), &(c->left[2][0]),
-                &(c->left[2][1]), &(c->left[2][2]));
-    fgets(str, sizeof(str), stdin);
-
-    // printf("please input R surface of cube:\n");
-    (void)scanf(" %c %c %c %c %c %c %c %c %c", &(c->right[0][0]),
-                &(c->right[0][1]), &(c->right[0][2]), &(c->right[1][0]),
-                &(c->right[1][1]), &(c->right[1][2]), &(c->right[2][0]),
-                &(c->right[2][1]), &(c->right[2][2]));
-    fgets(str, sizeof(str), stdin);
-
-    // printf("please input B surface of cube:\n");
-    (void)scanf(" %c %c %c %c %c %c %c %c %c", &(c->back[0][0]),
-                &(c->back[0][1]), &(c->back[0][2]), &(c->back[1][0]),
-                &(c->back[1][1]), &(c->back[1][2]), &(c->back[2][0]),
-                &(c->back[2][1]), &(c->back[2][2]));
-    fgets(str, sizeof(str), stdin);
 }
 
 int main()

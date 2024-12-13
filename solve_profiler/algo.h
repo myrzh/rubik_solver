@@ -60,6 +60,7 @@ enum {
     SEVENTHSTEP
 };
 
+void shuffle(int* arr, int N);
 void initCube(Cube *thisCube);
 void rotateSideBy90(char panel[3][3]);
 void rotateOtherSides(CubeLine sides[5]);
