@@ -641,7 +641,7 @@ Cube *search(SolutionTable *table, Cube *startCube, int state, char *operlist,
 
     //if (state == 28)
     //{
-        /*printf("Search state %d\n", state);
+       /* printf("Search state %d\n", state);
         start1 = clock();*/
     //}
 
@@ -679,19 +679,18 @@ Cube *search(SolutionTable *table, Cube *startCube, int state, char *operlist,
 
         currcube = &(table->cubes[table->closedCubes++]);
 
-        //if (state == 28)
-        //{ 
-           // opernum = 4;
-        //}
-
-        if (countshuffle % 5 == 0 && (state!=26 && state != 28 && state != 32)) // %3 == 3s all; %4 == 7s all; %
+        if (countshuffle % 15 == 0 && (state!=26 && state != 28 && state != 32)) // %3 == 3s all; %4 == 7s all; %
         {
             shuffle(arrI, opernum);
         }
-        else if (countshuffle % 3 == 0 && (state == 26 && state == 28 && state == 32))
+       /* else if (countshuffle % 3 == 0 && (state == 26 || state == 28))
         {
             shuffle(arrI, opernum);
-        }
+        }*/
+        /*else if (countshuffle % 2 == 0 && (state == 32))
+        {
+            shuffle(arrI, opernum);
+        }*/
         countshuffle++;
 
         /*if (state == 26)
