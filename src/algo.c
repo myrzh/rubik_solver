@@ -889,7 +889,7 @@ void cubeSolve(Cube *thisCube, FILE *foutput, char filename[]) {
     printf("Search all done %f ms\n", cpu_time_used);*/
 }
 
- int main()
+ /*int main()
 {
      FILE* foutput = fopen("solution.txt", "w");
      Cube c;
@@ -900,4 +900,4 @@ void cubeSolve(Cube *thisCube, FILE *foutput, char filename[]) {
      fclose(foutput);
 
    return 0;
- }
+ }*/
