@@ -1,7 +1,24 @@
-#include <algo.h>
+#include "algo.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>   
+
+clock_t start, end, start1, end1;
+double cpu_time_used, cpu_time_used1;
+
+void shuffle(int* arr, int N)
+{
+    // реализация алгоритма перестановки
+    for (int i = N - 1; i >= 1; i--)
+    {
+        int j = rand() % (i + 1);
+
+        int tmp = arr[j];
+        arr[j] = arr[i];
+        arr[i] = tmp;
+    }
+}
 
 void initCube(Cube *thisCube) {
     memset(thisCube->front, 'w', sizeof(thisCube->front));
@@ -622,6 +639,38 @@ Cube *search(SolutionTable *table, Cube *startCube, int state, char *operlist,
     table->cubes[table->openCubes] = *startCube;
     table->openCubes++;
 
+    //if (state == 28)
+    //{
+        printf("Search state %d\n", state);
+        start1 = clock();
+    //}
+
+        /*if (state == 32)
+        {
+            operlist[0] = BACKROTATE;
+            operlist[0] = RIGHTROTATE;
+            operlist[0] = UPROTATE;
+        }*/
+
+        int arrI[] = { 0,1,2,3,4,5};
+        //shuffle(arrI, opernum);
+        /*if (state == 28 || state == 32)
+       { 
+            arrI[0] = 0;
+            arrI[1] = 1;
+            arrI[2] = 2;
+            shuffle(arrI, opernum);
+       }*/
+        
+        /*if (state != 32)
+        {
+            arrI[0] = 0;
+            arrI[1] = 1;
+            arrI[2] = 2;
+        }*/
+
+        int countshuffle = 0;
+
     while (table->closedCubes < table->openCubes) {
         if (table->openCubes + 6 >= table->size - 1) {
             // all memory was used
@@ -630,24 +679,81 @@ Cube *search(SolutionTable *table, Cube *startCube, int state, char *operlist,
 
         currcube = &(table->cubes[table->closedCubes++]);
 
+        //if (state == 28)
+        //{ 
+           // opernum = 4;
+        //}
+
+        if (countshuffle % 5 == 0 && (state!=26 && state != 28 && state != 32)) // %3 == 3s all; %4 == 7s all; %
+        {
+            shuffle(arrI, opernum);
+        }
+        else if (countshuffle % 3 == 0 && (state == 26 && state == 28 && state == 32))
+        {
+            shuffle(arrI, opernum);
+        }
+        countshuffle++;
+
+        /*if (state == 26)
+       {
+            arrI[0] = 0;
+            arrI[1] = 1;
+            arrI[2] = 2;
+       }*/
+
         for (int i = 0; i < opernum; i++) {
             newcube = &(table->cubes[table->openCubes]);
             memcpy(newcube, currcube, sizeof(Cube));
-            cubeDoOp(newcube, operlist[i]);
 
-            newcube->operation = operlist[i];
+            //if (state == 28)
+            //{
+                //D3: R' U L U' R U L' U' и D4: L U' R' U L' U' R U 
+                //R = RIGHTROTATE; U = BACKROTATE ; L = LEFTROTATE
+                /*cubeDoOp(newcube, RIGHTROTATE);
+                cubeDoOp(newcube, RIGHTROTATE);
+                cubeDoOp(newcube, RIGHTROTATE);
+                cubeDoOp(newcube, BACKROTATE);
+                cubeDoOp(newcube, LEFTROTATE);
+                cubeDoOp(newcube, BACKROTATE);
+                cubeDoOp(newcube, BACKROTATE);
+                cubeDoOp(newcube, BACKROTATE);
+                cubeDoOp(newcube, RIGHTROTATE);
+                cubeDoOp(newcube, BACKROTATE);
+                cubeDoOp(newcube, LEFTROTATE);
+                cubeDoOp(newcube, LEFTROTATE);
+                cubeDoOp(newcube, LEFTROTATE);
+                cubeDoOp(newcube, BACKROTATE);
+                cubeDoOp(newcube, BACKROTATE);
+                cubeDoOp(newcube, BACKROTATE);*/
+            //}
+            //else
+            //{
+                cubeDoOp(newcube, operlist[arrI[i]]);
+            //}
+
+            newcube->operation = operlist[arrI[i]];
             newcube->previousState = currcube;
 
             newstate = checkAllCube(newcube, 0);
             newvalue = checkAllCube(newcube, state);
             if (newstate >= state) {
+
+                //if (state == 28)
+                //{
+                    end1 = clock();
+                    cpu_time_used1 = ((double)(end1 - start1));
+                    printf("Search state %d done %f ms\n Tables opened %d\n", state, cpu_time_used1, table->openCubes);
+                //}
+
                 return newcube;
             }
             if (cutTheWay(newvalue, cutvalue) || checkIfSameOps(newcube)) {
                 continue;
             }
             table->openCubes++;
+            
         }
+        
     }
     return NULL;
 }
@@ -727,6 +833,8 @@ void cubeSolve(Cube *thisCube, FILE *foutput, char filename[]) {
     char operatoinssecondsteps[6] = {UPROTATE, DOWNROTATE, LEFTROTATE,
                                      RIGHTROTATE, BACKROTATE};
     char operationslastspets[4] = {BACKROTATE, RIGHTROTATE, UPROTATE};
+    //char operationslastspets[4] = { BACKROTATE, RIGHTROTATE, UPROTATE };
+    //char operationslastspets[4] = { UPROTATE, RIGHTROTATE, BACKROTATE };
 
     char *opeartionsarray[3] = {operationsfirstseps, operatoinssecondsteps,
                                 operationslastspets};
@@ -747,12 +855,15 @@ void cubeSolve(Cube *thisCube, FILE *foutput, char filename[]) {
                           {21, 1, 5, 11},  // начало сборки желтого креста
                           {24, 1, 5, 11},  // конец сборки желтого креста
                           {26, 2, 3, 12},  // начало сборки всей желтой стороны
-                          {28, 2, 3, 12},  // конец сборки всей желтой стороны
+                          {28, 2, 3, 12},  // конец сборки всей желтой стороны //Было 12
                           {32, 2, 2, 12},  // начало и конец сборки нижнего слоя
                           {0, 0, 0, 0}};
 
     Cube *startCube = thisCube;
     Cube *find = NULL;
+
+    printf("Start search loop\n");
+    start = clock();
 
     for (int i = 0; i < SMALLSTEPSCOUNT; i++) {
         find = search(&table, startCube, parametrs[i][0],
@@ -765,10 +876,28 @@ void cubeSolve(Cube *thisCube, FILE *foutput, char filename[]) {
                 printOpToFile(find, foutput);
             }
         } else {
+            printf("Search failed \n");
             FILE *r = freopen(filename, "w", foutput);
             fputc('_', foutput);
             break;
         }
     }
     deleteTable(&table);
+
+    end = clock();
+    cpu_time_used = ((double)(end - start));
+    printf("Search all done %f ms\n", cpu_time_used);
 }
+
+ int main()
+{
+     FILE* foutput = fopen("solution.txt", "w");
+     Cube c;
+     initCube(&c);
+     randCube(&c, 52);
+     cubeSolve(&c, foutput, "solution.txt");
+
+     fclose(foutput);
+
+   return 0;
+ }
