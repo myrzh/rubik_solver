@@ -619,10 +619,10 @@ int cutTheWay(int newvalue, int cutvalue) {
     }
 }
 
-Cube *search(SolutionTable *table, Cube *startCube, int state, char *operlist,
-             int opernum, int cutvalue) {
-    Cube *newcube = NULL;
-    Cube *currcube = NULL;
+Cube* search(SolutionTable* table, Cube* startCube, int state, char* operlist,
+    int opernum, int cutvalue) {
+    Cube* newcube = NULL;
+    Cube* currcube = NULL;
     int newstate = 0;
     int newvalue = 0;
 
@@ -639,37 +639,19 @@ Cube *search(SolutionTable *table, Cube *startCube, int state, char *operlist,
     table->cubes[table->openCubes] = *startCube;
     table->openCubes++;
 
-    //if (state == 28)
-    //{
-       /* printf("Search state %d\n", state);
-        start1 = clock();*/
-    //}
+    int arrI[] = { 0,1,2,3,4,5 };
 
-        /*if (state == 32)
-        {
-            operlist[0] = BACKROTATE;
-            operlist[0] = RIGHTROTATE;
-            operlist[0] = UPROTATE;
-        }*/
+    int countshuffle = 0;
 
-        int arrI[] = { 0,1,2,3,4,5};
-        //shuffle(arrI, opernum);
-        /*if (state == 28 || state == 32)
-       { 
-            arrI[0] = 0;
-            arrI[1] = 1;
-            arrI[2] = 2;
-            shuffle(arrI, opernum);
-       }*/
-        
-        /*if (state != 32)
-        {
-            arrI[0] = 0;
-            arrI[1] = 1;
-            arrI[2] = 2;
-        }*/
-
-        int countshuffle = 0;
+    if (state == 15)
+    {
+        //splitToIntArray("01234", arrI);
+        arrI[0] = 0; //01234 - 1,1sec;  01243 - 1,1; sec 01324 - 2,1 sec; 01342 - 3 sec;
+        arrI[1] = 1; //10234 - 4,9sec
+        arrI[2] = 2;
+        arrI[3] = 3;
+        arrI[4] = 4;
+    }
 
     while (table->closedCubes < table->openCubes) {
         if (table->openCubes + 6 >= table->size - 1) {
@@ -679,56 +661,18 @@ Cube *search(SolutionTable *table, Cube *startCube, int state, char *operlist,
 
         currcube = &(table->cubes[table->closedCubes++]);
 
-        if (countshuffle % 15 == 0 && (state!=26 && state != 28 && state != 32)) // %3 == 3s all; %4 == 7s all; %
+        if ((state != 32 && state != 15) && countshuffle % 15 == 0) // %3 == 3s all; %4 == 7s all; %
         {
             shuffle(arrI, opernum);
         }
-       /* else if (countshuffle % 3 == 0 && (state == 26 || state == 28))
-        {
-            shuffle(arrI, opernum);
-        }*/
-        /*else if (countshuffle % 2 == 0 && (state == 32))
-        {
-            shuffle(arrI, opernum);
-        }*/
-        countshuffle++;
 
-        /*if (state == 26)
-       {
-            arrI[0] = 0;
-            arrI[1] = 1;
-            arrI[2] = 2;
-       }*/
+        countshuffle++;       
 
         for (int i = 0; i < opernum; i++) {
             newcube = &(table->cubes[table->openCubes]);
             memcpy(newcube, currcube, sizeof(Cube));
 
-            //if (state == 28)
-            //{
-                //D3: R' U L U' R U L' U' и D4: L U' R' U L' U' R U 
-                //R = RIGHTROTATE; U = BACKROTATE ; L = LEFTROTATE
-                /*cubeDoOp(newcube, RIGHTROTATE);
-                cubeDoOp(newcube, RIGHTROTATE);
-                cubeDoOp(newcube, RIGHTROTATE);
-                cubeDoOp(newcube, BACKROTATE);
-                cubeDoOp(newcube, LEFTROTATE);
-                cubeDoOp(newcube, BACKROTATE);
-                cubeDoOp(newcube, BACKROTATE);
-                cubeDoOp(newcube, BACKROTATE);
-                cubeDoOp(newcube, RIGHTROTATE);
-                cubeDoOp(newcube, BACKROTATE);
-                cubeDoOp(newcube, LEFTROTATE);
-                cubeDoOp(newcube, LEFTROTATE);
-                cubeDoOp(newcube, LEFTROTATE);
-                cubeDoOp(newcube, BACKROTATE);
-                cubeDoOp(newcube, BACKROTATE);
-                cubeDoOp(newcube, BACKROTATE);*/
-            //}
-            //else
-            //{
-                cubeDoOp(newcube, operlist[arrI[i]]);
-            //}
+            cubeDoOp(newcube, operlist[arrI[i]]);
 
             newcube->operation = operlist[arrI[i]];
             newcube->previousState = currcube;
@@ -736,23 +680,15 @@ Cube *search(SolutionTable *table, Cube *startCube, int state, char *operlist,
             newstate = checkAllCube(newcube, 0);
             newvalue = checkAllCube(newcube, state);
             if (newstate >= state) {
-
-                //if (state == 28)
-                //{
-                    /*end1 = clock();
-                    cpu_time_used1 = ((double)(end1 - start1));
-                    printf("Search state %d done %f ms\n Tables opened %d\n", state, cpu_time_used1, table->openCubes);*/
-                //}
-
                 return newcube;
             }
             if (cutTheWay(newvalue, cutvalue) || checkIfSameOps(newcube)) {
                 continue;
             }
             table->openCubes++;
-            
+
         }
-        
+
     }
     return NULL;
 }
@@ -823,22 +759,20 @@ void printOpToFile(Cube *thisCube, FILE *foutput) {
     }
 }
 
-void cubeSolve(Cube *thisCube, FILE *foutput, char filename[]) {
+void cubeSolve(Cube* thisCube, FILE* foutput, char filename[]) {
     SolutionTable table;
 
     createTable(&table, TABLESIZE);
-    char operationsfirstseps[6] = {FRONTROTATE, UPROTATE, DOWNROTATE,
-                                   LEFTROTATE, RIGHTROTATE};
-    char operatoinssecondsteps[6] = {UPROTATE, DOWNROTATE, LEFTROTATE,
-                                     RIGHTROTATE, BACKROTATE};
-    char operationslastspets[4] = {BACKROTATE, RIGHTROTATE, UPROTATE};
-    //char operationslastspets[4] = { BACKROTATE, RIGHTROTATE, UPROTATE };
-    //char operationslastspets[4] = { UPROTATE, RIGHTROTATE, BACKROTATE };
+    char operationsfirstseps[6] = { FRONTROTATE, UPROTATE, DOWNROTATE,
+                                   LEFTROTATE, RIGHTROTATE };
+    char operatoinssecondsteps[6] = { UPROTATE, DOWNROTATE, LEFTROTATE,
+                                     RIGHTROTATE, BACKROTATE };
+    char operationslastspets[4] = { BACKROTATE, RIGHTROTATE, UPROTATE };
 
-    char *opeartionsarray[3] = {operationsfirstseps, operatoinssecondsteps,
-                                operationslastspets};
+    char* opeartionsarray[3] = { operationsfirstseps, operatoinssecondsteps,
+                                operationslastspets };
 
-    int parametrs[][4] = {{2, 0, 5, 0},  // начало белого креста1
+    int parametrs[][4] = { {2, 0, 5, 0},  // начало белого креста1
                           {4, 0, 5, 2},  // конец белого креста1
                           {8, 0, 5, 2},  // начало и конец белого креста2
                           {9, 0, 5, 3},  // начало сборки верхнего слоя
@@ -856,36 +790,30 @@ void cubeSolve(Cube *thisCube, FILE *foutput, char filename[]) {
                           {26, 2, 3, 12},  // начало сборки всей желтой стороны
                           {28, 2, 3, 12},  // конец сборки всей желтой стороны //Было 12
                           {32, 2, 2, 12},  // начало и конец сборки нижнего слоя
-                          {0, 0, 0, 0}};
+                          {0, 0, 0, 0} };
 
-    Cube *startCube = thisCube;
-    Cube *find = NULL;
-
-    /*printf("Start search loop\n");
-    start = clock();*/
+    Cube* startCube = thisCube;
+    Cube* find = NULL;
 
     for (int i = 0; i < SMALLSTEPSCOUNT; i++) {
         find = search(&table, startCube, parametrs[i][0],
-                      opeartionsarray[parametrs[i][1]], parametrs[i][2],
-                      parametrs[i][3]);
+            opeartionsarray[parametrs[i][1]], parametrs[i][2],
+            parametrs[i][3]);
         if (find) {
             if (find != startCube) {
+
                 startCube = find;
                 *thisCube = *find;
                 printOpToFile(find, foutput);
             }
-        } else {
-            //printf("Search failed \n");
-            FILE *r = freopen(filename, "w", foutput);
+        }
+        else {
+            FILE* r = freopen(filename, "w", foutput);
             fputc('_', foutput);
             break;
         }
     }
     deleteTable(&table);
-
-    /*end = clock();
-    cpu_time_used = ((double)(end - start));
-    printf("Search all done %f ms\n", cpu_time_used);*/
 }
 
  /*int main()
