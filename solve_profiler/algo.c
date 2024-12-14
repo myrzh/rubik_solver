@@ -616,10 +616,10 @@ int cutTheWay(int newvalue, int cutvalue) {
     }
 }
 
-Cube *search(SolutionTable *table, Cube *startCube, int state, char *operlist,
-             int opernum, int cutvalue) {
-    Cube *newcube = NULL;
-    Cube *currcube = NULL;
+Cube* search(SolutionTable* table, Cube* startCube, int state, char* operlist,
+    int opernum, int cutvalue) {
+    Cube* newcube = NULL;
+    Cube* currcube = NULL;
     int newstate = 0;
     int newvalue = 0;
 
@@ -636,8 +636,18 @@ Cube *search(SolutionTable *table, Cube *startCube, int state, char *operlist,
     table->cubes[table->openCubes] = *startCube;
     table->openCubes++;
 
-        int arrI[] = { 0,1,2,3,4,5};
-        int countshuffle = 0;
+    int arrI[] = { 0,1,2,3,4,5 };
+
+    int countshuffle = 0;
+
+    if (state == 15)
+    {
+        arrI[0] = 0;
+        arrI[1] = 1;
+        arrI[2] = 2;
+        arrI[3] = 3;
+        arrI[4] = 4;
+    }
 
     while (table->closedCubes < table->openCubes) {
         if (table->openCubes + 6 >= table->size - 1) {
@@ -647,12 +657,12 @@ Cube *search(SolutionTable *table, Cube *startCube, int state, char *operlist,
 
         currcube = &(table->cubes[table->closedCubes++]);
 
-        if (countshuffle % 15 == 0 && (state!=26 && state != 28 && state != 32)) // %3 == 3s all; %4 == 7s all; %
+        if ((state != 32 && state != 15) && countshuffle % 15 == 0) // %3 == 3s all; %4 == 7s all; %
         {
             shuffle(arrI, opernum);
         }
 
-        countshuffle++;
+        countshuffle++;       
 
         for (int i = 0; i < opernum; i++) {
             newcube = &(table->cubes[table->openCubes]);
@@ -747,16 +757,16 @@ void cubeSolve(Cube *thisCube) {
     SolutionTable table;
 
     createTable(&table, TABLESIZE);
-    char operationsfirstseps[6] = {FRONTROTATE, UPROTATE, DOWNROTATE,
-                                   LEFTROTATE, RIGHTROTATE};
-    char operatoinssecondsteps[6] = {UPROTATE, DOWNROTATE, LEFTROTATE,
-                                     RIGHTROTATE, BACKROTATE};
-    char operationslastspets[4] = {BACKROTATE, RIGHTROTATE, UPROTATE};
+    char operationsfirstseps[6] = { FRONTROTATE, UPROTATE, DOWNROTATE,
+                                   LEFTROTATE, RIGHTROTATE };
+    char operatoinssecondsteps[6] = { UPROTATE, DOWNROTATE, LEFTROTATE,
+                                     RIGHTROTATE, BACKROTATE };
+    char operationslastspets[4] = { BACKROTATE, RIGHTROTATE, UPROTATE };
 
-    char *opeartionsarray[3] = {operationsfirstseps, operatoinssecondsteps,
-                                operationslastspets};
+    char* opeartionsarray[3] = { operationsfirstseps, operatoinssecondsteps,
+                                operationslastspets };
 
-    int parametrs[][4] = {{2, 0, 5, 0},  // начало белого креста1
+    int parametrs[][4] = { {2, 0, 5, 0},  // начало белого креста1
                           {4, 0, 5, 2},  // конец белого креста1
                           {8, 0, 5, 2},  // начало и конец белого креста2
                           {9, 0, 5, 3},  // начало сборки верхнего слоя
@@ -774,23 +784,24 @@ void cubeSolve(Cube *thisCube) {
                           {26, 2, 3, 12},  // начало сборки всей желтой стороны
                           {28, 2, 3, 12},  // конец сборки всей желтой стороны //Было 12
                           {32, 2, 2, 12},  // начало и конец сборки нижнего слоя
-                          {0, 0, 0, 0}};
+                          {0, 0, 0, 0} };
 
-    Cube *startCube = thisCube;
-    Cube *find = NULL;
+    Cube* startCube = thisCube;
+    Cube* find = NULL;
 
     for (int i = 0; i < SMALLSTEPSCOUNT; i++) {
         find = search(&table, startCube, parametrs[i][0],
-                      opeartionsarray[parametrs[i][1]], parametrs[i][2],
-                      parametrs[i][3]);
+            opeartionsarray[parametrs[i][1]], parametrs[i][2],
+            parametrs[i][3]);
         if (find) {
             if (find != startCube) {
                 startCube = find;
                 *thisCube = *find;
                 // printOpToFile(find, foutput);
             }
-        } else {
-            // FILE *r = freopen(filename, "w", foutput);
+        }
+        else {
+            // FILE* r = freopen(filename, "w", foutput);
             // fputc('_', foutput);
             break;
         }
